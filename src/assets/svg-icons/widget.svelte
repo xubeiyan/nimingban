@@ -8,7 +8,7 @@
 	height="1em"
 	viewBox="0 0 24 24"
 	fill="none"
-	class="stroke-zinc-500 {rotate_class} transition"
+	class="stroke-zinc-100 dark:stroke-zinc-900 {rotate_class} transition"
 	xmlns="http://www.w3.org/2000/svg"
 >
 	<path
