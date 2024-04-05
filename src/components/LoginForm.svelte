@@ -17,7 +17,7 @@
 					<KeyIcon />
 					登录
 				</h2>
-				<div class="w-72 m-auto pt-4 dark:text-zinc-100">
+				<div class="w-72 m-auto pt-10 dark:text-zinc-100">
 					<label class="flex flex-col mb-4">
 						<span class="mb-1">登录名称</span>
 						<input
