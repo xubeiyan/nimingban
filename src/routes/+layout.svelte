@@ -8,6 +8,7 @@
   let leftNavOpen = false;
   let loginFormOpen = false;
 
+  // 
   const handleMessage = (event) => {
     if (event.detail.type == 'toggleLeftNavbarOpen' ) {
       leftNavOpen = !leftNavOpen;
@@ -15,6 +16,8 @@
     } else if (event.detail.type == 'toggleLoginFormOpen') {
       loginFormOpen = !loginFormOpen;
       leftNavOpen = false;
+    } else if (event.detail.type == 'closeLoginForm') {
+      loginFormOpen = false;
     }
   }
 </script>
@@ -27,7 +30,7 @@
   <Header on:message={handleMessage} leftNavOpen={leftNavOpen}/>
   <div class="h-screen relative overflow-x-hidden">
     <LeftNav open={leftNavOpen}/>
-    <LoginForm open={loginFormOpen}/>
+    <LoginForm open={loginFormOpen} on:message={handleMessage}/>
     <slot />
   </div>
   <Footer />
