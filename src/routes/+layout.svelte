@@ -5,6 +5,8 @@
 	import LeftNav from "../components/LeftNav.svelte";
 	import LoginForm from "../components/LoginForm.svelte";
 
+  export let data;
+
   let leftNavOpen = false;
   let loginFormOpen = false;
 
@@ -27,9 +29,9 @@
 </svelte:head>
 
 <div class="flex flex-col h-screen">
-  <Header on:message={handleMessage} leftNavOpen={leftNavOpen}/>
+  <Header on:message={handleMessage} leftNavOpen={leftNavOpen} />
   <div class="h-screen relative overflow-x-hidden">
-    <LeftNav open={leftNavOpen}/>
+    <LeftNav open={leftNavOpen} forums={data.forms}/>
     <LoginForm open={loginFormOpen} on:message={handleMessage}/>
     <slot />
   </div>
