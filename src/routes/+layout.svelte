@@ -10,7 +10,7 @@
   let leftNavOpen = false;
   let loginFormOpen = false;
 
-  // 
+  // 处理各种消息
   const handleMessage = (event) => {
     if (event.detail.type == 'toggleLeftNavbarOpen' ) {
       leftNavOpen = !leftNavOpen;
@@ -31,7 +31,7 @@
 <div class="flex flex-col h-screen">
   <Header on:message={handleMessage} leftNavOpen={leftNavOpen} />
   <div class="h-screen relative overflow-x-hidden">
-    <LeftNav open={leftNavOpen} forums={data.forms}/>
+    <LeftNav open={leftNavOpen} forums={data.forums}/>
     <LoginForm open={loginFormOpen} on:message={handleMessage}/>
     <slot />
   </div>
