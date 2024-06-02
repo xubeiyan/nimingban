@@ -30,7 +30,7 @@
 
 <div class="flex flex-col h-screen">
   <Header on:message={handleMessage} leftNavOpen={leftNavOpen} />
-  <div class="h-screen relative overflow-x-hidden">
+  <div class="h-screen relative overflow-x-hidden dark:bg-sky-900 dark:text-white">
     <LeftNav open={leftNavOpen} forums={data.forums}/>
     <LoginForm open={loginFormOpen} on:message={handleMessage}/>
     <slot />

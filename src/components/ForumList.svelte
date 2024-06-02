@@ -17,7 +17,7 @@
 			{#each forum.boards as board}
 				<li>
 					<button
-						class="border border-sky-200 bg-sky-200 hover:bg-cyan-400 px-2 py-1 rounded-md w-full text-left"
+						class="bg-sky-200 dark:bg-sky-900 hover:bg-cyan-400 dark:hover:bg-cyan-700 px-2 py-1 rounded-md w-full text-left"
 						on:click={() => toBoard(board.board_url)}
 					>
 						{board.board_name}
