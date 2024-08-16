@@ -1,11 +1,14 @@
-<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" class="stroke-zinc-900 dark:stroke-zinc-100" xmlns="http://www.w3.org/2000/svg">
+<svg
+	class="stroke-slate-800 dark:stroke-slate-100"
+	width="1.5em"
+	height="1.5em"
+	viewBox="0 0 24 24"
+	xmlns="http://www.w3.org/2000/svg"
+>
+	<path d="M7 17L16.8995 7.10051" stroke-linecap="round" stroke-linejoin="round" />
 	<path
-		d="M2 12C2 7.28595 2 4.92893 3.46447 3.46447C4.92893 2 7.28595 2 12 2C16.714 2 19.0711 2 20.5355 3.46447C22 4.92893 22 7.28595 22 12C22 16.714 22 19.0711 20.5355 20.5355C19.0711 22 16.714 22 12 22C7.28595 22 4.92893 22 3.46447 20.5355C2 19.0711 2 16.714 2 12Z"
-		stroke-width="1.5"
-	/>
-	<path
-		d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5"
-		stroke-width="1.5"
+		d="M7 7.00001L16.8995 16.8995"
 		stroke-linecap="round"
+		stroke-linejoin="round"
 	/>
 </svg>

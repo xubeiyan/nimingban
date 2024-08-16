@@ -1,17 +1,29 @@
 <script>
+	import NewPostForm from "../../../components/NewPostForm.svelte";
+
 	export let data;
+
+	let newPostForm = null;
+
+	const showNewPostForm = () => {
+		if (newPostForm == null) return;
+		newPostForm.showForm();
+	}
 </script>
 
 <div class="container m-auto">
 	<h1 class="text-3xl py-4">
 		{data.board_name}
 	</h1>
-	<p class="bg-slate-200 dark:bg-slate-800 rounded-md px-4 py-2 shadow-inner mb-10">
+	<p class="bg-slate-200 dark:bg-slate-800/50 rounded-md px-4 py-2 shadow-inner shadow-slate-400 dark:shadow-slate-800 mb-4">
 		{data.board_intro}
 	</p>
+	<p>
+		<button class="bg-sky-100 shadow-md dark:bg-sky-500 rounded-md py-1 px-3" on:click={showNewPostForm}>发新串</button>
+	</p>
 	{#if data.posts.length == 0}
-		<div class="rounded-md border border-red-600 bg-red-200 p-4 my-2">
-			<span>似乎这个版块没有任何串...</span>
+		<div class="rounded-md bg-red-200 dark:bg-red-400/50 p-4 my-2">
+			<span>这个版块看起来没有任何串...</span>
 		</div>
 	{:else}
 		{#each data.posts as post}
@@ -31,3 +43,5 @@
 		{/each}
 	{/if}
 </div>
+
+<NewPostForm bind:this={newPostForm}/>
