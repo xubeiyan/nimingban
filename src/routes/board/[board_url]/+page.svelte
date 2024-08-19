@@ -9,6 +9,10 @@
 		if (newPostForm == null) return;
 		newPostForm.showForm();
 	}
+
+	const handleSendPost = () => {
+		
+	}
 </script>
 
 <div class="container m-auto">
@@ -44,4 +48,4 @@
 	{/if}
 </div>
 
-<NewPostForm bind:this={newPostForm}/>
+<NewPostForm bind:this={newPostForm} on:sendPost={handleSendPost}/>
