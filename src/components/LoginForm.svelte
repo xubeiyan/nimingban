@@ -44,6 +44,7 @@
 	let loginForm = {
 		username: '',
 		password: '',
+		submiting: false,
 		errors: {
 			username: null,
 			password: null
@@ -54,6 +55,7 @@
 		username: '',
 		password: '',
 		confirm: '',
+		submiting: false,
 		errors: {
 			username: null,
 			password: null,
@@ -132,6 +134,7 @@
 			if (one !== null) return;
 		}
 
+		registerForm.submiting = true;
 		const res = await fetch('/register', {
 			method: 'POST',
 			body: JSON.stringify({
@@ -144,6 +147,7 @@
 		});
 
 		const resJson = await res.json();
+		registerForm.submiting = false;
 		if (resJson.type !== 'success') {
 			// 用户已存在
 			if (resJson.errorCode == 'USER_NAME_EXISTS') {
@@ -181,7 +185,7 @@
 							<span class="mb-1 pl-1">登录名称</span>
 							<input type="text" bind:value={loginForm.username} class={textInputStyle} />
 							{#if loginForm.errors.username}
-								<span class="text-sm text-red-800 dark:text-red-300"
+								<span class="pl-1 pt-1 text-sm text-red-800 dark:text-red-300"
 									>{loginForm.errors.username}</span
 								>
 							{/if}
@@ -214,7 +218,7 @@
 								on:input={clearRegisterError}
 							/>
 							{#if registerForm.errors.username}
-								<span class="text-sm text-red-800 dark:text-red-300"
+								<span class="pl-1 pt-1 text-sm text-red-800 dark:text-red-300"
 									>{registerForm.errors.username}</span
 								>
 							{/if}
@@ -231,8 +235,12 @@
 								on:updateInput={(e) => updateInput('confirm', e.detail)}
 							/>
 						{/if}
-						<button class="w-full h-12 rounded-md {mainBtnStyle}" on:click={postRegisterForm}>
-							注册
+						<button
+							class="w-full h-12 rounded-md {mainBtnStyle}"
+							disabled={registerForm.submiting}
+							on:click={postRegisterForm}
+						>
+							{registerForm.submiting ? '请求中...' : '注册'}
 						</button>
 						<button class="mt-2 {underlinStyle}" on:click={() => scrollTo('login')}
 							>已有账号，登录</button

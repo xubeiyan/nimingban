@@ -18,7 +18,10 @@
 
 	const dispatch = createEventDispatcher();
 
+	let content = '';
+
 	const updateInput = (value) => {
+		content = value;
 		dispatch('updateInput', value);
 	};
 </script>
@@ -31,18 +34,20 @@
 			class={textInputStyle}
 			on:input={(e) => updateInput(e.target.value)}
 		/>
-		<button
-			class="absolute right-0 top-0 w-[2em] h-full flex justify-center items-center"
-			on:click={() => (dot = !dot)}
-		>
-			{#if dot}
-				<EyeClosedIcon />
-			{:else}
-				<EyeIcon />
-			{/if}
-		</button>
+		{#if content != ''}
+			<button
+				class="absolute right-0 top-0 w-[2em] h-full flex justify-center items-center"
+				on:click={() => (dot = !dot)}
+			>
+				{#if dot}
+					<EyeClosedIcon />
+				{:else}
+					<EyeIcon />
+				{/if}
+			</button>
+		{/if}
 	</div>
 	{#if error != null}
-		<span class="text-sm text-red-800 dark:text-red-300">{error}</span>
+		<span class="pl-1 pt-1 text-sm text-red-800 dark:text-red-300">{error}</span>
 	{/if}
 </label>
