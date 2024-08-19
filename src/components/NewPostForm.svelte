@@ -89,8 +89,7 @@
 		<div>
 			<label class="flex flex-col gap-1">
 				<span>正文</span>
-				<textarea class="{inputStyle} px-2 py-1" rows="10" bind:value={post.content} required
-				></textarea>
+				<textarea class="{inputStyle} px-2 py-1" rows="10" bind:value={post.content}></textarea>
 			</label>
 		</div>
 		<div class="mt-2 flex flex-col">
