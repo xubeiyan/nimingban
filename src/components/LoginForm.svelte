@@ -4,6 +4,8 @@
 	import ForwardIcon from '../assets/svg-icons/forward.svelte';
 
 	import { createEventDispatcher } from 'svelte';
+	import SecretTextInput from './LoginForm/SecretTextInput.svelte';
+
 	const dispatch = createEventDispatcher();
 
 	const closeLoginForm = () => {
@@ -29,7 +31,7 @@
 	let textInputBgStyle =
 		'bg-zinc-50 dark:bg-zinc-800 focus-visible:bg-white dark:focus-visible:bg-zinc-700';
 	// 输入框样式
-	$: textInputStyle = `rounded-md p-1 outline-none ${textInputBgStyle} ${textInputBorderStyle}`;
+	$: textInputStyle = `w-full rounded-md p-1 outline-none ${textInputBgStyle} ${textInputBorderStyle}`;
 
 	// 下划线样式
 	let underlinStyle =
@@ -41,41 +43,93 @@
 
 	let loginForm = {
 		username: '',
-		password: ''
+		password: '',
+		errors: {
+			username: null,
+			password: null
+		}
 	};
 
 	let registerForm = {
 		username: '',
 		password: '',
 		confirm: '',
-		errors: []
+		errors: {
+			username: null,
+			password: null,
+			confirm: null
+		},
+		// 是否显示确认密码部分
+		confirmInputShow: true
+	};
+
+	const updateInput = (type, value) => {
+		if (type == 'password') {
+			registerForm.password = value;
+			clearRegisterError();
+		} else if (type == 'confirm') {
+			registerForm.confirm = value;
+			clearRegisterError();
+		} else if (type == 'login_password') {
+			loginForm.password = value;
+		}
 	};
 
 	const clearRegisterError = () => {
-		registerForm.errors = [];
-		registerForm = registerForm;
+		registerForm.errors = {
+			username: null,
+			password: null,
+			confirm: null
+		};
 	};
 
+	// 登录
+	const postloginForm = async () => {
+		if (loginForm.username == '') {
+			loginForm.errors.username = '用户名不能为空';
+		}
+
+		if (loginForm.password == '') {
+			loginForm.errors.password = '密码不能为空';
+		}
+
+		for (let one of Object.values(loginForm.errors)) {
+			if (one !== null) return;
+		}
+
+		const res = await fetch('/login', {
+			method: 'POST',
+			body: JSON.stringify({
+				username: loginForm.username,
+				password: loginForm.password
+			}),
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		});
+	};
+
+	// 注册
 	const postRegisterForm = async () => {
 		if (registerForm.username == '') {
-			registerForm.errors.push('用户名不能为空');
+			registerForm.errors.username = '用户名不能为空';
 		}
 
 		if (registerForm.password == '') {
-			registerForm.errors.push('密码不能为空');
+			registerForm.errors.password = '密码不能为空';
 		}
 
 		if (registerForm.confirm == '') {
-			registerForm.errors.push('确认密码不能为空');
+			registerForm.errors.confirm = '确认密码不能为空';
 		}
 
 		if (registerForm.confirm != registerForm.password) {
-			registerForm.errors.push('密码和确认密码不一致');
+			registerForm.errors.password = '密码和确认密码不一致';
+			registerForm.errors.confirm = '密码和确认密码不一致';
 		}
 
-		if (registerForm.errors.length > 0) {
-			registerForm = registerForm;
-			return;
+		for (let one of Object.values(registerForm.errors)) {
+			if (one !== null) return;
 		}
 
 		const res = await fetch('/register', {
@@ -90,7 +144,13 @@
 		});
 
 		const resJson = await res.json();
-		console.log(resJson);
+		if (resJson.type !== 'success') {
+			// 用户已存在
+			if (resJson.errorCode == 'USER_NAME_EXISTS') {
+				registerForm.errors.username = `用户名${registerForm.username}已经存在`;
+				return;
+			}
+		}
 	};
 </script>
 
@@ -104,7 +164,7 @@
 		>
 			<button
 				class="absolute top-4 right-4 rounded-md size-[2em]
-				bg-zinc-200 hover:bg-zinc-300 dark:bg-zinc-800 dark:hover:bg-zinc-700/70
+				bg-zinc-200/70 hover:bg-zinc-200 dark:bg-sky-800 dark:hover:bg-sky-700/70
        			flex justify-center items-center"
 				on:click={closeLoginForm}
 			>
@@ -119,13 +179,21 @@
 					<div class="w-72 m-auto pt-10">
 						<label class="flex flex-col mb-4">
 							<span class="mb-1 pl-1">登录名称</span>
-							<input type="text" class={textInputStyle} />
+							<input type="text" bind:value={loginForm.username} class={textInputStyle} />
+							{#if loginForm.errors.username}
+								<span class="text-sm text-red-800 dark:text-red-300"
+									>{loginForm.errors.username}</span
+								>
+							{/if}
 						</label>
-						<label class="flex flex-col mb-4">
-							<span class="mb-1 pl-1">密码</span>
-							<input type="password" class={textInputStyle} />
-						</label>
-						<button class="w-full h-12 rounded-md {mainBtnStyle}"> 登录 </button>
+						<SecretTextInput
+							label="密码"
+							error={loginForm.errors.password}
+							on:updateInput={(e) => updateInput('login_password', e.detail)}
+						/>
+						<button class="w-full h-12 rounded-md {mainBtnStyle}" on:click={postloginForm}>
+							登录
+						</button>
 						<button class="mt-2 {underlinStyle}" on:click={() => scrollTo('register')}
 							>没有账号？去注册</button
 						>
@@ -145,33 +213,23 @@
 								bind:value={registerForm.username}
 								on:input={clearRegisterError}
 							/>
+							{#if registerForm.errors.username}
+								<span class="text-sm text-red-800 dark:text-red-300"
+									>{registerForm.errors.username}</span
+								>
+							{/if}
 						</label>
-						<label class="flex flex-col mb-4">
-							<span class="mb-1 pl-1">密码</span>
-							<input
-								type="password"
-								class={textInputStyle}
-								bind:value={registerForm.password}
-								on:input={clearRegisterError}
+						<SecretTextInput
+							label="密码"
+							error={registerForm.errors.password}
+							on:updateInput={(e) => updateInput('password', e.detail)}
+						/>
+						{#if registerForm.confirmInputShow}
+							<SecretTextInput
+								label="确认密码"
+								error={registerForm.errors.confirm}
+								on:updateInput={(e) => updateInput('confirm', e.detail)}
 							/>
-						</label>
-						{#if registerForm.password != ''}
-							<label class="flex flex-col mb-4">
-								<span class="mb-1 pl-1">确认密码</span>
-								<input
-									type="password"
-									class={textInputStyle}
-									bind:value={registerForm.confirm}
-									on:input={clearRegisterError}
-								/>
-							</label>
-						{/if}
-						{#if registerForm.errors.length > 0}
-							<div class="space-y-1 my-2">
-								{#each registerForm.errors as error}
-									<p class="border border-red-400 bg-red-100 px-2 py-1 rounded-md">{error}</p>
-								{/each}
-							</div>
 						{/if}
 						<button class="w-full h-12 rounded-md {mainBtnStyle}" on:click={postRegisterForm}>
 							注册

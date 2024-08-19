@@ -19,7 +19,7 @@
 	<h1 class="text-3xl py-4">
 		{data.board_name}
 	</h1>
-	<p class="bg-slate-200 dark:bg-slate-800/50 rounded-md px-4 py-2 shadow-inner shadow-slate-400 dark:shadow-slate-800 mb-4">
+	<p class="bg-slate-200 dark:bg-slate-800/50 rounded-md px-4 py-2 shadow-inner shadow-slate-300 dark:shadow-slate-800 mb-4">
 		{data.board_intro}
 	</p>
 	<p>
