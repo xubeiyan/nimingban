@@ -40,6 +40,7 @@
 区域名，用于版块的上级
     * id uuid
     * section_name vchar(256)
+    * order integer
 
 ### board
 
@@ -48,16 +49,18 @@
     * parent_section_id uuid 
     * min_post_second integer default 30
     * min_post_timestamp timestamp
-    * board_type char(16) 'all' 'view_only' 'hidden'
-    * board_name vchar(256)
-    * board_url_name vchar(256)
-    * board_intro text
+    * access_type char(16) 'all' 'view_only' 'hidden'
+    * name vchar(256)
+    * url_name vchar(256)
+    * intro text
+    * order integer
 
 ### post
 
 发送的串
 
     * id uuid
+    * belong_board_id uuid
     * poster_name vchar(256)
     * poster_email vchar(256)
     * title vchar(256)
@@ -71,7 +74,7 @@
 串和评论的图
 
     * id uuid
-    * image_type char(16) 'png' 'jpg' 'webp'
+    * image_type char(16) 'png' 'jpg' 'gif' 'webp' 'avif'
     * exist_type char(16) 'exist' 'hidden' 'remove'
     * post_id uuid
 
@@ -80,10 +83,10 @@
 评论
 
     * id uuid
-    * belong_post uuid
+    * belong_post_id uuid
     * belong_comment uuid
-    * post_name vchar(256)
-    * post_email vchar(256)
+    * poster_name vchar(256)
+    * poster_email vchar(256)
     * title vchar(256)
     * content text
     * poster_cookies_id uuid
@@ -95,7 +98,7 @@
 用户
 
     * id uuid
-    * status char(16) 'enable' 'only-view' 'forbidden'
+    * status char(16) 'enable' 'disabled' 'forbidden'
     * username vchar(256)
     * password_hash vchar(64)
     * password_salt vchar(64)

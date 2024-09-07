@@ -2,8 +2,8 @@ export const load = async ({ locals }) => {
     const { dbconn } = locals;
     // 查询section表中的id和section_name以及board表中的id和board_name
     const result = await dbconn.query(
-        `SELECT s.id AS section_id, s.section_name, b.id AS board_id, b.board_name, b.board_url_name 
-        FROM section AS s LEFT JOIN board AS b ON s.id = b.parent_section_id;`
+        `SELECT s.id AS section_id, s.section_name, b.id AS board_id, b.name AS board_name, b.url_name 
+        ,b.order FROM section AS s LEFT JOIN board AS b ON s.id = b.parent_section_id ORDER BY b.order;`
     );
     // 没有则返回空
     if (result.rows == undefined || result.rows.length == 0) {
@@ -57,7 +57,7 @@ export const load = async ({ locals }) => {
             filtered[0].boards.push({
                 board_id: one.board_id,
                 board_name: one.board_name,
-                board_url: one.board_url_name,
+                board_url: one.url_name,
             });
         }
     });

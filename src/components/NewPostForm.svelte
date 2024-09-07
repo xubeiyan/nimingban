@@ -79,7 +79,7 @@
 			</label>
 			<label class="flex flex-col gap-1">
 				<span>E-mail</span>
-				<input class="{inputStyle} px-2 py-0.5" placeholder="" bind:value={post.email} />
+				<input class="{inputStyle} px-2 py-0.5" placeholder="noname@noname.net" bind:value={post.email} />
 			</label>
 			<label class="flex flex-col gap-1 grow">
 				<span>标题</span>

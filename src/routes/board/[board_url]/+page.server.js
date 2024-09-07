@@ -2,22 +2,22 @@ export const load = async ({ locals, params }) => {
 	const { board_url } = params;
 	const { dbconn } = locals;
 	const query = {
-		text: `SELECT b.id AS board_id, b.board_name, b.board_intro FROM board AS b WHERE b.board_url_name = $1 LIMIT 1`,
+		text: `SELECT b.id AS board_id, b.name, b.intro FROM board AS b WHERE b.url_name = $1 LIMIT 1`,
 		values: [board_url]
 	};
 	const result = await dbconn.query(query);
 
 	// TODO: cannot find board error
 
-	const { board_id, board_name, board_intro } = result.rows[0];
+	const { board_id, name, intro } = result.rows[0];
 
 	let limit = 20;
 	let offset = 0;
 	const post_query = {
 		text: `
-			SELECT p.id, p.title, p.email, p.author, p.content 
-      FROM posts 
-			AS p WHERE p.belong_board_id = $1 
+			SELECT p.id, p.title, p.poster_email, p.poster_name, p.content, c.content AS cookies_content,
+			to_char(p.post_timestamp, 'YYYY-MM-DD HH:MI:SS') AS post_time FROM post 
+			AS p INNER JOIN cookies AS c ON p.poster_cookies_id = c.id WHERE p.belong_board_id = $1 
 			LIMIT $2 OFFSET $3
 		`,
 		values: [board_id, limit, offset]
@@ -30,17 +30,19 @@ export const load = async ({ locals, params }) => {
 			posts.push({
 				id: one.id,
 				title: one.title,
-				email: one.email,
-				author: one.author,
-				content: one.content
+				email: one.poster_email,
+				author: one.poster_name,
+				content: one.content,
+				cookies_content: one.cookies_content,
+				post_time: one.post_time,
 			});
 		});
 	}
 
 	return {
 		board_id,
-		board_name,
-		board_intro,
-		posts
+		name,
+		intro,
+		posts,
 	};
 };
