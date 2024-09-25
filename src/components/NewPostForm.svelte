@@ -2,6 +2,7 @@
 	import MarkdownIcon from '$svgIcon/markdown.svelte';
 	import AddPlusIcon from '$svgIcon/addPlus.svelte';
 	import CloseIcon from '$svgIcon/close.svelte';
+	import LoadingIcon from '$svgIcon/loading.svelte';
 
 	import MarkdownContent from './NewPostForm/MarkdownContent.svelte';
 	import AttachPicture from './NewPostForm/AttachPicture.svelte';
@@ -86,6 +87,18 @@
 		}
 		const json = await res.json();
 		sendBtnStatus = 'ok';
+
+		// 清空发帖部分
+		show = false;
+		sendBtnStatus = 'idle';
+		post = {
+			name: null,
+			email: null,
+			title: null,
+			content: null
+		};
+		attachFile.value = '';
+		attachedFileList = [];
 	};
 
 	let expand = false;
@@ -175,9 +188,14 @@
 		<div class="mt-6 flex justify-end">
 			<button
 				type="submit"
-				class="{sendBtnClass} px-3 py-1 rounded-md"
+				class="{sendBtnClass} px-3 py-1 rounded-md flex gap-1 items-center"
 				disabled={['sending', 'ok'].includes(sendBtnStatus)}
-				on:click={sendPost}>{sendBtnText}</button
+				on:click={sendPost}
+			>
+				{#if sendBtnStatus == 'sending'}
+					<LoadingIcon />
+				{/if}
+				<span>{sendBtnText}</span></button
 			>
 		</div>
 		<button
