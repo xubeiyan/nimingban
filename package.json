@@ -31,6 +31,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"marked": "^14.1.2",
 		"pg": "^8.11.5"
 	}
 }

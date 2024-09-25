@@ -1,7 +1,10 @@
 <script>
+	import MarkdownIcon from '$svgIcon/markdown.svelte';
 	import AddPlusIcon from '../assets/svg-icons/addPlus.svelte';
 	import CloseIcon from '../assets/svg-icons/close.svelte';
 	import TrashIcon from '../assets/svg-icons/trash.svelte';
+
+	import MarkdownContent from './NewPostForm/MarkdownContent.svelte';
 
 	let show = false;
 	$: showStyle = show ? 'top-0' : 'top-[100%]';
@@ -59,38 +62,66 @@
 		});
 	};
 
+	let expand = false;
+
+	// 展开编辑区
+	const toggleEdit = () => {
+		expand = !expand;
+	};
+
 	export const showForm = () => {
 		show = true;
 	};
+
+	$: formWidthClass = expand ? 'md:w-[95%]' : 'md:w-[50em]';
+	$: markdownBtnClass = expand ? 'bg-blue-400' : 'bg-blue-200';
 
 	let inputStyle =
 		'outline-none border border-slate-300 focus-within:border-slate-600 focus-within:dark:border-slate-400 dark:border-slate-600 focus-within:dark:bg-slate-600 dark:bg-slate-700 rounded-md';
 </script>
 
-<div class="z-20 fixed {showStyle} transition-all duration-500 w-screen bg-gray-100/30">
+<div class="z-20 fixed {showStyle} transition-all duration-500 w-screen h-screen bg-gray-300/50 dark:bg-gray-100/30">
 	<form
-		class="relative w-[90%] md:w-[50em] mx-auto my-[5em] bg-sky-100 dark:bg-sky-800 py-4 px-6 rounded-md"
+		class="relative {formWidthClass} w-[90%] transition-all duration-500 mx-auto my-[5em] bg-sky-100 dark:bg-sky-800 py-4 px-6 rounded-md"
 	>
 		<h1 class="text-2xl mb-6">发新串</h1>
 		<div class="flex gap-2 mb-2">
-			<label class="flex flex-col gap-1">
+			<label class="grow flex flex-col gap-1">
 				<span>名称</span>
 				<input class="{inputStyle} px-2 py-0.5" placeholder="无名氏" bind:value={post.name} />
 			</label>
-			<label class="flex flex-col gap-1">
+			<label class="grow flex flex-col gap-1">
 				<span>E-mail</span>
-				<input class="{inputStyle} px-2 py-0.5" placeholder="noname@noname.net" bind:value={post.email} />
+				<input
+					class="{inputStyle} px-2 py-0.5"
+					placeholder="noname@noname.net"
+					bind:value={post.email}
+				/>
 			</label>
-			<label class="flex flex-col gap-1 grow">
+			<label class="grow flex flex-col gap-1">
 				<span>标题</span>
 				<input class="{inputStyle} px-2 py-0.5" placeholder="无标题" bind:value={post.title} />
 			</label>
 		</div>
-		<div>
-			<label class="flex flex-col gap-1">
+		<div class="relative flex gap-2">
+			<label class="grow flex flex-col gap-1 mt-3">
 				<span>正文</span>
-				<textarea class="{inputStyle} px-2 py-1" rows="10" bind:value={post.content}></textarea>
+				<textarea
+					class="{inputStyle} px-2 py-1 grow"
+					rows="10"
+					bind:value={post.content}
+				></textarea>
 			</label>
+			<button
+				class="absolute right-0 top-0 {markdownBtnClass} px-2 rounded-md hover:shadow-md"
+				on:click={toggleEdit}
+			>
+				<MarkdownIcon highlight={expand} />
+			</button>
+
+			{#if expand}
+				<MarkdownContent content={post.content} />
+			{/if}
 		</div>
 		<div class="mt-2 flex flex-col">
 			<label class="mb-1">
@@ -131,7 +162,7 @@
 		<div class="mt-6 flex justify-end">
 			<button
 				type="submit"
-				class="bg-slate-300/50 hover:bg-slate-300/70 dark:bg-slate-50/20 hover:dark:bg-slate-50/30 px-3 py-1 rounded-md"
+				class="bg-slate-300/50 dark:bg-slate-50/20 px-3 py-1 rounded-md hover:shadow-md"
 				on:click={sendPost}>发送</button
 			>
 		</div>
