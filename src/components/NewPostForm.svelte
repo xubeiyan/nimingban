@@ -1,10 +1,10 @@
 <script>
 	import MarkdownIcon from '$svgIcon/markdown.svelte';
-	import AddPlusIcon from '../assets/svg-icons/addPlus.svelte';
-	import CloseIcon from '../assets/svg-icons/close.svelte';
-	import TrashIcon from '../assets/svg-icons/trash.svelte';
+	import AddPlusIcon from '$svgIcon/addPlus.svelte';
+	import CloseIcon from '$svgIcon/close.svelte';
 
 	import MarkdownContent from './NewPostForm/MarkdownContent.svelte';
+	import AttachPicture from './NewPostForm/AttachPicture.svelte';
 
 	let show = false;
 	$: showStyle = show ? 'top-0' : 'top-[100%]';
@@ -31,19 +31,36 @@
 
 		for (let file of files) {
 			attachedFileList.push({
+				id: attachedFileList.length,
 				name: file.name,
 				fileContent: file
 			});
 		}
 
+		attachFile.value = '';
+
 		// reactivity
 		attachedFileList = attachedFileList;
 	};
 
-	const removeImageFile = (name) => {
-		attachedFileList = attachedFileList.filter((one) => one.name != name);
+	const handleImageRemove = (e) => {
+		const id = e.detail.id;
+		attachedFileList = attachedFileList.filter((one) => one.id != id);
 	};
 
+	// 发送按钮状态
+	let sendBtnStatus = 'idle';
+	$: sendBtnText =
+		sendBtnStatus == 'idle'
+			? '发送'
+			: sendBtnStatus == 'sending'
+				? '发送中...'
+				: sendBtnStatus == 'failed'
+					? '发串失败，重试'
+					: '发串完成';
+	$: sendBtnClass = ['idle', 'failed'].includes(sendBtnStatus)
+		? 'bg-slate-300/50 dark:bg-slate-50/20 dark:bg-slate-50/10 hover:dark:bg-slate-50/20 hover:shadow-md'
+		: '';
 	// 发送串
 	const sendPost = async () => {
 		const form = new FormData();
@@ -56,10 +73,19 @@
 		form.append('title', post.title);
 		form.append('content', post.content);
 
+		sendBtnStatus = 'sending';
 		const res = await fetch('/board/sendPost', {
 			method: 'POST',
 			body: form
 		});
+
+		// 处理发串失败的情况
+		if (res.status != 200) {
+			sendBtnStatus = 'failed';
+			return;
+		}
+		const json = await res.json();
+		sendBtnStatus = 'ok';
 	};
 
 	let expand = false;
@@ -80,7 +106,9 @@
 		'outline-none border border-slate-300 focus-within:border-slate-600 focus-within:dark:border-slate-400 dark:border-slate-600 focus-within:dark:bg-slate-600 dark:bg-slate-700 rounded-md';
 </script>
 
-<div class="z-20 fixed {showStyle} transition-all duration-500 w-screen h-screen bg-gray-300/50 dark:bg-gray-100/30">
+<div
+	class="z-20 fixed {showStyle} transition-all duration-500 w-screen h-screen bg-gray-300/50 dark:bg-gray-100/30"
+>
 	<form
 		class="relative {formWidthClass} w-[90%] transition-all duration-500 mx-auto my-[5em] bg-sky-100 dark:bg-sky-800 py-4 px-6 rounded-md"
 	>
@@ -106,10 +134,7 @@
 		<div class="relative flex gap-2">
 			<label class="grow flex flex-col gap-1 mt-3">
 				<span>正文</span>
-				<textarea
-					class="{inputStyle} px-2 py-1 grow"
-					rows="10"
-					bind:value={post.content}
+				<textarea class="{inputStyle} px-2 py-1 grow" rows="10" bind:value={post.content}
 				></textarea>
 			</label>
 			<button
@@ -137,19 +162,7 @@
 			</label>
 			<div class="flex gap-2">
 				{#each attachedFileList as attachFile}
-					<div class="relative">
-						<img
-							class="size-16 object-cover object-center rounded-md"
-							src={window.URL.createObjectURL(attachFile.fileContent)}
-							alt="to upload"
-						/>
-						<button
-							class="absolute inset-0 flex justify-center items-center bg-slate-100/50 dark:bg-slate-600/50 opacity-0 hover:opacity-100"
-							on:click={() => removeImageFile(attachFile.name)}
-						>
-							<TrashIcon />
-						</button>
-					</div>
+					<AttachPicture {attachFile} on:removeImage={handleImageRemove} />
 				{/each}
 				<button
 					class="border-2 border-slate-500 dark:border-slate-100 border-dashed hover:bg-slate-500/10 hover:dark:bg-slate-50/10 rounded-lg size-16 flex justify-center items-center"
@@ -162,12 +175,13 @@
 		<div class="mt-6 flex justify-end">
 			<button
 				type="submit"
-				class="bg-slate-300/50 dark:bg-slate-50/20 px-3 py-1 rounded-md hover:shadow-md"
-				on:click={sendPost}>发送</button
+				class="{sendBtnClass} px-3 py-1 rounded-md"
+				disabled={['sending', 'ok'].includes(sendBtnStatus)}
+				on:click={sendPost}>{sendBtnText}</button
 			>
 		</div>
 		<button
-			class="absolute right-4 top-4 dark:bg-slate-50/10 hover:dark:bg-slate-50/20 size-8 rounded-md flex justify-center items-center"
+			class="absolute right-4 top-4 size-8 rounded-md flex justify-center items-center"
 			on:click={() => (show = false)}
 		>
 			<CloseIcon />

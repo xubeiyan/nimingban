@@ -8,14 +8,15 @@
 
 			let fontStyle = 'text-base';
 			if (depth == 1) {
-				fontStyle = 'text-3xl font-extrabold pb-1 mb-2 border-b border-slate-800 dark:border-slate-100 ';
+				fontStyle =
+					'text-3xl font-extrabold pb-1 mb-2 border-b border-slate-800 dark:border-slate-100 ';
 			} else if (depth == 2) {
 				fontStyle = 'text-2xl font-bold mb-2';
 			} else if (depth == 3) {
 				fontStyle = 'text-xl font-semibold mb-1';
 			} else if (depth == 4) {
-                fontStyle = 'text-lg'
-            }
+				fontStyle = 'text-lg';
+			}
 
 			return `
             <h${depth} class="${fontStyle}">
@@ -29,7 +30,7 @@
         */
 		code({ text, lang }) {
 			return `
-                <pre class="py-1"><code class="bg-slate-700 rounded-md my-1 p-1">${text}</code></pre>
+                <pre class="py-1"><code class="bg-slate-300 dark:bg-slate-700 rounded-md my-1 p-1">${text}</code></pre>
             `;
 		},
 
@@ -40,12 +41,29 @@
             `;
 		},
 
+		// 无序有序列表
+		list({ ordered, start, items }) {
+			let body = '';
+			for (let item of items) {
+				body += `${this.listitem(item)}`;
+			}
+			if (ordered) {
+				return `
+                <ol class="list-decimal" start="${start}">${body}</ol>
+                `;
+			} else {
+				return `
+                <ul class="list-disc">${body}</ul>
+                `;
+			}
+		},
+
 		// 无序，有序列表列表项
-		listitem({ ordered, items }) {
-            if (ordered) {
-                return `<ul></ul>`
-            }
-        }
+		listitem({ tokens }) {
+            let itemBody = '';
+            itemBody += this.parser.parse(tokens);
+			return `<li class="ml-4">${itemBody}</li>`;
+		}
 	};
 
 	marked.use({ renderer });

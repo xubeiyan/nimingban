@@ -25,19 +25,12 @@
 * 串附件图片最大数
 * 串图片大小限制
 
-### 用户参数
-
-* 分组 
-    * ADMIN 管理员
-    * USER 普通用户
-    * GUEST 分配账户的普通用户
-    * NOLOGIN 被禁止登录的用户
-
 ## 表设计
 
 ### section 
 
 区域名，用于版块的上级
+
     * id uuid
     * section_name vchar(256)
     * order integer
@@ -45,11 +38,12 @@
 ### board
 
 版块，可以允许发串的地方
+
     * id uuid
     * parent_section_id uuid 
     * min_post_second integer default 30
     * min_post_timestamp timestamp
-    * access_type char(16) 'all' 'view_only' 'hidden'
+    * access_type char(16) 'all' 'view_only' '' 'hidden'
     * name vchar(256)
     * url_name vchar(256)
     * intro text
