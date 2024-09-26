@@ -57,7 +57,7 @@
 		} else {
 			post.content += imageMarkdown;
 		}
-	}
+	};
 
 	// 发送按钮状态
 	let sendBtnStatus = 'idle';
@@ -72,6 +72,9 @@
 	$: sendBtnClass = ['idle', 'failed'].includes(sendBtnStatus)
 		? 'bg-slate-300/50 dark:bg-slate-50/20 dark:bg-slate-50/10 hover:dark:bg-slate-50/20 hover:shadow-md'
 		: '';
+
+	// 发送结果
+	let sendResponseError = null;
 	// 发送串
 	const sendPost = async () => {
 		const form = new FormData();
@@ -85,6 +88,8 @@
 		form.append('content', post.content);
 
 		sendBtnStatus = 'sending';
+		sendResponseError = null;
+
 		const res = await fetch('/board/sendPost', {
 			method: 'POST',
 			body: form
@@ -96,6 +101,26 @@
 			return;
 		}
 		const json = await res.json();
+
+		if (json.type == 'error') {
+			if (json.errorCode == 'BEYOND_MAX_UPLAD_IMAGE_COUNT') {
+				sendResponseError = {
+					text: '上传图片数超出了限制'
+				};
+			} else if (json.errorCode == 'IMAGE_OVERSIZE') {
+				sendResponseError = {
+					text: `图片 ${json.errorDetail.filenames.join(', ')} 超出了大小限制`
+				};
+			} else if (json.errorCode == 'CONTENT_LENGTH_TOO_SHORT') {
+				sendResponseError = {
+					text: `串的正文内容太短了`
+				};
+			}
+
+			sendBtnStatus = 'failed';
+			return;
+		}
+
 		sendBtnStatus = 'ok';
 
 		// 清空发帖部分
@@ -143,11 +168,7 @@
 			</label>
 			<label class="grow flex flex-col gap-1">
 				<span>E-mail</span>
-				<input
-					class="{inputStyle} px-2 py-0.5"
-					placeholder="no@name.net"
-					bind:value={post.email}
-				/>
+				<input class="{inputStyle} px-2 py-0.5" placeholder="no@name.net" bind:value={post.email} />
 			</label>
 			<label class="grow flex flex-col gap-1">
 				<span>标题</span>
@@ -199,7 +220,12 @@
 				</button>
 			</div>
 		</div>
-		<div class="mt-6 flex justify-end">
+		<div class="mt-6 flex justify-end items-center gap-4">
+			{#if sendResponseError != null}
+				<span class="border border-red-400 text-red-600 dark:text-red-300 rounded-md px-2"
+					>{sendResponseError.text}</span
+				>
+			{/if}
 			<button
 				type="submit"
 				class="{sendBtnClass} px-3 py-1 rounded-md flex gap-1 items-center"
