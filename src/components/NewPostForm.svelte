@@ -32,7 +32,7 @@
 
 		for (let file of files) {
 			attachedFileList.push({
-				id: attachedFileList.length,
+				id: attachedFileList.length + 1,
 				name: file.name,
 				fileContent: file
 			});
@@ -48,6 +48,16 @@
 		const id = e.detail.id;
 		attachedFileList = attachedFileList.filter((one) => one.id != id);
 	};
+
+	const handleInsertImageToPost = (e) => {
+		const id = e.detail.id;
+		const imageMarkdown = `![](/images/${id} "附加图片${id}")\n`;
+		if (post.content == null) {
+			post.content = imageMarkdown;
+		} else {
+			post.content += imageMarkdown;
+		}
+	}
 
 	// 发送按钮状态
 	let sendBtnStatus = 'idle';
@@ -120,7 +130,7 @@
 </script>
 
 <div
-	class="z-20 fixed {showStyle} transition-all duration-500 w-screen h-screen bg-gray-300/50 dark:bg-gray-100/30"
+	class="z-20 fixed {showStyle} transition-all duration-500 w-screen h-screen max-h-screen overflow-y-auto bg-gray-300/50 dark:bg-gray-100/30"
 >
 	<form
 		class="relative {formWidthClass} w-[90%] transition-all duration-500 mx-auto my-[5em] bg-sky-100 dark:bg-sky-800 py-4 px-6 rounded-md"
@@ -135,7 +145,7 @@
 				<span>E-mail</span>
 				<input
 					class="{inputStyle} px-2 py-0.5"
-					placeholder="noname@noname.net"
+					placeholder="no@name.net"
 					bind:value={post.email}
 				/>
 			</label>
@@ -175,7 +185,11 @@
 			</label>
 			<div class="flex gap-2">
 				{#each attachedFileList as attachFile}
-					<AttachPicture {attachFile} on:removeImage={handleImageRemove} />
+					<AttachPicture
+						{attachFile}
+						on:removeImage={handleImageRemove}
+						on:insertImageToPost={handleInsertImageToPost}
+					/>
 				{/each}
 				<button
 					class="border-2 border-slate-500 dark:border-slate-100 border-dashed hover:bg-slate-500/10 hover:dark:bg-slate-50/10 rounded-lg size-16 flex justify-center items-center"

@@ -10,6 +10,9 @@ const config = {
 		adapter: adapter(),
 		alias: {
 			'$svgIcon': 'src/assets/svg-icons'
+		},
+		paths: {
+			base: ''
 		}
 	},
 	preprocess: vitePreprocess()

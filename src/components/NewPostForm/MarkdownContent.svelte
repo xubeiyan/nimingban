@@ -60,9 +60,27 @@
 
 		// 无序，有序列表列表项
 		listitem({ tokens }) {
-            let itemBody = '';
-            itemBody += this.parser.parse(tokens);
+			let itemBody = '';
+			itemBody += this.parser.parse(tokens);
 			return `<li class="ml-4">${itemBody}</li>`;
+		},
+
+		// 图片
+		image({ href, title, text }) {
+			let descText = '← 此图片宽度会扩展到20em, 本消息只会出现在编辑界面';
+			// 匹配图片
+			const regex = /^http[s]?:\/\/.*/;
+			let src = href;
+			if (!regex.test(href)) {
+				src = '/attach_placeholder.png';
+				descText = `← 此为<em> ${title} </em>的占位图片，实际上传后会被替换, 宽度会扩展至20em`;
+			}
+			return `
+				<div class="flex items-center">
+					<img class="h-[5em]" src="${src}" alt="${text}" title="${title}"/>
+					<span class="text-sm text-slate-400 dark:text-slate-300 pl-2">${descText}</span>
+				</div>
+				`;
 		}
 	};
 
