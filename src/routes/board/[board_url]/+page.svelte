@@ -1,5 +1,6 @@
 <script>
 	import NewPostForm from '../../../components/NewPostForm.svelte';
+	import PostContent from '../../../components/PostContent.svelte';
 
 	export let data;
 
@@ -35,17 +36,20 @@
 	{:else}
 		{#each data.posts as post}
 			<div class="rounded-md bg-slate-100 dark:bg-sky-800 px-4 py-2 mt-4 shadow-inner">
-				<p class="space-x-2">
-					<a href="#id-{post.id}">
-						<span class="dark:text-green-100 font-bold">标题：{post.title}</span>
-					</a>
-					<span class="dark:text-yellow-100">作者：{post.author}</span>
-					<span class="italic">邮箱：{post.email}</span>
-					<span>写于：{post.post_time}</span>
-					<span>饼干: {post.cookies_content}</span>
-				</p>
+				<div class="flex justify-between items-end">
+					<p class="space-x-2">
+						<a href="#id-{post.id}">
+							<span class="dark:text-green-100 font-bold">标题：{post.title}</span>
+						</a>
+						<span class="dark:text-yellow-100">作者：{post.author}</span>
+						<span class="italic">邮箱：{post.email}</span>
+						<span>写于：{post.post_time}</span>
+						<span>饼干: {post.cookies_content}</span>
+					</p>
+					<button class="bg-sky-100 shadow-md dark:bg-sky-500 rounded-md py-1 px-3">回复</button>
+				</div>
 				<div class="border border-cyan-600 mt-2 py-2 px-4 rounded-sm">
-					{post.content}
+					<PostContent content={post.content} />
 				</div>
 			</div>
 		{/each}

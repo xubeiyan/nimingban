@@ -11,14 +11,16 @@ const CONTENT_MIN_LENGTH = 10;
 const ALLOW_IMAGE_TYPE = ['image/png', 'image/jpeg', 'image/gif', 'image/webp', 'image/avif'];
 
 // 图片上传路径，如果使用相对路径，则是从packages.json开始计算
-const IMAGE_UPLOAD_PATH = './images';
+const IMAGE_UPLOAD_PATH = './static/images';
+// 图片引用路径
+const IMAGE_URL_PATH = '/images';
 
 export async function POST({ locals, request }) {
 	const formData = await request.formData();
 	const uploadImages = formData?.getAll('image');
 	const board = formData?.get('board');
 	const name = formData?.get('name');
-	const email = formData?.get('');
+	const email = formData?.get('email');
 	const title = formData?.get('title');
 	const content = formData?.get('content');
 
@@ -137,7 +139,7 @@ export async function POST({ locals, request }) {
 		const regex = new RegExp(`/TEMPFOLDER/${index + 1}`, 'g');
 		replaceImageUrlContent = replaceImageUrlContent.replaceAll(
 			regex,
-			`${IMAGE_UPLOAD_PATH}/${one.name}`
+			`${IMAGE_URL_PATH}/${one.name}`
 		);
 	});
 

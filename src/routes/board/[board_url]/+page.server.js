@@ -15,9 +15,9 @@ export const load = async ({ locals, params }) => {
 	let offset = 0;
 	const post_query = {
 		text: `
-			SELECT p.id, p.title, p.poster_email, p.poster_name, p.content, c.content AS cookies_content,
+			SELECT p.id, p.title, p.poster_email, p.poster_name, p.content,
 			to_char(p.post_timestamp, 'YYYY-MM-DD HH:MI:SS') AS post_time FROM post 
-			AS p INNER JOIN cookies AS c ON p.poster_cookies_id = c.id WHERE p.belong_board_id = $1 
+			AS p WHERE p.belong_board_id = $1 
 			LIMIT $2 OFFSET $3
 		`,
 		values: [board_id, limit, offset]
@@ -30,9 +30,9 @@ export const load = async ({ locals, params }) => {
 		post_result.rows.forEach((one) => {
 			posts.push({
 				id: one.id,
-				title: one.title,
-				email: one.poster_email,
-				author: one.poster_name,
+				title: one.title == 'null' ? '无标题' : one.title,
+				email: one.poster_email == 'null' ? 'no@name.net' : one.poster_email,
+				author: one.poster_name == 'null' ? '无名氏' : one.poster_name,
 				content: one.content,
 				cookies_content: one.cookies_content,
 				post_time: one.post_time,
