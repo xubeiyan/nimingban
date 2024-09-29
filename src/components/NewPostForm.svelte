@@ -51,7 +51,7 @@
 
 	const handleInsertImageToPost = (e) => {
 		const id = e.detail.id;
-		const imageMarkdown = `![](/images/${id} "附加图片${id}")\n`;
+		const imageMarkdown = `![](/TEMPFOLDER/${id} "附加图片${id}")\n`;
 		if (post.content == null) {
 			post.content = imageMarkdown;
 		} else {
@@ -82,6 +82,8 @@
 			form.append('image', file.fileContent);
 		});
 
+		const board = window.location.href.split('/').at(-1);
+		form.append('board', board)
 		form.append('name', post.name);
 		form.append('email', post.email);
 		form.append('title', post.title);
@@ -95,18 +97,26 @@
 			body: form
 		});
 
-		// 处理发串失败的情况
+		// 处理发串API未正常返回的情况
 		if (res.status != 200) {
 			sendBtnStatus = 'failed';
+			sendResponseError = {
+				text: '由于各种原因，服务器没有做出正确地响应'
+			}
 			return;
 		}
 		const json = await res.json();
 
+		// 处理返回的错误
 		if (json.type == 'error') {
 			if (json.errorCode == 'BEYOND_MAX_UPLAD_IMAGE_COUNT') {
 				sendResponseError = {
 					text: '上传图片数超出了限制'
 				};
+			} else if (json.errorCode == 'IMAGE_FORMAT_NOT_ALLOW') {
+				sendResponseError = {
+					text: `图片 ${json.errorDetail.filenames.join(', ')} 不是允许上传的格式`
+				}
 			} else if (json.errorCode == 'IMAGE_OVERSIZE') {
 				sendResponseError = {
 					text: `图片 ${json.errorDetail.filenames.join(', ')} 超出了大小限制`
@@ -115,7 +125,7 @@
 				sendResponseError = {
 					text: `串的正文内容太短了`
 				};
-			}
+			} 
 
 			sendBtnStatus = 'failed';
 			return;
@@ -200,7 +210,7 @@
 					class="hidden"
 					bind:this={attachFile}
 					multiple
-					accept=".jpeg, .jpg, .png, .webp"
+					accept=".jpeg, .jpg, .png, .webp, .avif"
 					on:change={(e) => addImageFiles(e)}
 				/>
 			</label>

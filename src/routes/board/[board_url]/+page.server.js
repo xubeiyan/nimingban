@@ -24,6 +24,7 @@ export const load = async ({ locals, params }) => {
 	};
 
 	const post_result = await dbconn.query(post_query);
+	console.log(post_query);
 	let posts = [];
 	if (post_result.rows != undefined && post_result.rows.length != 0) {
 		post_result.rows.forEach((one) => {
