@@ -4,6 +4,19 @@
 
 	export let data;
 
+	// 帖子数据
+	let posts = [];
+	// 帖子获取状态
+	let postFetchStatus = 'idle';
+	// 获取帖子
+	const getPosts = async () => {
+		postFetchStatus = 'fetching';
+		const res = await fetch('/board/getPosts', {
+			method: 'GET',
+
+		});
+	}
+	
 	let newPostForm = null;
 
 	const showNewPostForm = () => {
@@ -11,7 +24,9 @@
 		newPostForm.showForm();
 	};
 
-	const handleSendPost = () => {};
+	const handleSendPost = () => {
+		getPosts();
+	};
 </script>
 
 <div class="container m-auto">
@@ -29,12 +44,12 @@
 			on:click={showNewPostForm}>发新串</button
 		>
 	</p>
-	{#if data.posts.length == 0}
+	{#if postFetchStatus == 'idle' && posts.length == 0}
 		<div class="rounded-md bg-red-200 dark:bg-red-400/50 p-4 my-2">
 			<span>这个版块看起来没有任何串...</span>
 		</div>
 	{:else}
-		{#each data.posts as post}
+		{#each posts as post}
 			<div class="rounded-md bg-slate-100 dark:bg-sky-800 px-4 py-2 mt-4 shadow-inner">
 				<div class="flex justify-between items-end">
 					<p class="space-x-2">
