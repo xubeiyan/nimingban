@@ -159,7 +159,7 @@
 </script>
 
 <div
-	class="absolute right-0 w-full {open_class} h-full bg-slate-800/20 dark:bg-slate-800/90
+	class="fixed right-0 w-full {open_class} h-full bg-slate-800/20 dark:bg-slate-800/90
   transition-transform duration-500 ease-in-out"
 >
 	<div class="container h-full m-auto flex justify-end overflow-hidden">

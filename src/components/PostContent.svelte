@@ -69,7 +69,7 @@
 		// 图片
 		image({ href, title, text }) {
 			return `
-				<img class="w-[20em]" src="${href}" alt="${text}" title="${title}"/>
+				<img class="w-[20em] mt-1" src="${href}" alt="${text}" title="${title}"/>
 				`;
 		}
 	};
