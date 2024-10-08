@@ -7,6 +7,9 @@
 	import MarkdownContent from './NewPostForm/MarkdownContent.svelte';
 	import AttachPicture from './NewPostForm/AttachPicture.svelte';
 
+	import { createEventDispatcher } from 'svelte';
+	const dispatch = createEventDispatcher();
+
 	let show = false;
 	$: showStyle = show ? 'top-0' : 'top-[100%]';
 
@@ -83,7 +86,7 @@
 		});
 
 		const board = window.location.href.split('/').at(-1);
-		form.append('board', board)
+		form.append('board', board);
 		form.append('name', post.name);
 		form.append('email', post.email);
 		form.append('title', post.title);
@@ -102,7 +105,7 @@
 			sendBtnStatus = 'failed';
 			sendResponseError = {
 				text: '由于各种原因，服务器没有做出正确地响应'
-			}
+			};
 			return;
 		}
 		const json = await res.json();
@@ -116,7 +119,7 @@
 			} else if (json.errorCode == 'IMAGE_FORMAT_NOT_ALLOW') {
 				sendResponseError = {
 					text: `图片 ${json.errorDetail.filenames.join(', ')} 不是允许上传的格式`
-				}
+				};
 			} else if (json.errorCode == 'IMAGE_OVERSIZE') {
 				sendResponseError = {
 					text: `图片 ${json.errorDetail.filenames.join(', ')} 超出了大小限制`
@@ -125,13 +128,16 @@
 				sendResponseError = {
 					text: `串的正文内容太短了`
 				};
-			} 
+			}
 
 			sendBtnStatus = 'failed';
 			return;
 		}
 
 		sendBtnStatus = 'ok';
+
+		// 发送发帖消息
+		dispatch('sendPost');
 
 		// 清空发帖部分
 		show = false;

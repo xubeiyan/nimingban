@@ -165,7 +165,7 @@ export async function POST({ locals, request }) {
 		text: `INSERT INTO post (
 			id, 				poster_name, 	poster_email, 	title, 	content,	poster_cookies_id,						post_timestamp, belong_board_id
 		) VALUES (
-		 	gen_random_uuid(),	$1,				$2,				$3,		$4,			'61134766-8788-4fa5-bad3-3363cd3abcee',	now(),			$5
+		 	gen_random_uuid(),	$1,				$2,				$3,		$4,			'08da75fa-7114-40c3-b4f9-abdcbfd7a5ff',	now(),			$5
 		) RETURNING id`,
 		values: [name, email, title, replaceImageUrlContent, board_id]
 	};

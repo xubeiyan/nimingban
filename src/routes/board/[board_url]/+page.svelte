@@ -2,21 +2,16 @@
 	import NewPostForm from '../../../components/NewPostForm.svelte';
 	import PostContent from '../../../components/PostContent.svelte';
 
+	import { createQuery } from '@tanstack/svelte-query';
+
 	export let data;
 
-	// 帖子数据
-	let posts = [];
-	// 帖子获取状态
-	let postFetchStatus = 'idle';
-	// 获取帖子
-	const getPosts = async () => {
-		postFetchStatus = 'fetching';
-		const res = await fetch('/board/getPosts', {
-			method: 'GET',
+	$: posts = createQuery({
+		queryKey: ['getPosts'],
+		queryFn: async () =>
+			await fetch(`/board/getPosts?board_id=${data.board_id}`).then((r) => r.json())
+	});
 
-		});
-	}
-	
 	let newPostForm = null;
 
 	const showNewPostForm = () => {
@@ -25,7 +20,7 @@
 	};
 
 	const handleSendPost = () => {
-		getPosts();
+		$posts.refetch();
 	};
 </script>
 
@@ -44,12 +39,20 @@
 			on:click={showNewPostForm}>发新串</button
 		>
 	</p>
-	{#if postFetchStatus == 'idle' && posts.length == 0}
+	{#if $posts.isLoading}
+		<div class="rounded-md bg-sky-200 dark:bg-sky-400/50 p-4 my-2">
+			<span>获取数据...</span>
+		</div>
+	{:else if $posts.data?.type == 'error'}
+		<div class="rounded-md bg-yellow-200 dark:bg-yellow-400/50 p-4 my-2">
+			<span>错误：{$posts.data.errorCode}</span>
+		</div>
+	{:else if $posts.isSuccess && $posts.data.length == 0}
 		<div class="rounded-md bg-red-200 dark:bg-red-400/50 p-4 my-2">
 			<span>这个版块看起来没有任何串...</span>
 		</div>
-	{:else}
-		{#each posts as post}
+	{:else if $posts.isSuccess}
+		{#each $posts.data as post}
 			<div class="rounded-md bg-slate-100 dark:bg-sky-800 px-4 py-2 mt-4 shadow-inner">
 				<div class="flex justify-between items-end">
 					<p class="space-x-2">
