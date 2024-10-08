@@ -53,7 +53,8 @@
 		</div>
 	{:else if $posts.isSuccess}
 		{#each $posts.data as post}
-			<div class="rounded-md bg-slate-100 dark:bg-sky-800 px-4 py-2 mt-4 shadow-inner">
+			<div class="rounded-md bg-slate-100 dark:bg-sky-800 px-4 py-2 mt-4 shadow-inner"
+			id="id-{post.id}">
 				<div class="flex justify-between items-end">
 					<p class="space-x-2">
 						<a href="#id-{post.id}">
