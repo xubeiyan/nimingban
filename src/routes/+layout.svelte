@@ -3,7 +3,7 @@
 	import Header from '../components/Header.svelte';
 	import Footer from '../components/Footer.svelte';
 	import LeftNav from '../components/LeftNav.svelte';
-	import LoginForm from '../components/LoginForm.svelte';
+	import LoginAndRegister from '../components/LoginAndRegister.svelte';
 
 	import { browser } from '$app/environment';
 	import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query';
@@ -19,18 +19,16 @@
 	export let data;
 
 	let leftNavOpen = false;
-	let loginFormOpen = false;
+	let loginAndRegistermOpen = false;
 
 	// 处理各种消息
 	const handleMessage = (event) => {
 		if (event.detail.type == 'toggleLeftNavbarOpen') {
 			leftNavOpen = !leftNavOpen;
-			loginFormOpen = false;
+			loginAndRegistermOpen = false;
 		} else if (event.detail.type == 'toggleLoginFormOpen') {
-			loginFormOpen = !loginFormOpen;
+			loginAndRegistermOpen = !loginAndRegistermOpen;
 			leftNavOpen = false;
-		} else if (event.detail.type == 'closeLoginForm') {
-			loginFormOpen = false;
 		}
 	};
 </script>
@@ -44,7 +42,7 @@
 		<Header on:message={handleMessage} {leftNavOpen} />
 		<div class="h-screen relative overflow-x-hidden dark:bg-sky-900 dark:text-white">
 			<LeftNav open={leftNavOpen} forums={data.forums} />
-			<LoginForm open={loginFormOpen} on:message={handleMessage} />
+			<LoginAndRegister open={loginAndRegistermOpen} on:message={handleMessage} />
 			<slot />
 		</div>
 		<Footer />

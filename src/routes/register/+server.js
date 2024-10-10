@@ -11,7 +11,7 @@ export async function POST({ locals, request }) {
 		values: [username]
 	};
 	const result = await dbconn.query(query);
-	console.log(result);
+
 	/* 
 	用户名已存在
 	返回JSON

@@ -12,13 +12,17 @@ export async function GET({ locals, url }) {
 	}
 
 	const { dbconn } = locals;
+
+	/* 
+	最后一行SQL的 AND 不使用 WHERE 的原因在于后者会在 JOIN 之后再应用 WHERE
+	*/
 	const query = {
 		text: `
 		SELECT p.id, p.poster_name, p.poster_email, p.title, p.content, 
 		to_char(p.post_timestamp, 'YYYY-MM-DD HH:MI:SS') AS post_time, 
 		c.content AS cookies_content
-		FROM post as p LEFT JOIN cookies AS c ON p.poster_cookies_id = c.id
-		WHERE p.belong_board_id = $1 ORDER BY post_time DESC`,
+		FROM post AS p LEFT JOIN cookies AS c ON p.poster_cookies_id = c.id
+		AND p.belong_board_id = $1 ORDER BY post_time DESC`,
 		values: [board_id]
 	};
 
@@ -35,7 +39,7 @@ export async function GET({ locals, url }) {
 				title: one.title == 'null' ? '无标题' : one.title,
 				content: one.content,
 				post_time: one.post_time,
-				cookies_content: one.cookies_content == null ? '神秘饼干' : one.cookies_content,
+				cookies_content: one.cookies_content == null ? '神秘饼干' : one.cookies_content
 			});
 		});
 	}

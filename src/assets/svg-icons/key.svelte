@@ -1,6 +1,6 @@
 <svg
-	width="1em"
-	height="1em"
+	width="2em"
+	height="2em"
 	viewBox="0 0 24 24"
 	fill="none"
   class="stroke-zinc-900 dark:stroke-zinc-100"

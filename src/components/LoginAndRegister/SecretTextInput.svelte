@@ -6,7 +6,7 @@
 	export let label = '未知label';
 
 	let textInputBorderStyle =
-		'border border-zinc-300 dark:border-zinc-600 focus-visible:border-zinc-500 dark:focus-visible:border-zinc-400';
+		'border border-slate-400 dark:border-zinc-600 focus-visible:border-slate-700 dark:focus-visible:border-zinc-400';
 	let textInputBgStyle =
 		'bg-zinc-50 dark:bg-zinc-800 focus-visible:bg-white dark:focus-visible:bg-zinc-700';
 	// 输入框样式
@@ -22,7 +22,7 @@
 
 	const updateInput = (value) => {
 		content = value;
-		dispatch('updateInput', value);
+		dispatch('input', value);
 	};
 </script>
 
