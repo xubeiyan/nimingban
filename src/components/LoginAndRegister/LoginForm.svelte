@@ -6,6 +6,9 @@
 	import TextInput from './TextInput.svelte';
 	import AlertMessage from '../AlertMessage.svelte';
 
+	import { createMutation } from '@tanstack/svelte-query';
+	import AddPlus from '$svgIcon/addPlus.svelte';
+
 	export let toRight = false;
 	$: toRightClass = toRight ? 'translate-x-[-100%]' : '';
 
@@ -25,7 +28,10 @@
 	let err = {
 		username: null,
 		password: null,
-		server: '用户名或密码错误'
+		server: {
+			type: null,
+			message: null
+		}
 	};
 
 	const dispatch = createEventDispatcher();
@@ -34,7 +40,12 @@
 		dispatch('toggleToRight');
 	};
 
-	const loginSubmit = () => {
+	const loginSubmit = async () => {
+		err.server = {
+			type: null,
+			message: null
+		};
+
 		if (username == '') {
 			err.username = '用户名不能为空';
 		}
@@ -47,18 +58,48 @@
 			return;
 		}
 
-		console.log(username, password);
+		const res = await $loginMutation.mutateAsync();
+
+		// 用户名和密码错误
+		if (res.type == 'error' && res.errorCode == 'USERNAME_OR_PASSWORD_WRONG') {
+			err.server.type = 'error';
+			err.server.message = '用户名或密码错误';
+			return;
+		}
 	};
+
+	const loginMutation = createMutation({
+		mutationFn: () => {
+			return fetch(
+				'/login',
+				{
+					method: 'POST',
+					body: JSON.stringify({
+						username,
+						password
+					})
+				},
+				{
+					headers: {
+						'Content-Type': 'application/json'
+					}
+				}
+			).then((r) => r.json());
+		},
+		onError: (err) => {}
+	});
+
+	$: btnText = $loginMutation.isPending ? '登录中...' : '登录';
 </script>
 
 <div class="w-full shrink-0 {toRightClass} transition-all duration-500">
 	<FormTitle type="login" />
 	<div class="w-full flex flex-col items-center">
 		<div class="w-[20em] flex flex-col">
-			<TextInput label="用户名" on:input={handleUsernameInput} />
+			<TextInput label="用户名" on:input={handleUsernameInput} error={err.username} />
 			<SecretTextInput label="密码" error={err.password} on:input={handlePasswordInput} />
 			<div class="mt-4"></div>
-			<PrimaryButton btnText="登录" on:click={loginSubmit} />
+			<PrimaryButton {btnText} disable={$loginMutation.isPending} on:click={loginSubmit} />
 		</div>
 	</div>
 	<div class="flex justify-center mt-1">
@@ -68,8 +109,8 @@
 			</span>
 		</button>
 	</div>
-	{#if err.server != null}
-        <div class="mt-4"></div>
-		<AlertMessage type="error" message={err.server} />
+	{#if err.server.type != null}
+		<div class="mt-8"></div>
+		<AlertMessage type={err.server.type} message={err.server.message} />
 	{/if}
 </div>

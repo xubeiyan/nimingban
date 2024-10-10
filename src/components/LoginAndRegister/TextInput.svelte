@@ -7,7 +7,7 @@
 	let textInputBgStyle =
 		'bg-zinc-50 dark:bg-zinc-800 focus-visible:bg-white dark:focus-visible:bg-zinc-700';
 	// 输入框样式
-	$: textInputStyle = `w-full rounded-md p-1 outline-none ${textInputBgStyle} ${textInputBorderStyle}`;
+	$: textInputStyle = `w-full rounded-md px-2 py-1 outline-none ${textInputBgStyle} ${textInputBorderStyle}`;
 </script>
 
 <label class="flex flex-col mb-4">

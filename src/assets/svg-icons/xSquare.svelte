@@ -1,0 +1,25 @@
+<svg
+	width="2em"
+	height="2em"
+	viewBox="0 0 24 24"
+    class="stroke-red-400 dark:stroke-red-800"
+	fill="none"
+	xmlns="http://www.w3.org/2000/svg"
+>
+	<path
+		d="M9 9L15 15"
+		stroke-width="2"
+		stroke-linecap="round"
+		stroke-linejoin="round"
+	/>
+	<path
+		d="M15 9L9 15"
+		stroke-width="2"
+		stroke-linecap="round"
+		stroke-linejoin="round"
+	/>
+	<path
+		d="M3 12C3 4.5885 4.5885 3 12 3C19.4115 3 21 4.5885 21 12C21 19.4115 19.4115 21 12 21C4.5885 21 3 19.4115 3 12Z"
+		stroke-width="2"
+	/>
+</svg>

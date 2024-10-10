@@ -20,5 +20,5 @@ export const POST = async ({ locals, request }) => {
     
 	console.log(result);
 
-	return json();
+	return json({});
 };
