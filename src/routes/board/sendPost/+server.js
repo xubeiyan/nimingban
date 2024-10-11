@@ -143,6 +143,12 @@ export async function POST({ locals, request }) {
 		);
 	});
 
+	// 如果没有图片而有图片链接则替换为一张默认图片
+	replaceImageUrlContent = replaceImageUrlContent.replaceAll(
+		/\/TEMPFOLDER\/\d+/g,
+		'/miss_attach.png'
+	);
+
 	// 写入数据库
 	// 查找board是否存在
 	const { dbconn } = locals;
@@ -189,6 +195,6 @@ export async function POST({ locals, request }) {
 	});
 
 	return json({
-		type: 'ok',
+		type: 'ok'
 	});
 }
