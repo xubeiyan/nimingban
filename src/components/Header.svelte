@@ -2,6 +2,7 @@
 	import LoginIcon from '$svgIcon/login.svelte';
 	import WidgetIcon from '$svgIcon/widget.svelte';
 	import LogoutIcon from '$svgIcon/logout.svelte';
+	import UserAvatarIcon from '$svgIcon/userAvatar.svelte';
 
 	import DarkModeSwitch from './darkModeSwitch.svelte';
 	import { userStore } from '../store/userStore';
@@ -44,7 +45,6 @@
 			const user = JSON.parse(userInLocalStorage);
 			if (user == undefined) return;
 
-			console.log(user.token);
 			userStore.set(user);
 		}
 	});
@@ -64,7 +64,16 @@
 		</div>
 		<div class="flex gap-2 items-center">
 			{#if $userStore.username != null}
-				<span>已登录用户：{$userStore.username}</span>
+				<button
+					class="flex gap-2 items-center
+					border border-sky-700 dark:border-sky-100
+					bg-sky-100 dark:bg-sky-800
+					hover:bg-sky-200 hover:dark:bg-sky-700
+					 rounded-md px-2 py-1"
+				>
+					<UserAvatarIcon />
+					<span>{$userStore.username}</span>
+				</button>
 				<LoginoutButton on:click={logout}>
 					<LogoutIcon />
 				</LoginoutButton>
