@@ -29,6 +29,8 @@
 		} else if (event.detail.type == 'toggleLoginFormOpen') {
 			loginAndRegistermOpen = !loginAndRegistermOpen;
 			leftNavOpen = false;
+		} else if (event.detail.type == 'hideLoginAndRegister') {
+			loginAndRegistermOpen = false;
 		}
 	};
 </script>

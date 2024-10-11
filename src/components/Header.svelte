@@ -74,11 +74,11 @@
 					<UserAvatarIcon />
 					<span>{$userStore.username}</span>
 				</button>
-				<LoginoutButton on:click={logout}>
+				<LoginoutButton on:click={logout} hintText="退出登录">
 					<LogoutIcon />
 				</LoginoutButton>
 			{:else}
-				<LoginoutButton on:click={toggleLoginFormOpen}>
+				<LoginoutButton on:click={toggleLoginFormOpen} hintText="登录/注册">
 					<LoginIcon />
 				</LoginoutButton>
 			{/if}

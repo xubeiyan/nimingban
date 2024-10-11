@@ -12,6 +12,13 @@
 		});
 	};
 
+    // 关闭登录或注册
+    const hideLoginAndRegister = () => {
+        dispatch('message', {
+            type: 'hideLoginAndRegister'
+        });
+    }
+
 	export let open = false;
 	$: openClass = open ? 'translate-x-0' : 'translate-x-[100%]';
 
@@ -30,7 +37,7 @@
 		<div
 			class="flex relative overflow-x-hidden w-[60em] h-[40em] bg-sky-50 dark:bg-sky-800 mt-16 p-4 rounded-xl"
 		>
-			<LoginForm {toRight} on:toggleToRight={handleToggleToRight} on:toggleLoginFormOpen={toggleLoginAndRegisterHide} />
+			<LoginForm {toRight} on:toggleToRight={handleToggleToRight} on:toggleLoginFormOpen={hideLoginAndRegister} />
 			<RegisterForm {toRight} on:toggleToRight={handleToggleToRight} />
 			<CloseBtn on:click={toggleLoginAndRegisterHide}></CloseBtn>
 		</div>
