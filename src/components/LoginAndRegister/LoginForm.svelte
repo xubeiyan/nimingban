@@ -1,13 +1,17 @@
 <script>
 	import { createEventDispatcher } from 'svelte';
 	import FormTitle from './FormTitle.svelte';
+
+	import TextInput from './TextInput.svelte';
 	import SecretTextInput from './SecretTextInput.svelte';
 	import PrimaryButton from './PrimaryButton.svelte';
-	import TextInput from './TextInput.svelte';
+
 	import AlertMessage from '../AlertMessage.svelte';
 
 	import { createMutation } from '@tanstack/svelte-query';
 	import AddPlus from '$svgIcon/addPlus.svelte';
+
+	import { userStore } from '../../store/userStore';
 
 	export let toRight = false;
 	$: toRightClass = toRight ? 'translate-x-[-100%]' : '';
@@ -66,6 +70,52 @@
 			err.server.message = '用户名或密码错误';
 			return;
 		}
+
+		// 登录成功
+		if (res.type == 'OK') {
+			const { username, type, token } = res.user;
+
+			userStore.set({
+				username,
+				type,
+				token
+			});
+
+            // 写入localStorage
+			window.localStorage.setItem(
+				'user',
+				JSON.stringify({
+					username,
+					type,
+					token
+				})
+			);
+
+            err.server = {
+                type: 'success',
+                message: '登录成功，即将跳转.',
+            }
+
+			// 5秒后，关闭loginForm
+            let time = 0;
+			const handler = () => {
+				time += 1;
+				err.server.message += '.';
+
+				if (time > 5) {
+					err.server = {
+						type: null,
+						message: null
+					};
+					dispatch('toggleLoginFormOpen');
+					return;
+				}
+
+				setTimeout(handler, 1000);
+			};
+			handler();
+			
+		}
 	};
 
 	const loginMutation = createMutation({
@@ -101,9 +151,7 @@
 			<div class="mt-4"></div>
 			<PrimaryButton {btnText} disable={$loginMutation.isPending} on:click={loginSubmit} />
 		</div>
-	</div>
-	<div class="flex justify-center mt-1">
-		<button on:click={toRegisterForm}>
+		<button class="mt-2" on:click={toRegisterForm}>
 			<span class="text-blue-400 dark:text-blue-100 hover:underline underline-offset-4">
 				没有帐号？点击注册
 			</span>

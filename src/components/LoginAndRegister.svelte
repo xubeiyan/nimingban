@@ -30,7 +30,7 @@
 		<div
 			class="flex relative overflow-x-hidden w-[60em] h-[40em] bg-sky-50 dark:bg-sky-800 mt-16 p-4 rounded-xl"
 		>
-			<LoginForm {toRight} on:toggleToRight={handleToggleToRight} />
+			<LoginForm {toRight} on:toggleToRight={handleToggleToRight} on:toggleLoginFormOpen={toggleLoginAndRegisterHide} />
 			<RegisterForm {toRight} on:toggleToRight={handleToggleToRight} />
 			<CloseBtn on:click={toggleLoginAndRegisterHide}></CloseBtn>
 		</div>

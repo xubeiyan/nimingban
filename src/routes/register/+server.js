@@ -21,7 +21,7 @@ export async function POST({ locals, request }) {
 	}
 	*/
 	if (result.rows.length > 0) {
-		return json({ type: "error", errorCode: "USER_NAME_EXISTS" });
+		return json({ type: 'error', errorCode: 'USER_NAME_EXISTS' });
 	}
 
 	// 随机一串盐字符串
@@ -31,17 +31,20 @@ export async function POST({ locals, request }) {
 	const hashWithSalt = hashStringWithSalt(salt, password);
 
 	const createUserQuery = {
-		text: `INSERT INTO "user"(id, enabled, username, password_hash, password_salt) VALUES (gen_random_uuid(), true, $1, $2, $3)`,
+		text: `INSERT INTO "user"
+			(id, 				status, 	username, 	password_hash, 	password_salt, 	type) VALUES 
+			(gen_random_uuid(), 'enable', 	$1, 		$2, 			$3, 			'user')`,
 		values: [username, hashWithSalt, salt]
-	}
+	};
 
 	const createResult = await dbconn.query(createUserQuery);
 
 	if (createResult.rowCount == null) {
 		return json({
-			type: "warning", errorCode: "NOT_AFFECT_ROWS"
+			type: 'warning',
+			errorCode: 'NOT_AFFECT_ROWS'
 		});
 	}
 
-	return json({ username, password });
+	return json({ type: 'OK' });
 }

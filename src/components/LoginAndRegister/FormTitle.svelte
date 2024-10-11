@@ -6,7 +6,7 @@
 	$: titleText = type == 'login' ? '登录' : '注册';
 </script>
 
-<div class="flex justify-center items-center gap-4 my-10">
+<div class="flex justify-center items-center gap-4 my-12">
 	{#if type == 'login'}
 		<LockIcon />
 	{:else}
