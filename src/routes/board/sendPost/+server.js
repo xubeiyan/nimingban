@@ -3,6 +3,9 @@ import { writeFile } from 'fs/promises';
 
 import { randomUUID } from 'node:crypto';
 
+import { verifyJWTToken } from '$lib/jwt.js';
+import { JWTSECRET } from '$env/static/private';
+
 const MAX_UPLOAD_IMAGE_COUNT = 5;
 const SINGLE_IMAGE_SIZE = 2 * 1024 * 1024; // 不超过2MiB
 
@@ -16,6 +19,53 @@ const IMAGE_UPLOAD_PATH = './static/images';
 const IMAGE_URL_PATH = '/images';
 
 export async function POST({ locals, request }) {
+	// 验证请求头是否有Bearer 'ey...'的Authorization字段
+	const tokenWithBearer = request.headers.get('Authorization');
+	if (tokenWithBearer == undefined) {
+		return json({
+			type: 'error',
+			errorCode: 'NO_AUTHORIZATION_HEADER'
+		});
+	}
+
+	const token = tokenWithBearer.split(' ')[1];
+	if (token == undefined) {
+		return json({
+			type: 'error',
+			errorCode: 'NO_AUTHORIZATION_HEADER'
+		});
+	}
+
+	// 验证此JWT未经过篡改
+	const [base64Header, base64Payload, base64Signature] = token.split('.');
+
+	if (base64Header == undefined || base64Payload == undefined || base64Signature == undefined) {
+		return json({
+			type: 'error',
+			errorCode: 'COOKIES_MALFORM'
+		});
+	}
+
+	if (!verifyJWTToken(base64Header, base64Payload, base64Signature, JWTSECRET)) {
+		return json({
+			type: 'error',
+			errorCode: 'INVALID_AUTHORIZATION_HEADER'
+		});
+	}
+
+	// 似乎在node中atob会自动补齐后面的=
+	const payloadOriginStr = atob(base64Payload);
+	const payload = JSON.parse(payloadOriginStr);
+
+	const expireTimestamp = new Date(payload.expire).getTime();
+
+	if (expireTimestamp < Date.now()) {
+		return json({
+			type: 'error',
+			errorCode: 'AUTHORIZATION_EXPIRE'
+		});
+	}
+
 	const formData = await request.formData();
 	const uploadImages = formData?.getAll('image');
 	const board = formData?.get('board');
@@ -23,6 +73,15 @@ export async function POST({ locals, request }) {
 	const email = formData?.get('email');
 	const title = formData?.get('title');
 	const content = formData?.get('content');
+	const cookies = formData?.get('cookies');
+
+	if (cookies == null) {
+		return json({
+			type: 'error',
+			errorCode: 'WRONG_COOKIES',
+			extra: null
+		});
+	}
 
 	/*
     // 超出了最大图片上传数

@@ -7,6 +7,8 @@
 	import MarkdownContent from './NewPostForm/MarkdownContent.svelte';
 	import AttachPicture from './NewPostForm/AttachPicture.svelte';
 
+	import { userStore } from '../store/userStore';
+
 	import { createEventDispatcher } from 'svelte';
 	const dispatch = createEventDispatcher();
 
@@ -95,9 +97,19 @@
 		sendBtnStatus = 'sending';
 		sendResponseError = null;
 
+		let headers = {};
+
+		// 有userStore.token字段则附上
+		if ($userStore.token != null) {
+			headers = {
+				Authorization: `Bearer ${$userStore.token}`
+			};
+		}
+
 		const res = await fetch('/board/sendPost', {
 			method: 'POST',
-			body: form
+			body: form,
+			headers
 		});
 
 		// 处理发串API未正常返回的情况
@@ -127,6 +139,22 @@
 			} else if (json.errorCode == 'CONTENT_LENGTH_TOO_SHORT') {
 				sendResponseError = {
 					text: `串的正文内容太短了`
+				};
+			} else if (json.errorCode == 'NO_AUTHORIZATION_HEADER') {
+				sendResponseError = {
+					text: `发串需要登录`
+				};
+			} else if (['COOKIES_MALFORM', 'INVALID_AUTHORIZATION_HEADER'].includes(json.errorCode)) {
+				sendResponseError = {
+					text: `认证字段不正确`
+				};
+			} else if (json.errorCode == 'AUTHORIZATION_EXPIRE') {
+				sendResponseError = {
+					text: `需要退出后重新登录`
+				};
+			} else if (json.errorCode == 'WRONG_COOKIES') {
+				sendResponseError = {
+					text: `当前饼干: "${json.extra}" 无法发串`
 				};
 			}
 

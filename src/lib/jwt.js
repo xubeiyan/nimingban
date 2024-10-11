@@ -25,6 +25,21 @@ const generateJWTToken = (payload, key) => {
 	return `${base64Header}.${base64Payload}.${zzz}`;
 };
 
+// 验证JWT token
+const verifyJWTToken = (base64Header, base64Payload, base64Signature, key) => {
+	const hmac = createHmac('sha256', key);
+	const zzz = hmac
+		.update(`${base64Header}.${base64Payload}`)
+		.digest('base64')
+		.replace(/\//g, '_')
+		.replace(/\+/g, '-')
+		.replace(/=/g, '');
+	if (zzz == base64Signature) {
+		return true;
+	}
+	return false;
+};
+
 const parseJWTTokenPayload = (payload) => {};
 
-export { generateJWTToken };
+export { generateJWTToken, verifyJWTToken };

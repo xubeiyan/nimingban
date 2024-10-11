@@ -3,6 +3,8 @@ import { json } from '@sveltejs/kit';
 import { hashStringWithSalt } from '$lib/utils.js';
 import { generateJWTToken } from '$lib/jwt.js';
 
+import { JWTSECRET } from '$env/static/private';
+
 export const POST = async ({ locals, request }) => {
 	const { username, password } = await request.json();
 
@@ -46,12 +48,10 @@ export const POST = async ({ locals, request }) => {
 	const payload = {
 		username,
 		type,
-		expire: Date.now() + 1000 * 60 * 60
+		expire: new Date().getTime() + 1000 * 60 * 60
 	};
 
-	const KEY = 'nimingban20241011';
-
-	const token = generateJWTToken(payload, KEY);
+	const token = generateJWTToken(payload, JWTSECRET);
 
 	return json({
 		type: 'OK',
