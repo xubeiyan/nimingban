@@ -108,7 +108,7 @@
 				};
 			} else if (res.errorCode == 'WRONG_COOKIES') {
 				sendResponseError = {
-					text: `当前饼干: "${res.extra}" 无法发串`
+					text: `当前饼干: "${window.localStorage.getItem('usingCookies')}" 无法发串`
 				};
 			}
 

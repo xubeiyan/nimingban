@@ -3,8 +3,7 @@ import { writeFile } from 'fs/promises';
 
 import { randomUUID } from 'node:crypto';
 
-import { verifyJWTToken } from '$lib/jwt.js';
-import { JWTSECRET } from '$env/static/private';
+import { JWTAuth } from '$lib/auth.js';
 
 const MAX_UPLOAD_IMAGE_COUNT = 5;
 const SINGLE_IMAGE_SIZE = 2 * 1024 * 1024; // 不超过2MiB
@@ -19,51 +18,11 @@ const IMAGE_UPLOAD_PATH = './static/images';
 const IMAGE_URL_PATH = '/images';
 
 export async function POST({ locals, request }) {
-	// 验证请求头是否有Bearer 'ey...'的Authorization字段
-	const tokenWithBearer = request.headers.get('Authorization');
-	if (tokenWithBearer == undefined) {
-		return json({
-			type: 'error',
-			errorCode: 'NO_AUTHORIZATION_HEADER'
-		});
-	}
+	const authRes = JWTAuth(request);
 
-	const token = tokenWithBearer.split(' ')[1];
-	if (token == undefined) {
-		return json({
-			type: 'error',
-			errorCode: 'NO_AUTHORIZATION_HEADER'
-		});
-	}
-
-	// 验证此JWT未经过篡改
-	const [base64Header, base64Payload, base64Signature] = token.split('.');
-
-	if (base64Header == undefined || base64Payload == undefined || base64Signature == undefined) {
-		return json({
-			type: 'error',
-			errorCode: 'COOKIES_MALFORM'
-		});
-	}
-
-	if (!verifyJWTToken(base64Header, base64Payload, base64Signature, JWTSECRET)) {
-		return json({
-			type: 'error',
-			errorCode: 'INVALID_AUTHORIZATION_HEADER'
-		});
-	}
-
-	// 似乎在node中atob会自动补齐后面的=
-	const payloadOriginStr = atob(base64Payload);
-	const payload = JSON.parse(payloadOriginStr);
-
-	const expireTimestamp = new Date(payload.expire).getTime();
-
-	if (expireTimestamp < Date.now()) {
-		return json({
-			type: 'error',
-			errorCode: 'AUTHORIZATION_EXPIRE'
-		});
+	// 认证错误则返回
+	if (authRes.type != 'ok') {
+		return json(authRes);
 	}
 
 	const formData = await request.formData();
@@ -75,12 +34,67 @@ export async function POST({ locals, request }) {
 	const content = formData?.get('content');
 	const cookies = formData?.get('cookies');
 
+	/* 
+	// 未提供cookies字段
+	*/
 	if (cookies == null) {
 		return json({
 			type: 'error',
 			errorCode: 'WRONG_COOKIES',
 			extra: null
 		});
+	}
+
+	// 验证 cookies
+	const cookie_query = {
+		text: `SELECT belong_user_id FROM cookies WHERE content = $1 LIMIT 1`,
+		values: [cookies]
+	};
+
+	const { dbconn } = locals;
+
+	const cookies_result = await dbconn.query(cookie_query);
+
+	if (cookies_result.rowCount == 0) {
+		return json({
+			type: 'error',
+			errorCode: 'WRONG_COOKIES',
+			extra: 'c n e' // cookies not exist
+		});
+	}
+
+	const belong_user_id = cookies_result.rows[0].belong_user_id;
+
+	const user_query = {
+		text: `SELECT status, username FROM "user" WHERE id = $1 LIMIT 1`,
+		values: [belong_user_id]
+	};
+
+	const user_result = await dbconn.query(user_query);
+
+	if (user_result.rowCount == 0) {
+		return json({
+			type: 'error',
+			errorCode: 'WRONG_COOKIES',
+			extra: 'u n e' // user not exist
+		})
+	}
+
+	const { status, username } = user_result.rows[0];
+
+	if (status != 'enable') {
+		return json({
+			type: 'error',
+			errorCode: 'USER_NOT_ENABLE'
+		})
+	}
+
+	if (username != authRes.username) {
+		return json({
+			type: 'error',
+			errorCode: 'WRONG_COOKIES',
+			extra: 'u c m', // user cookies mismatch
+		})
 	}
 
 	/*
@@ -210,7 +224,7 @@ export async function POST({ locals, request }) {
 
 	// 写入数据库
 	// 查找board是否存在
-	const { dbconn } = locals;
+
 	const boardSearchQuery = {
 		text: `SELECT id FROM board WHERE url_name = $1 LIMIT 1`,
 		values: [board]
@@ -230,7 +244,7 @@ export async function POST({ locals, request }) {
 		text: `INSERT INTO post (
 			id, 				poster_name, 	poster_email, 	title, 	content,	poster_cookies_id,						post_timestamp, belong_board_id
 		) VALUES (
-		 	gen_random_uuid(),	$1,				$2,				$3,		$4,			'08da75fa-7114-40c3-b4f9-abdcbfd7a5ff',	now(),			$5
+		 	gen_random_uuid(),	$1,				$2,				$3,		$4,			'',	now(),			$5
 		) RETURNING id`,
 		values: [name, email, title, replaceImageUrlContent, board_id]
 	};
