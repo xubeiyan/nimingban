@@ -9,6 +9,7 @@
 
 	import { createEventDispatcher, onMount } from 'svelte';
 	import LoginoutButton from './Header/LoginoutButton.svelte';
+	import CookiesStatusButton from './Header/CookiesStatusButton.svelte';
 
 	export let leftNavOpen;
 
@@ -33,20 +34,29 @@
 		userStore.set({
 			username: null,
 			type: null,
-			token: null
+			token: null,
+			cookies: []
 		});
 
+		window.localStorage.removeItem('usingCookies');
 		window.localStorage.removeItem('user');
 	};
 
 	onMount(() => {
 		const userInLocalStorage = window.localStorage.getItem('user');
-		if (userInLocalStorage != undefined) {
-			const user = JSON.parse(userInLocalStorage);
-			if (user == undefined) return;
+		// localStorage 没有则什么都不做
+		if (userInLocalStorage == undefined) return;
 
-			userStore.set(user);
+		const user = JSON.parse(userInLocalStorage);
+		if (user == undefined) return;
+
+		// 检查 localStorage 有无 usingCookies，无则添加
+		const usingCookies = window.localStorage.getItem('usingCookies');
+		if (user.cookies.length > 0 && usingCookies == undefined) {
+			window.localStorage.setItem('usingCookies', user.cookies[0].content);
 		}
+
+		userStore.set(user);
 	});
 </script>
 
@@ -64,9 +74,10 @@
 		</div>
 		<div class="flex gap-2 items-center">
 			{#if $userStore.username != null}
+				<CookiesStatusButton />
 				<button
-					class="flex gap-2 items-center
-					border border-sky-700 dark:border-sky-100
+					class="flex gap-1 items-center
+					outline outline-1 outline-sky-700 dark:outline-sky-100
 					bg-sky-100 dark:bg-sky-800
 					hover:bg-sky-200 hover:dark:bg-sky-700
 					 rounded-md px-2 py-1"

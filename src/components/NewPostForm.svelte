@@ -148,6 +148,12 @@
 			form.append('title', post.title);
 			form.append('content', post.content);
 
+			// 有usingCookies则附上
+			const usingCookies = window.localStorage.getItem('usingCookies');
+			if (usingCookies != undefined) {
+				form.append('cookies', usingCookies);
+			}
+
 			sendBtnStatus = 'sending';
 			sendResponseError = null;
 
@@ -166,7 +172,6 @@
 				headers
 			});
 
-			
 			// 处理发串API未正常返回的情况
 			// TODO: 应该全局地处理这个问题，但使用的是fetch，不会处理
 			if (res.status != 200) {

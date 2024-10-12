@@ -73,31 +73,37 @@
 
 		// 登录成功
 		if (res.type == 'OK') {
-			const { username, type, token } = res.user;
+			const { username, type, token, cookies } = res.user;
 
 			userStore.set({
 				username,
 				type,
-				token
+				token,
+				cookies
 			});
 
-            // 写入localStorage
+			// 写入localStorage
 			window.localStorage.setItem(
 				'user',
 				JSON.stringify({
 					username,
 					type,
-					token
+					token,
+					cookies
 				})
 			);
 
-            err.server = {
-                type: 'success',
-                message: '登录成功，即将跳转.',
-            }
+			if (cookies.length > 0) {
+				window.localStorage.setItem('usingCookies', cookies[0].content);
+			}
+
+			err.server = {
+				type: 'success',
+				message: '登录成功，即将跳转.'
+			};
 
 			// 5秒后，关闭loginForm
-            let time = 0;
+			let time = 0;
 			const handler = () => {
 				time += 1;
 				err.server.message += '.';
@@ -114,7 +120,6 @@
 				setTimeout(handler, 1000);
 			};
 			handler();
-			
 		}
 	};
 
