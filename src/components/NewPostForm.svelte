@@ -2,14 +2,17 @@
 	import MarkdownIcon from '$svgIcon/markdown.svelte';
 	import AddPlusIcon from '$svgIcon/addPlus.svelte';
 	import CloseIcon from '$svgIcon/close.svelte';
-	import LoadingIcon from '$svgIcon/loading.svelte';
 
 	import MarkdownContent from './NewPostForm/MarkdownContent.svelte';
 	import AttachPicture from './NewPostForm/AttachPicture.svelte';
+	import InlineInput from './NewPostForm/InlineInput.svelte';
+	import MutilineContent from './NewPostForm/MutilineContent.svelte';
 
 	import { userStore } from '../store/userStore';
+	import { createMutation } from '@tanstack/svelte-query';
 
 	import { createEventDispatcher } from 'svelte';
+	import SendBtn from './NewPostForm/SendBtn.svelte';
 	const dispatch = createEventDispatcher();
 
 	let show = false;
@@ -66,95 +69,46 @@
 
 	// 发送按钮状态
 	let sendBtnStatus = 'idle';
-	$: sendBtnText =
-		sendBtnStatus == 'idle'
-			? '发送'
-			: sendBtnStatus == 'sending'
-				? '发送中...'
-				: sendBtnStatus == 'failed'
-					? '发串失败，重试'
-					: '发串完成';
-	$: sendBtnClass = ['idle', 'failed'].includes(sendBtnStatus)
-		? 'bg-slate-300/50 dark:bg-slate-50/20 dark:bg-slate-50/10 hover:dark:bg-slate-50/20 hover:shadow-md'
-		: '';
 
 	// 发送结果
 	let sendResponseError = null;
 	// 发送串
 	const sendPost = async () => {
-		const form = new FormData();
-		attachedFileList.forEach((file) => {
-			form.append('image', file.fileContent);
-		});
-
-		const board = window.location.href.split('/').at(-1);
-		form.append('board', board);
-		form.append('name', post.name);
-		form.append('email', post.email);
-		form.append('title', post.title);
-		form.append('content', post.content);
-
-		sendBtnStatus = 'sending';
-		sendResponseError = null;
-
-		let headers = {};
-
-		// 有userStore.token字段则附上
-		if ($userStore.token != null) {
-			headers = {
-				Authorization: `Bearer ${$userStore.token}`
-			};
-		}
-
-		const res = await fetch('/board/sendPost', {
-			method: 'POST',
-			body: form,
-			headers
-		});
-
-		// 处理发串API未正常返回的情况
-		if (res.status != 200) {
-			sendBtnStatus = 'failed';
-			sendResponseError = {
-				text: '由于各种原因，服务器没有做出正确地响应'
-			};
-			return;
-		}
-		const json = await res.json();
+		const res = await $sendPostMutation.mutateAsync();
 
 		// 处理返回的错误
-		if (json.type == 'error') {
-			if (json.errorCode == 'BEYOND_MAX_UPLAD_IMAGE_COUNT') {
+		if (res.type == 'error') {
+			if (res.errorCode == 'BEYOND_MAX_UPLAD_IMAGE_COUNT') {
 				sendResponseError = {
 					text: '上传图片数超出了限制'
 				};
-			} else if (json.errorCode == 'IMAGE_FORMAT_NOT_ALLOW') {
+			} else if (res.errorCode == 'IMAGE_FORMAT_NOT_ALLOW') {
 				sendResponseError = {
 					text: `图片 ${json.errorDetail.filenames.join(', ')} 不是允许上传的格式`
 				};
-			} else if (json.errorCode == 'IMAGE_OVERSIZE') {
+			} else if (res.errorCode == 'IMAGE_OVERSIZE') {
 				sendResponseError = {
-					text: `图片 ${json.errorDetail.filenames.join(', ')} 超出了大小限制`
+					text: `图片 ${res.errorDetail.filenames.join(', ')} 超出了大小限制`
 				};
-			} else if (json.errorCode == 'CONTENT_LENGTH_TOO_SHORT') {
+			} else if (res.errorCode == 'CONTENT_LENGTH_TOO_SHORT') {
 				sendResponseError = {
 					text: `串的正文内容太短了`
 				};
-			} else if (json.errorCode == 'NO_AUTHORIZATION_HEADER') {
+			} else if (res.errorCode == 'NO_AUTHORIZATION_HEADER') {
 				sendResponseError = {
-					text: `发串需要登录`
+					text: `发串需要登录且拥有饼干`
 				};
-			} else if (['COOKIES_MALFORM', 'INVALID_AUTHORIZATION_HEADER'].includes(json.errorCode)) {
+			} else if (['COOKIES_MALFORM', 'INVALID_AUTHORIZATION_HEADER'].includes(res.errorCode)) {
 				sendResponseError = {
 					text: `认证字段不正确`
 				};
-			} else if (json.errorCode == 'AUTHORIZATION_EXPIRE') {
+			} else if (res.errorCode == 'AUTHORIZATION_EXPIRE') {
 				sendResponseError = {
 					text: `需要退出后重新登录`
 				};
-			} else if (json.errorCode == 'WRONG_COOKIES') {
+			} else if (res.errorCode == 'WRONG_COOKIES') {
 				sendResponseError = {
-					text: `当前饼干: "${json.extra}" 无法发串`
+					text: `当前饼干: "${res.extra}" 无法发串`
 				};
 			}
 
@@ -180,6 +134,52 @@
 		attachedFileList = [];
 	};
 
+	const sendPostMutation = createMutation({
+		mutationFn: async () => {
+			const form = new FormData();
+			attachedFileList.forEach((file) => {
+				form.append('image', file.fileContent);
+			});
+
+			const board = window.location.href.split('/').at(-1);
+			form.append('board', board);
+			form.append('name', post.name);
+			form.append('email', post.email);
+			form.append('title', post.title);
+			form.append('content', post.content);
+
+			sendBtnStatus = 'sending';
+			sendResponseError = null;
+
+			let headers = {};
+
+			// 有userStore.token字段则附上
+			if ($userStore.token != null) {
+				headers = {
+					Authorization: `Bearer ${$userStore.token}`
+				};
+			}
+
+			const res = await fetch('/board/sendPost', {
+				method: 'POST',
+				body: form,
+				headers
+			});
+
+			
+			// 处理发串API未正常返回的情况
+			// TODO: 应该全局地处理这个问题，但使用的是fetch，不会处理
+			if (res.status != 200) {
+				return JSON.stringify({
+					type: 'error',
+					errorCode: 'SERVER_NOT_RESPOND_PROPERLY'
+				});
+			}
+
+			return await res.json();
+		}
+	});
+
 	let expand = false;
 
 	// 展开编辑区
@@ -194,8 +194,18 @@
 	$: formWidthClass = expand ? 'md:w-[95%]' : 'md:w-[50em]';
 	$: markdownBtnClass = expand ? 'bg-blue-400' : 'bg-blue-200';
 
-	let inputStyle =
-		'outline-none border border-slate-300 focus-within:border-slate-600 focus-within:dark:border-slate-400 dark:border-slate-600 focus-within:dark:bg-slate-600 dark:bg-slate-700 rounded-md';
+	// 将输入的内容调整到各个值中
+	const handleInput = (type, value) => {
+		if (type == 'name') {
+			post.name = value;
+		} else if (type == 'email') {
+			post.email = value;
+		} else if (type == 'title') {
+			post.title = value;
+		} else if (type == 'content') {
+			post.content = value;
+		}
+	};
 </script>
 
 <div
@@ -206,25 +216,28 @@
 	>
 		<h1 class="text-2xl mb-6">发新串</h1>
 		<div class="flex gap-2 mb-2">
-			<label class="grow flex flex-col gap-1">
-				<span>名称</span>
-				<input class="{inputStyle} px-2 py-0.5" placeholder="无名氏" bind:value={post.name} />
-			</label>
-			<label class="grow flex flex-col gap-1">
-				<span>E-mail</span>
-				<input class="{inputStyle} px-2 py-0.5" placeholder="no@name.net" bind:value={post.email} />
-			</label>
-			<label class="grow flex flex-col gap-1">
-				<span>标题</span>
-				<input class="{inputStyle} px-2 py-0.5" placeholder="无标题" bind:value={post.title} />
-			</label>
+			<InlineInput
+				label="名称"
+				placeholder="无名氏"
+				on:input={(e) => handleInput('name', e.target.value)}
+			/>
+			<InlineInput
+				label="Email"
+				placeholder="no@name.net"
+				on:input={(e) => handleInput('email', e.target.value)}
+			/>
+			<InlineInput
+				label="标题"
+				placeholder="无标题"
+				on:input={(e) => handleInput('title', e.target.value)}
+			/>
 		</div>
 		<div class="relative flex gap-2">
-			<label class="grow flex flex-col gap-1 mt-3">
-				<span>正文</span>
-				<textarea class="{inputStyle} px-2 py-1 grow" rows="10" bind:value={post.content}
-				></textarea>
-			</label>
+			<MutilineContent
+				label="正文"
+				value={post.content}
+				on:input={(e) => handleInput('content', e.target.value)}
+			/>
 			<button
 				class="absolute right-0 top-0 {markdownBtnClass} px-2 rounded-md hover:shadow-md"
 				on:click={toggleEdit}
@@ -270,17 +283,7 @@
 					>{sendResponseError.text}</span
 				>
 			{/if}
-			<button
-				type="submit"
-				class="{sendBtnClass} px-3 py-1 rounded-md flex gap-1 items-center"
-				disabled={['sending', 'ok'].includes(sendBtnStatus)}
-				on:click={sendPost}
-			>
-				{#if sendBtnStatus == 'sending'}
-					<LoadingIcon />
-				{/if}
-				<span>{sendBtnText}</span></button
-			>
+			<SendBtn status={sendBtnStatus} on:click={sendPost} />
 		</div>
 		<button
 			class="absolute right-4 top-4 size-8 rounded-md flex justify-center items-center"
