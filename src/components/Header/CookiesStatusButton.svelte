@@ -21,14 +21,15 @@
 		usingCookies = usingCookiesFromLocalStorage;
 	});
 
-	$: slotWidth = usingCookies == null ? 'w-[7em]' : 'w-full';
+	$: slotWidth = usingCookies == null ? 'w-[10em]' : 'w-full';
+	$: statusBtnWidth = usingCookies == null ? '' : 'w-[8em]';
 
 	const getNewCookies = () => {};
 </script>
 
 <button
-	class="group relative rounded-md bg-sky-200 hover:bg-sky-300 dark:bg-sky-900 hover:dark:bg-sky-800 
-    h-[2em] px-6 flex gap-1 items-center"
+	class="group relative rounded-md bg-sky-200 hover:bg-sky-300 dark:bg-sky-900 hover:dark:bg-sky-800
+    h-[2em] {statusBtnWidth} px-2 flex justify-center gap-1 items-center"
 >
 	<CookiesIcon />
 	{#if usingCookies != null}

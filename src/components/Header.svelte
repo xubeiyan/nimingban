@@ -77,10 +77,10 @@
 				<CookiesStatusButton />
 				<button
 					class="flex gap-1 items-center
-					outline outline-1 outline-sky-700 dark:outline-sky-100
-					bg-sky-100 dark:bg-sky-800
-					hover:bg-sky-200 hover:dark:bg-sky-700
-					 rounded-md px-2 py-1"
+					border border-sky-700 dark:border-sky-100
+					bg-transparent
+					hover:bg-sky-200 hover:dark:bg-sky-800
+					 rounded-md px-2 h-[2em]"
 				>
 					<UserAvatarIcon />
 					<span>{$userStore.username}</span>
