@@ -47,7 +47,7 @@ export async function POST({ locals, request }) {
 
 	// 验证 cookies
 	const cookie_query = {
-		text: `SELECT belong_user_id FROM cookies WHERE content = $1 LIMIT 1`,
+		text: `SELECT id, belong_user_id FROM cookies WHERE content = $1 LIMIT 1`,
 		values: [cookies]
 	};
 
@@ -64,6 +64,7 @@ export async function POST({ locals, request }) {
 	}
 
 	const belong_user_id = cookies_result.rows[0].belong_user_id;
+	const poster_cookies_id = cookies_result.rows[0].id;
 
 	const user_query = {
 		text: `SELECT status, username FROM "user" WHERE id = $1 LIMIT 1`,
@@ -77,7 +78,7 @@ export async function POST({ locals, request }) {
 			type: 'error',
 			errorCode: 'WRONG_COOKIES',
 			extra: 'u n e' // user not exist
-		})
+		});
 	}
 
 	const { status, username } = user_result.rows[0];
@@ -86,15 +87,15 @@ export async function POST({ locals, request }) {
 		return json({
 			type: 'error',
 			errorCode: 'USER_NOT_ENABLE'
-		})
+		});
 	}
 
 	if (username != authRes.username) {
 		return json({
 			type: 'error',
 			errorCode: 'WRONG_COOKIES',
-			extra: 'u c m', // user cookies mismatch
-		})
+			extra: 'u c m' // user cookies mismatch
+		});
 	}
 
 	/*
@@ -244,9 +245,9 @@ export async function POST({ locals, request }) {
 		text: `INSERT INTO post (
 			id, 				poster_name, 	poster_email, 	title, 	content,	poster_cookies_id,						post_timestamp, belong_board_id
 		) VALUES (
-		 	gen_random_uuid(),	$1,				$2,				$3,		$4,			'',	now(),			$5
+		 	gen_random_uuid(),	$1,				$2,				$3,		$4,			$5,	now(),			$6
 		) RETURNING id`,
-		values: [name, email, title, replaceImageUrlContent, board_id]
+		values: [name, email, title, replaceImageUrlContent, poster_cookies_id, board_id]
 	};
 
 	const boardInsertResult = await dbconn.query(boardInsertQuery);

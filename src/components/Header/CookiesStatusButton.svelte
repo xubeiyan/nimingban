@@ -12,7 +12,22 @@
 	let usingCookies = null;
 
 	const getNewCookiesMuation = createMutation({
-		mutationFn: () => {}
+		mutationFn: async () => {
+			let headers = {};
+
+			// 有userStore.token字段则附上
+			if ($userStore.token != null) {
+				headers = {
+					Authorization: `Bearer ${$userStore.token}`
+				};
+			}
+			const res = await fetch('/user/getNewCookies', {
+				method: 'GET',
+				headers
+			});
+
+			return await res.json();
+		}
 	});
 
 	onMount(() => {
@@ -24,7 +39,27 @@
 	$: slotWidth = usingCookies == null ? 'w-[10em]' : 'w-full';
 	$: statusBtnWidth = usingCookies == null ? '' : 'w-[8em]';
 
-	const getNewCookies = () => {};
+	const getNewCookies = async () => {
+		const res = await $getNewCookiesMuation.mutateAsync();
+		if (res.type != 'ok') {
+			return;
+		}
+
+		const cookies = res.cookies;
+
+		userStore.update((store) => {
+			return { ...store, cookies };
+		});
+
+		// 写入localStorage
+		window.localStorage.setItem('user', JSON.stringify($userStore));
+	};
+
+	// 使用某个cookies
+	const useCookies = (cookies) => {
+		window.localStorage.setItem('usingCookies', cookies);
+		usingCookies = cookies;
+	};
 </script>
 
 <button
@@ -46,6 +81,7 @@
 				class="w-full
                 bg-sky-100/80 dark:bg-sky-800/70 hover:bg-sky-100 dark:hover:bg-sky-800
                 rounded-sm h-[2em] flex justify-center items-center gap-1 px-1"
+				on:click={() => useCookies(c.content)}
 			>
 				{#if c.content == usingCookies}
 					<MaskIcon />
@@ -58,8 +94,13 @@
 				on:click={getNewCookies}
 				class="w-full bg-orange-50 dark:bg-orange-700/50 hover:bg-orange-100 dark:hover:bg-orange-600/50
                 rounded-sm h-[2em] flex justify-center items-center"
+				disabled={$getNewCookiesMuation.isPending}
 			>
-				<PlusIcon />
+				{#if $getNewCookiesMuation.isPending}
+					<LoadingIcon />
+				{:else}
+					<PlusIcon />
+				{/if}
 			</button>
 		{/if}
 	</div>
