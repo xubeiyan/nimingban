@@ -85,6 +85,8 @@
 			>
 				{#if c.content == usingCookies}
 					<MaskIcon />
+				{:else}
+					<span class="inline-block w-[1.5em]"></span>
 				{/if}
 				{c.content}
 			</button>
