@@ -4,43 +4,51 @@
 
 	import NewPostForm from '../../../components/NewPostForm.svelte';
 	import PostContent from '../../../components/PostContent.svelte';
+	import ImageViewer from '../../../components/ImageViewer.svelte';
 
 	import { createMutation } from '@tanstack/svelte-query';
 
 	export let data;
 
 	let posts = [];
-	let from = 0;
-	let total = 0;
 	let fetchDataText = '加载中...';
 
 	const getPostMutation = createMutation({
 		mutationFn: async () => {
-			const res = await fetch(`/board/getPosts/${$boardStore.boardUrl}?from=${from}`).then((r) =>
-				r.json()
-			);
+			const res = await fetch(
+				`/board/getPosts/${$boardStore.boardUrl}?from=${$boardStore.from}`
+			).then((r) => r.json());
 
-			let ids = posts.map(post => post.id);
+			let ids = posts.map((post) => post.id);
 
 			// 合并现有和获取到的
-			res.posts.forEach(newPost => {
+			res.posts.forEach((newPost) => {
 				// 如果获取到的串有存在的，代表有新串发表
 				// 导致老串下移，则需要删除原有老串
 				if (ids.includes(newPost.id)) {
-					ids = ids.filter(id => id != newPost.id);
+					ids = ids.filter((id) => id != newPost.id);
 				}
 			});
-			const filteredPosts = posts.filter(post => ids.includes(post.id)); 
+			const filteredPosts = posts.filter((post) => ids.includes(post.id));
 			posts = [...filteredPosts, ...res.posts];
-			total = res.totalPost;
-			from += res.getSize;
-			if (from > total) {
+			boardStore.update((old) => {
+				return {
+					...old,
+					from: old.from + res.getSize,
+					total: res.totalPost
+				};
+			});
+
+			window.localStorage.setItem('board', JSON.stringify($boardStore));
+
+			if ($boardStore.from > $boardStore.total) {
 				fetchDataText = '没有更多了';
 			}
 		}
 	});
 
 	let newPostForm = null;
+	let imageViewer = null;
 
 	const showNewPostForm = () => {
 		if (newPostForm == null) return;
@@ -48,18 +56,31 @@
 	};
 
 	const handleSendPost = () => {
-		from = 0;
+		boardStore.update((old) => {
+			return {
+				...old,
+				from: 0,
+				total: 0
+			};
+		});
 		posts = [];
 		fetchDataText = '加载中...';
 		$getPostMutation.mutateAsync();
 	};
 
 	onMount(() => {
+		boardStore.update((b) => {
+			const boardUrl = window.location.href.split('/').at(-1);
+			return { ...b, from: 0, boardUrl };
+		});
+
+		window.localStorage.setItem('board', JSON.stringify($boardStore));
+
 		//
 		let observer = new IntersectionObserver((entries) => {
 			entries.forEach((entry) => {
 				if (entry.isIntersecting) {
-					if (from > total) {
+					if ($boardStore.from > $boardStore.total) {
 						fetchDataText = '没有更多了';
 						return;
 					}
@@ -69,13 +90,6 @@
 		}, {});
 
 		observer.observe(document.querySelector('#getMore'));
-
-		boardStore.update((b) => {
-			const boardUrl = window.location.href.split('/').at(-1);
-			return { ...b, boardUrl };
-		});
-
-		window.localStorage.setItem('board', JSON.stringify($boardStore));
 	});
 </script>
 
@@ -122,3 +136,4 @@
 </div>
 
 <NewPostForm bind:this={newPostForm} on:sendPost={handleSendPost} />
+<ImageViewer bind:this={imageViewer} />

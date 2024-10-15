@@ -2,6 +2,7 @@
 	export let content = '';
 
 	import { marked } from 'marked';
+	import { onMount } from 'svelte';
 
 	const renderer = {
 		heading({ tokens, depth }) {
@@ -69,8 +70,8 @@
 		// 图片
 		image({ href, title, text }) {
 			return `
-				<img class="w-[20em] mt-1" src="${href}" alt="${text}" title="${title}"/>
-				`;
+				<img class="w-[20em] mt-1 cursor-pointer" src="${href}" alt="${text}" title="${title}" 
+				onmousedown="if (event.which != 1) return; this.classList.toggle('w-[20em]')" />`;
 		}
 	};
 

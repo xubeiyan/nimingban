@@ -13,7 +13,7 @@ export async function GET({ locals, params, url }) {
 	const { dbconn } = locals;
 
 	const count_query = {
-		text: `SELECT COUNT(*) AS total_post, board.id AS board_id
+		text: `SELECT CAST(COUNT(*) AS INTEGER) AS total_post, board.id AS board_id
 		FROM post RIGHT JOIN board ON 
 		board.id = post.belong_board_id WHERE board.url_name = $1 
 		GROUP BY board.id`,
