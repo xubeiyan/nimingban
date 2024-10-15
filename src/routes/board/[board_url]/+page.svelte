@@ -96,9 +96,9 @@
 		{data.name}
 	</h1>
 	<p
-		class="bg-slate-200 dark:bg-slate-800/50 rounded-md px-4 py-2 shadow-inner shadow-slate-300 dark:shadow-slate-800 mb-4"
+		class="bg-slate-200 dark:bg-slate-800/50 rounded-md px-6 py-4 shadow-inner shadow-slate-300 dark:shadow-slate-800 mb-4"
 	>
-		{data.intro}
+		<PostContent content={data.intro} />
 	</p>
 	<p>
 		<button
@@ -121,7 +121,9 @@
 					<span>写于：{post.post_time}</span>
 					<span>饼干: {post.cookies_content}</span>
 				</p>
-				<button class="bg-sky-100 shadow-md dark:bg-sky-500 rounded-md py-1 px-3">回复</button>
+				<a href="/post/{post.id}">
+					<button class="bg-sky-100 shadow-md dark:bg-sky-500 rounded-md py-1 px-3">详情</button>
+				</a>
 			</div>
 			<div class="border border-cyan-600 mt-2 py-2 px-4 rounded-sm">
 				<PostContent content={post.content} />
