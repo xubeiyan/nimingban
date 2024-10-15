@@ -12,6 +12,7 @@ export async function GET({ locals, params, url }) {
 
 	const { dbconn } = locals;
 
+	// 获取此区帖子的数量
 	const count_query = {
 		text: `SELECT CAST(COUNT(*) AS INTEGER) AS total_post, board.id AS board_id
 		FROM post RIGHT JOIN board ON 
@@ -22,9 +23,9 @@ export async function GET({ locals, params, url }) {
 
 	const count_result = await dbconn.query(count_query);
 
-	// 获取此区帖子的数量
 	const { total_post: totalPost, board_id } = count_result.rows[0];
 
+	// 查询对应帖子
 	const query = {
 		text: `
 		SELECT p.id, p.poster_name, p.poster_email, p.title, p.content, 

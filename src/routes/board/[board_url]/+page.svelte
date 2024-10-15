@@ -4,7 +4,6 @@
 
 	import NewPostForm from '../../../components/NewPostForm.svelte';
 	import PostContent from '../../../components/PostContent.svelte';
-	import ImageViewer from '../../../components/ImageViewer.svelte';
 
 	import { createMutation } from '@tanstack/svelte-query';
 
@@ -48,7 +47,6 @@
 	});
 
 	let newPostForm = null;
-	let imageViewer = null;
 
 	const showNewPostForm = () => {
 		if (newPostForm == null) return;
@@ -136,4 +134,3 @@
 </div>
 
 <NewPostForm bind:this={newPostForm} on:sendPost={handleSendPost} />
-<ImageViewer bind:this={imageViewer} />
