@@ -29,81 +29,82 @@
 
 ### section 
 
-区域名，用于版块的上级
+> 区域名，用于版块的上级
 
-    * id uuid
-    * section_name vchar(256)
-    * order integer
+* id uuid
+* section_name vchar(256)
+* order integer
 
 ### board
 
-版块，可以允许发串的地方
+> 版块
 
-    * id uuid
-    * parent_section_id uuid 
-    * min_post_second integer default 30
-    * min_post_timestamp timestamp
-    * access_type char(16) 'all' 'view_only' '' 'hidden'
-    * name vchar(256)
-    * url_name vchar(256)
-    * intro text
-    * order integer
+* id uuid
+* parent_section_id uuid 
+* min_post_second integer default 30
+* min_post_timestamp timestamp
+* access_type vchar(16) 'all' 'view_only' 'hidden'
+* name vchar(256)
+* url_name vchar(256)
+* intro text
+* order integer
 
 ### post
 
-发送的串
+> 发送的串
 
-    * id uuid
-    * belong_board_id uuid
-    * poster_name vchar(256)
-    * poster_email vchar(256)
-    * title vchar(256)
-    * content text
-    * poster_cookies_id uuid
-    * post_timestamp timestamp
-    * edit_timestamp timestamp
+* id uuid
+* belong_board_id uuid
+* poster_name vchar(256)
+* poster_email vchar(256)
+* title vchar(256)
+* content text
+* poster_cookies_id uuid
+* post_timestamp timestamp
+* edit_timestamp timestamp
 
 ### post_comment_image
 
-串和评论的图
+> 串和评论的图
 
-    * id uuid
-    * image_type char(16) 'png' 'jpg' 'gif' 'webp' 'avif'
-    * exist_type char(16) 'exist' 'hidden' 'remove'
-    * post_id uuid
+* id uuid
+* image_type char(16) 'png' 'jpg' 'gif' 'webp' 'avif'
+* exist_type char(16) 'exist' 'hidden' 'remove'
+* post_id uuid
 
 ### comment
 
-评论
+> 评论
 
-    * id uuid
-    * belong_post_id uuid
-    * belong_comment uuid
-    * poster_name vchar(256)
-    * poster_email vchar(256)
-    * title vchar(256)
-    * content text
-    * poster_cookies_id uuid
-    * post_timestamp timestamp
-    * edit_timestamp timestamp
+* id uuid
+* belong_post_id uuid
+* belong_comment uuid
+* poster_name vchar(256)
+* poster_email vchar(256)
+* title vchar(256)
+* content text
+* poster_cookies_id uuid
+* post_timestamp timestamp
+* edit_timestamp timestamp
 
 ### user
 
-用户
+> 用户
 
-    * id uuid
-    * status char(16) 'enable' 'disabled' 'forbidden'
-    * username vchar(256)
-    * password_hash vchar(64)
-    * password_salt vchar(64)
-    * type char(16) 'admin' 'user' 'guest'
+* id uuid
+* status vchar(16) 'enable' 'disabled' 'forbidden'
+* username vchar(256)
+* password_hash vchar(64)
+* password_salt vchar(64)
+* type vchar(16) 'admin' 'user' 'guest'
 
 ### cookies
 
-用户饼干
+> 用户饼干
 
-    * id uuid
-    * belong_user_id uuid
-    * create_timestamp timestamp
-    * expire_timestamp timestamp
-    * content char(16)
+* id uuid
+* belong_user_id uuid
+* create_timestamp timestamp
+* expire_timestamp timestamp
+* content vchar(32)
+* status vchar(16) 'enable' 'disable' 

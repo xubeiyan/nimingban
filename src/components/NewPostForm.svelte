@@ -9,6 +9,7 @@
 	import MutilineContent from './NewPostForm/MutilineContent.svelte';
 
 	import { userStore } from '../store/userStore';
+	import { boardStore } from '../store/boardStore';
 	import { createMutation } from '@tanstack/svelte-query';
 
 	import { createEventDispatcher } from 'svelte';
@@ -110,6 +111,10 @@
 				sendResponseError = {
 					text: `当前饼干: "${window.localStorage.getItem('usingCookies')}" 无法发串`
 				};
+			} else if (res.errorCode == 'POST_TOO_FAST') {
+				sendResponseError = {
+					text: `发串太快了，请等待 ${res.extra} 秒后重试`
+				};
 			}
 
 			sendBtnStatus = 'failed';
@@ -141,8 +146,6 @@
 				form.append('image', file.fileContent);
 			});
 
-			const board = window.location.href.split('/').at(-1);
-			form.append('board', board);
 			form.append('name', post.name);
 			form.append('email', post.email);
 			form.append('title', post.title);
@@ -166,7 +169,7 @@
 				};
 			}
 
-			const res = await fetch('/board/sendPost', {
+			const res = await fetch(`/board/sendPost/${$boardStore.boardUrl}`, {
 				method: 'POST',
 				body: form,
 				headers

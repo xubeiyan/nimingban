@@ -1,29 +1,38 @@
 import { json } from '@sveltejs/kit';
 
-export async function GET({ locals, url }) {
-	const board_id = url.searchParams.get('board_id');
+export async function GET({ locals, params, url }) {
+	const { board_url } = params;
+	let from = url.searchParams.get('from');
+	
+	const GET_SIZE = 10;
 
-	if (board_id == undefined) {
-		// 没有board_id则报错
-		return json({
-			type: 'error',
-			errorCode: 'NO_BOARD_ID'
-		});
+	if (from == undefined) {
+		from = 0;
 	}
 
 	const { dbconn } = locals;
 
-	/* 
-	最后一行SQL的 AND 不使用 WHERE 的原因在于后者会在 JOIN 之后再应用 WHERE
-	*/
+	const count_query = {
+		text: `SELECT COUNT(*) AS total_post, board.id AS board_id
+		FROM post RIGHT JOIN board ON 
+		board.id = post.belong_board_id WHERE board.url_name = $1 
+		GROUP BY board.id`,
+		values: [board_url]
+	};
+
+	const count_result = await dbconn.query(count_query);
+
+	// 获取此区帖子的数量
+	const { total_post: totalPost, board_id } = count_result.rows[0];
+
 	const query = {
 		text: `
 		SELECT p.id, p.poster_name, p.poster_email, p.title, p.content, 
-		to_char(p.post_timestamp, 'YYYY-MM-DD HH:MI:SS') AS post_time, 
+		to_char(p.post_timestamp, 'YYYY-MM-DD HH24:MI:SS') AS post_time, 
 		c.content AS cookies_content
 		FROM post AS p LEFT JOIN cookies AS c ON p.poster_cookies_id = c.id
-		AND p.belong_board_id = $1 ORDER BY post_time DESC`,
-		values: [board_id]
+		WHERE p.belong_board_id = $1 ORDER BY post_time DESC LIMIT $2 OFFSET $3`,
+		values: [board_id, GET_SIZE, from]
 	};
 
 	const posts_result = await dbconn.query(query);
@@ -44,5 +53,10 @@ export async function GET({ locals, url }) {
 		});
 	}
 
-	return json(posts);
+	return json({
+		getSize: GET_SIZE,
+		from,
+		totalPost,
+		posts
+	});
 }
