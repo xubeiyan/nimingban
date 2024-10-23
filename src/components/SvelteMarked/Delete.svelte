@@ -4,8 +4,8 @@
 	export let children = [];
 </script>
 
-<s>
+<s class="text-red-600 dark:text-red-300">
 	{#each children as child}
-		<Text content={child.content} />
+		<span class="text-gray-600 dark:text-gray-400"><Text content={child.content} /></span>
 	{/each}
 </s>
