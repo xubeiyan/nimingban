@@ -9,7 +9,7 @@
 	export let children = [];
 </script>
 
-<p>
+<p class="my-1">
 	{#each children as child}
 		{#if child.type == 'text' && child.content != ''}
 			<Text content={child.content} />

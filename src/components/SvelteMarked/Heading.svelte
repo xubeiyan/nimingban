@@ -14,8 +14,8 @@
 			: level == 2
 				? 'text-2xl font-bold border-b mb-2 pb-1 border-slate-800 dark:border-cyan-400'
 				: level == 3
-					? 'text-xl font-semibold'
-					: 'text-lg';
+					? 'text-xl mb-1 font-semibold'
+					: 'text-lg mb-1';
 </script>
 
 <h1 class={style}>
