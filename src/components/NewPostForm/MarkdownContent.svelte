@@ -29,24 +29,13 @@
 		const inputArray = input.split('\n');
 		for (let line of inputArray) {
 			const lineObj = inlineLexer(line);
-			if (isTextNode(lineObj)) {
-				result.children.push({
-					type: 'paragraph',
-					children: [lineObj]
-				});
-			} else {
-				result.children.push(lineObj);
-			}
+
+			result.children.push(lineObj);
 		}
 
 		console.log(result.children);
 
 		return result;
-	};
-
-	//
-	const isTextNode = (node) => {
-		return node.type == 'text';
 	};
 
 	// 返回text节点
@@ -59,6 +48,7 @@
 
 	// 返回emphasis节点
 	const emphasisLexer = (inlineInput, inToken = []) => {
+		// console.log(inlineInput);
 		return {
 			type: 'emphasis',
 			children: restInlineLexer(inlineInput, [...inToken, 'emphasis'])
@@ -114,18 +104,6 @@
 			inlineInput = inlineInput.substring(i);
 		}
 
-		// 处理emphasis
-		if (!inToken.includes('emphasis')) {
-			let emphasisRegex = /^\*(.+?)\*(.*)/.exec(inlineInput);
-			if (emphasisRegex != null) {
-				children.push(emphasisLexer(emphasisRegex[1], inToken));
-				// 处理后面的部分
-				if (emphasisRegex[2] != '') {
-					children.push(...restInlineLexer(emphasisRegex[2], inToken));
-				}
-			}
-		}
-
 		// 处理strong
 		if (!inToken.includes('strong')) {
 			let strongRegex = /^\*{2}(.+?)\*{2}(.*)/.exec(inlineInput);
@@ -134,6 +112,20 @@
 				// 处理后面的部分
 				if (strongRegex[2] != '') {
 					children.push(...restInlineLexer(strongRegex[2], inToken));
+					return children;
+				}
+			}
+		}
+
+		// 处理emphasis
+		if (!inToken.includes('emphasis')) {
+			let emphasisRegex = /^\*(.+?)\*(.*)/.exec(inlineInput);
+			if (emphasisRegex != null) {
+				children.push(emphasisLexer(emphasisRegex[1], inToken));
+				// 处理后面的部分
+				if (emphasisRegex[2] != '') {
+					children.push(...restInlineLexer(emphasisRegex[2], inToken));
+					return children;
 				}
 			}
 		}
@@ -142,10 +134,11 @@
 		if (!inToken.includes('delete')) {
 			let deleteRegex = /^\~\~(.+?)\~\~(.*)/.exec(inlineInput);
 			if (deleteRegex != null) {
-				children.push(deleteLexer(deleteRegex[1]), inToken);
+				children.push(deleteLexer(deleteRegex[1], inToken));
 				// 处理后面的部分
 				if (deleteRegex[2] != '') {
 					children.push(...restInlineLexer(deleteRegex[2], inToken));
+					return children;
 				}
 			}
 		}
@@ -154,10 +147,11 @@
 		if (!inToken.includes('code')) {
 			let codeRegex = /^`(.+?)`(.*)/.exec(inlineInput);
 			if (codeRegex != null) {
-				children.push(codeLexer(codeRegex[1]), inToken);
+				children.push(codeLexer(codeRegex[1], inToken));
 				// 处理后面的部分
 				if (codeRegex[2] != '') {
 					children.push(...restInlineLexer(codeRegex[2], inToken));
+					return children;
 				}
 			}
 		}
@@ -198,19 +192,17 @@
 		};
 	};
 
-	//
-
 	$: parsed = lexer(content);
 </script>
 
 <div class="w-full">
-	{#each parsed.children as oneLine}
-		{#if oneLine.type == 'heading'}
-			<Heading level={oneLine.level} children={oneLine.children} />
-		{:else if oneLine.type == 'blockquote'}
-			<Blockquote children={oneLine.children} />
-		{:else if oneLine.type == 'paragraph'}
-			<Paragraph children={oneLine.children} />
+	{#each parsed.children as one}
+		{#if one.type == 'heading'}
+			<Heading level={one.level} children={one.children} />
+		{:else if one.type == 'blockquote'}
+			<Blockquote children={one.children} />
+		{:else if one.type == 'paragraph'}
+			<Paragraph children={one.children} />
 		{/if}
 	{/each}
 </div>
