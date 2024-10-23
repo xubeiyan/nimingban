@@ -10,11 +10,11 @@
 
 	$: style =
 		level == 1
-			? 'text-3xl border-b-2 mb-4 pb-1 border-slate-800'
+			? 'text-3xl font-extrabold border-b-2 mb-4 pb-1 border-slate-800 dark:border-cyan-400'
 			: level == 2
-				? 'text-2xl border-b mb-2 pb-1 border-slate-800'
+				? 'text-2xl font-bold border-b mb-2 pb-1 border-slate-800 dark:border-cyan-400'
 				: level == 3
-					? 'text-xl'
+					? 'text-xl font-semibold'
 					: 'text-lg';
 </script>
 

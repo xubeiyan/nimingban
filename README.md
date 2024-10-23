@@ -108,3 +108,20 @@
 * expire_timestamp timestamp
 * content vchar(32)
 * status vchar(16) 'enable' 'disable' 
+
+## Markdown 编辑器支持语法
+
+* [x] `heading` h1~h4
+* [x] `text` 
+* [x] `paragraph`
+* [x] `emphasis`
+* [x] `strong`
+* [x] `inlineCode`
+* [ ] `code`
+* [x] `delete`
+* [x] `hr`
+* [x] `blockquote`
+* [x] `link`
+* [x] `image`
+* [ ] `list`
+* [ ] `table`

@@ -5,6 +5,7 @@
 	import Blockquote from '../SvelteMarked/Blockquote.svelte';
 	import Paragraph from '../SvelteMarked/Paragraph.svelte';
 	import Page from '../../routes/+page.svelte';
+	import HoriRule from '../SvelteMarked/HoriRule.svelte';
 
 	export let content = '';
 
@@ -79,6 +80,25 @@
 		};
 	};
 
+	// 返回link节点
+	const linkLexer = (linkText, linkUrl) => {
+		return {
+			type: 'link',
+			text: linkText,
+			url: linkUrl
+		};
+	};
+
+	// 返回image节点
+	const imageLexer = (alt, url, title) => {
+		return {
+			type: 'image',
+			alt,
+			url,
+			title: title == undefined ? '' : title
+		};
+	};
+
 	// 处理已经被解析为行节点的剩余部分
 	// 只处理 emphasis(强调 *...*) strong(加粗 **...**) 删除线(~~...~~)
 	// inlineCode(行内代码 `...`) link(链接 [...](...)) image(图片 ![...](... ..))
@@ -112,8 +132,8 @@
 				// 处理后面的部分
 				if (strongRegex[2] != '') {
 					children.push(...restInlineLexer(strongRegex[2], inToken));
-					return children;
 				}
+				return children;
 			}
 		}
 
@@ -125,8 +145,8 @@
 				// 处理后面的部分
 				if (emphasisRegex[2] != '') {
 					children.push(...restInlineLexer(emphasisRegex[2], inToken));
-					return children;
 				}
+				return children;
 			}
 		}
 
@@ -138,8 +158,8 @@
 				// 处理后面的部分
 				if (deleteRegex[2] != '') {
 					children.push(...restInlineLexer(deleteRegex[2], inToken));
-					return children;
 				}
+				return children;
 			}
 		}
 
@@ -151,11 +171,36 @@
 				// 处理后面的部分
 				if (codeRegex[2] != '') {
 					children.push(...restInlineLexer(codeRegex[2], inToken));
-					return children;
 				}
+				return children;
 			}
 		}
+		// 处理link节点
+		let linkRegex = /^\[(.+?)\]\((.+?)\)(.*)/.exec(inlineInput);
+		if (linkRegex != null) {
+			children.push(linkLexer(linkRegex[1], linkRegex[2]));
+			// 处理后面部分
+			if (linkRegex[3] != '') {
+				children.push(...restInlineLexer(linkRegex[3], inToken));
+			}
+			return children;
+		}
 
+		// 处理image节点
+		let imageRegex = /^!\[(.*?)\]\((.+?)(?: \"(.+?)\")?\)(.*)/.exec(inlineInput);
+		if (imageRegex != null) {
+			children.push(imageLexer(imageRegex[1], imageRegex[2], imageRegex[3]));
+			if (imageRegex[4] != '') {
+				children.push(...restInlineLexer(imageRegex[4], inToken));
+			}
+
+			return children;
+		}
+
+		children.push({
+			type: 'text',
+			content: inlineInput
+		});
 		return children;
 	};
 
@@ -185,6 +230,24 @@
 			};
 		}
 
+		// 尝试单线hr
+		let hrRegex = /^-{6,}$/.exec(inlineInput);
+		if (hrRegex != null) {
+			return {
+				type: 'horizontalRule',
+				border: 'single'
+			};
+		}
+
+		// 尝试双线hr
+		let hrDoubleRegex = /^={6,}$/.exec(inlineInput);
+		if (hrDoubleRegex != null) {
+			return {
+				type: 'horizontalRule',
+				border: 'double'
+			};
+		}
+
 		// 都不满足则按paragraph解析
 		return {
 			type: 'paragraph',
@@ -201,6 +264,8 @@
 			<Heading level={one.level} children={one.children} />
 		{:else if one.type == 'blockquote'}
 			<Blockquote children={one.children} />
+		{:else if one.type == 'horizontalRule'}
+			<HoriRule border={one.border} />
 		{:else if one.type == 'paragraph'}
 			<Paragraph children={one.children} />
 		{/if}
