@@ -254,7 +254,9 @@
 			</button>
 
 			{#if expand}
-				<MarkdownContent content={post.content} />
+				<div class="w-[50%] mt-10">
+					<MarkdownContent content={post.content} />
+				</div>
 			{/if}
 		</div>
 		<div class="mt-2 flex flex-col">
