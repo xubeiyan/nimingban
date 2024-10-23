@@ -4,6 +4,7 @@
 
 	import NewPostForm from '../../../components/NewPostForm.svelte';
 	import PostContent from '../../../components/PostContent.svelte';
+	import ImageViewer from '../../../components/ImageViewer.svelte';
 
 	import { createMutation } from '@tanstack/svelte-query';
 
@@ -47,6 +48,7 @@
 	});
 
 	let newPostForm = null;
+	let imageViewer = null;
 
 	const showNewPostForm = () => {
 		if (newPostForm == null) return;
@@ -64,6 +66,13 @@
 		posts = [];
 		fetchDataText = '加载中...';
 		$getPostMutation.mutateAsync();
+	};
+
+	// 打开图片预览
+	const openImageViewer = (url) => {
+		if (imageViewer == null) return;
+
+		imageViewer.openDialog(url);
 	};
 
 	onMount(() => {
@@ -126,7 +135,7 @@
 				</a>
 			</div>
 			<div class="border border-cyan-600 mt-2 py-2 px-4 rounded-sm">
-				<PostContent content={post.content} />
+				<PostContent content={post.content} on:largeImage={(e) => openImageViewer(e.detail)} />
 			</div>
 		</div>
 	{/each}
@@ -136,3 +145,4 @@
 </div>
 
 <NewPostForm bind:this={newPostForm} on:sendPost={handleSendPost} />
+<ImageViewer bind:this={imageViewer} />

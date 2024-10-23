@@ -24,7 +24,7 @@
 		{:else if child.type == 'link'}
 			<Link text={child.text} url={child.url} />
 		{:else if child.type == 'image'}
-			<Image alt={child.alt} url={child.url} title={child.title} />
+			<Image alt={child.alt} url={child.url} title={child.title} on:largeImage />
 		{/if}
 	{/each}
 </p>

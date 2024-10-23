@@ -60,7 +60,7 @@
 
 	const handleInsertImageToPost = (e) => {
 		const id = e.detail.id;
-		const imageMarkdown = `![](/TEMPFOLDER/${id} "附加图片${id}")\n`;
+		const imageMarkdown = `![附加图片${id}](/TEMPFOLDER/${id} "附加图片${id}")\n`;
 		if (post.content == null) {
 			post.content = imageMarkdown;
 		} else {

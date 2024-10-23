@@ -1,4 +1,7 @@
 <script>
+	import { createEventDispatcher } from 'svelte';
+	const dispatch = createEventDispatcher();
+
 	export let alt = '';
 	export let url = '';
 	export let title = '';
@@ -8,7 +11,7 @@
 
 	const fullScreenView = (url) => {
 		// TODO: 打开一个大窗口查看图片
-		console.log(url);
+		dispatch('largeImage', url);
 	};
 </script>
 

@@ -34,7 +34,7 @@
 			result.children.push(lineObj);
 		}
 
-		console.log(result.children);
+		// console.log(result.children);
 
 		return result;
 	};
@@ -267,7 +267,7 @@
 		{:else if one.type == 'horizontalRule'}
 			<HoriRule border={one.border} />
 		{:else if one.type == 'paragraph'}
-			<Paragraph children={one.children} />
+			<Paragraph children={one.children} on:largeImage />
 		{/if}
 	{/each}
 </div>

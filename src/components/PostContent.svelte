@@ -3,4 +3,4 @@
 	export let content = '';
 </script>
 
-<MarkdownContent {content} />
+<MarkdownContent {content} on:largeImage />
