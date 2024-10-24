@@ -1,8 +1,18 @@
 <script>
 	export let data;
 	import PostContent from '../../../components/PostContent.svelte';
+	import ImageViewer from '../../../components/ImageViewer.svelte';
 
 	import { boardStore } from '../../../store/boardStore';
+
+	let imageViewer = null;
+
+	// 打开图片预览
+	const openImageViewer = (url) => {
+		if (imageViewer == null) return;
+
+		imageViewer.openDialog(url);
+	};
 
 	const goBack = () => {
 		window.location.href = `/board/${$boardStore.boardUrl}`;
@@ -11,7 +21,7 @@
 
 <div class="container m-auto">
 	<div class="mt-4">
-		<button on:click={goBack}> 返回 </button>
+		<button class="rounded-full bg-sky-200 dark:bg-sky-600" on:click={goBack}> 返回 </button>
 	</div>
 	<div
 		class="rounded-md bg-slate-100 dark:bg-sky-800 px-4 py-2 mt-2 shadow-inner"
@@ -30,7 +40,8 @@
 			</p>
 		</div>
 		<div class="border border-cyan-600 mt-2 py-2 px-4 rounded-sm">
-			<PostContent content={data.post.content} />
+			<PostContent content={data.post.content} on:largeImage={(e) => openImageViewer(e.detail)} />
 		</div>
 	</div>
 </div>
+<ImageViewer bind:this={imageViewer} />
