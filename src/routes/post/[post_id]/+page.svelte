@@ -1,11 +1,16 @@
 <script>
 	export let data;
+	import SendForm from '../../../components/SendForm.svelte';
 	import PostContent from '../../../components/PostContent.svelte';
 	import ImageViewer from '../../../components/ImageViewer.svelte';
+	import BackIcon from '$svgIcon/back.svelte';
 
 	import { boardStore } from '../../../store/boardStore';
+	import SecondaryBtn from '../../../components/SecondaryBtn.svelte';
+	import PrimaryBtn from '../../../components/PrimaryBtn.svelte';
 
 	let imageViewer = null;
+	let newCommentForm = null;
 
 	// 打开图片预览
 	const openImageViewer = (url) => {
@@ -14,14 +19,24 @@
 		imageViewer.openDialog(url);
 	};
 
-	const goBack = () => {
-		window.location.href = `/board/${$boardStore.boardUrl}`;
+	// 打开评论框
+	const openCommentForm = () => {
+		if (newCommentForm == null) return;
+		newCommentForm.showForm();
 	};
+
+	// 发送评论
+	const handleSendComment = () => {};
 </script>
 
 <div class="container m-auto">
 	<div class="mt-4">
-		<button class="rounded-full bg-sky-200 dark:bg-sky-600" on:click={goBack}> 返回 </button>
+		<a href={`/board/${$boardStore.boardUrl}`}>
+			<PrimaryBtn>
+				<BackIcon />
+				<span>返回版块</span>
+			</PrimaryBtn>
+		</a>
 	</div>
 	<div
 		class="rounded-md bg-slate-100 dark:bg-sky-800 px-4 py-2 mt-2 shadow-inner"
@@ -38,10 +53,12 @@
 				{/if}
 				<span>饼干: {data.post.cookies_content}</span>
 			</p>
+			<SecondaryBtn on:click={openCommentForm}>回复</SecondaryBtn>
 		</div>
 		<div class="border border-cyan-600 mt-2 py-2 px-4 rounded-sm">
 			<PostContent content={data.post.content} on:largeImage={(e) => openImageViewer(e.detail)} />
 		</div>
 	</div>
 </div>
+<SendForm bind:this={newCommentForm} formTitle="回复串" on:sendPost={handleSendComment} />
 <ImageViewer bind:this={imageViewer} />

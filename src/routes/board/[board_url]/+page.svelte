@@ -2,11 +2,14 @@
 	import { onMount } from 'svelte';
 	import { boardStore } from '../../../store/boardStore';
 
-	import NewPostForm from '../../../components/NewPostForm.svelte';
+	import SendForm from '../../../components/SendForm.svelte';
 	import PostContent from '../../../components/PostContent.svelte';
 	import ImageViewer from '../../../components/ImageViewer.svelte';
 
 	import { createMutation } from '@tanstack/svelte-query';
+	import SecondaryBtn from '../../../components/SecondaryBtn.svelte';
+	import PrimaryBtn from '../../../components/PrimaryBtn.svelte';
+	import ErrorPage from '../../../components/ErrorPage.svelte';
 
 	export let data;
 
@@ -96,25 +99,29 @@
 			});
 		}, {});
 
-		observer.observe(document.querySelector('#getMore'));
+		const getMore = document.querySelector('#getMore');
+		if (getMore == undefined) return;
+
+		observer.observe(getMore);
 	});
 </script>
 
 <div class="container m-auto">
-	<h1 class="text-3xl py-4">
-		{data.name}
-	</h1>
-	<p
-		class="bg-slate-200 dark:bg-slate-800/50 rounded-md px-6 py-4 shadow-inner shadow-slate-300 dark:shadow-slate-800 mb-4"
-	>
-		<PostContent content={data.intro} />
-	</p>
-	<p>
-		<button
-			class="bg-cyan-50 hover:bg-cyan-100 shadow-md dark:bg-sky-600 dark:hover:bg-sky-500 rounded-md py-1 px-3"
-			on:click={showNewPostForm}>发新串</button
+	{#if data.type == 'error'}
+		<ErrorPage message="访问的地址不存在" />
+	{:else}
+		<h1 class="text-3xl py-4">
+			{data.name}
+		</h1>
+		<p
+			class="bg-slate-200 dark:bg-slate-800/50 rounded-md px-6 py-4 shadow-inner shadow-slate-300 dark:shadow-slate-800 mb-4"
 		>
-	</p>
+			<PostContent content={data.intro} />
+		</p>
+		<p>
+			<PrimaryBtn on:click={showNewPostForm}>发新串</PrimaryBtn>
+		</p>
+	{/if}
 	{#each posts as post}
 		<div
 			class="rounded-md bg-slate-100 dark:bg-sky-800 px-4 py-2 mt-4 shadow-inner"
@@ -131,7 +138,7 @@
 					<span>饼干: {post.cookies_content}</span>
 				</p>
 				<a href="/post/{post.id}">
-					<button class="bg-sky-100 shadow-md dark:bg-sky-700 hover:bg-sky-200 hover:dark:bg-sky-600 rounded-md py-1 px-3">详情</button>
+					<SecondaryBtn>详情</SecondaryBtn>
 				</a>
 			</div>
 			<div class="border border-cyan-600 mt-2 py-2 px-4 rounded-sm">
@@ -139,10 +146,12 @@
 			</div>
 		</div>
 	{/each}
-	<div class="rounded-md bg-sky-200 dark:bg-sky-400/50 p-4 my-2 mt-4" id="getMore">
-		<span>{fetchDataText}</span>
-	</div>
+	{#if data.name}
+		<div class="rounded-md bg-sky-200 dark:bg-sky-400/50 p-4 my-2 mt-4" id="getMore">
+			<span>{fetchDataText}</span>
+		</div>
+	{/if}
 </div>
 
-<NewPostForm bind:this={newPostForm} on:sendPost={handleSendPost} />
+<SendForm bind:this={newPostForm} on:sendPost={handleSendPost} />
 <ImageViewer bind:this={imageViewer} />

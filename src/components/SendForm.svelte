@@ -1,12 +1,12 @@
 <script>
 	import MarkdownIcon from '$svgIcon/markdown.svelte';
 	import AddPlusIcon from '$svgIcon/addPlus.svelte';
-	import CloseIcon from '$svgIcon/close.svelte';
 
 	import MarkdownContent from './NewPostForm/MarkdownContent.svelte';
 	import AttachPicture from './NewPostForm/AttachPicture.svelte';
 	import InlineInput from './NewPostForm/InlineInput.svelte';
 	import MutilineContent from './NewPostForm/MutilineContent.svelte';
+	import CloseBtn from './NewPostForm/CloseBtn.svelte';
 
 	import { userStore } from '../store/userStore';
 	import { boardStore } from '../store/boardStore';
@@ -15,6 +15,8 @@
 	import { createEventDispatcher } from 'svelte';
 	import SendBtn from './NewPostForm/SendBtn.svelte';
 	const dispatch = createEventDispatcher();
+
+	export let formTitle = '发新串';
 
 	let show = false;
 	$: showStyle = show ? 'top-0' : 'top-[100%]';
@@ -222,7 +224,7 @@
 	<form
 		class="relative {formWidthClass} w-[90%] transition-all duration-500 mx-auto my-[5em] bg-sky-100 dark:bg-sky-800 py-4 px-6 rounded-md"
 	>
-		<h1 class="text-2xl mb-6">发新串</h1>
+		<h1 class="text-2xl mb-6">{formTitle}</h1>
 		<div class="flex gap-2 mb-2">
 			<InlineInput
 				label="名称"
@@ -295,11 +297,10 @@
 			{/if}
 			<SendBtn status={sendBtnStatus} on:click={sendPost} />
 		</div>
-		<button
-			class="absolute right-4 top-4 size-8 rounded-md flex justify-center items-center"
-			on:click={() => (show = false)}
-		>
-			<CloseIcon />
-		</button>
+		<CloseBtn
+			on:click={() => {
+				show = false;
+			}}
+		/>
 	</form>
 </div>

@@ -8,13 +8,20 @@ export const load = async ({ locals, params }) => {
 	const result = await dbconn.query(query);
 
 	// TODO: cannot find board error
+	if (result.rowCount == 0) {
+		return {
+			type: 'error',
+			errorCode: 'NO_SUCH_BOARD'
+		};
+	}
 
 	const { board_id, name, intro } = result.rows[0];
-	
+
 	return {
+		type: 'ok',
 		board_id,
 		name,
 		intro,
-		posts: [],
+		posts: []
 	};
 };
