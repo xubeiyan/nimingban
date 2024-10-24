@@ -111,7 +111,7 @@
 	</p>
 	<p>
 		<button
-			class="bg-sky-100 shadow-md dark:bg-sky-500 rounded-md py-1 px-3"
+			class="bg-cyan-50 hover:bg-cyan-100 shadow-md dark:bg-sky-600 dark:hover:bg-sky-500 rounded-md py-1 px-3"
 			on:click={showNewPostForm}>发新串</button
 		>
 	</p>
@@ -131,7 +131,7 @@
 					<span>饼干: {post.cookies_content}</span>
 				</p>
 				<a href="/post/{post.id}">
-					<button class="bg-sky-100 shadow-md dark:bg-sky-500 rounded-md py-1 px-3">详情</button>
+					<button class="bg-sky-100 shadow-md dark:bg-sky-700 hover:bg-sky-200 hover:dark:bg-sky-600 rounded-md py-1 px-3">详情</button>
 				</a>
 			</div>
 			<div class="border border-cyan-600 mt-2 py-2 px-4 rounded-sm">
