@@ -16,7 +16,8 @@
 	import SendBtn from './NewPostForm/SendBtn.svelte';
 	const dispatch = createEventDispatcher();
 
-	export let formTitle = '发新串';
+	export let type = 'post';
+	$: formTitle = type == 'post' ? '发新串' : '回复串';
 
 	let show = false;
 	$: showStyle = show ? 'top-0' : 'top-[100%]';
@@ -81,6 +82,7 @@
 
 		// 处理返回的错误
 		if (res.type == 'error') {
+			const verb = type == 'post' ? '发串' : '回复串';
 			if (res.errorCode == 'BEYOND_MAX_UPLAD_IMAGE_COUNT') {
 				sendResponseError = {
 					text: '上传图片数超出了限制'
@@ -99,7 +101,7 @@
 				};
 			} else if (res.errorCode == 'NO_AUTHORIZATION_HEADER') {
 				sendResponseError = {
-					text: `发串需要登录且拥有饼干`
+					text: `${verb}需要登录且拥有饼干`
 				};
 			} else if (['COOKIES_MALFORM', 'INVALID_AUTHORIZATION_HEADER'].includes(res.errorCode)) {
 				sendResponseError = {
@@ -111,11 +113,11 @@
 				};
 			} else if (res.errorCode == 'WRONG_COOKIES') {
 				sendResponseError = {
-					text: `当前饼干: "${window.localStorage.getItem('usingCookies')}" 无法发串`
+					text: `当前饼干: "${window.localStorage.getItem('usingCookies')}" 无法${verb}`
 				};
 			} else if (res.errorCode == 'POST_TOO_FAST') {
 				sendResponseError = {
-					text: `发串太快了，请等待 ${res.extra} 秒后重试`
+					text: `${verb}太快了，请等待 ${res.extra} 秒后重试`
 				};
 			}
 
@@ -125,8 +127,13 @@
 
 		sendBtnStatus = 'ok';
 
-		// 发送发帖消息
-		dispatch('sendPost');
+		if (type == 'post') {
+			// 发送发帖消息
+			dispatch('sendPost');
+		} else if (type == 'comment') {
+			// 发送回帖消息
+			dispatch('sendComment');
+		}
 
 		// 清空发帖部分
 		show = false;
@@ -171,7 +178,14 @@
 				};
 			}
 
-			const res = await fetch(`/board/sendPost/${$boardStore.boardUrl}`, {
+			// 发串和回复串不同
+			let url = `/board/sendPost/${$boardStore.boardUrl}`;
+			if (type == 'comment') {
+				const urlArray = window.location.href.split('/');
+				url = `/board/sendComment/${urlArray.at(-1)}`;
+			}
+
+			const res = await fetch(url, {
 				method: 'POST',
 				body: form,
 				headers
@@ -197,7 +211,11 @@
 		expand = !expand;
 	};
 
-	export const showForm = () => {
+	export const showForm = (params) => {
+		const { content } = params;
+		if (content != undefined) {
+			post.content = content;
+		}
 		show = true;
 	};
 
@@ -295,7 +313,7 @@
 					>{sendResponseError.text}</span
 				>
 			{/if}
-			<SendBtn status={sendBtnStatus} on:click={sendPost} />
+			<SendBtn status={sendBtnStatus} {type} on:click={sendPost} />
 		</div>
 		<CloseBtn
 			on:click={() => {

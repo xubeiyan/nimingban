@@ -2,10 +2,10 @@ import { json } from '@sveltejs/kit';
 
 export async function GET({ locals, params, url }) {
 	const { board_url } = params;
-	let from = url.searchParams.get('from');
-	
+
 	const GET_SIZE = 10;
 
+	let from = url.searchParams.get('from');
 	if (from == undefined) {
 		from = 0;
 	}
@@ -28,11 +28,12 @@ export async function GET({ locals, params, url }) {
 	// 查询对应帖子
 	const query = {
 		text: `
-		SELECT p.id, p.poster_name, p.poster_email, p.title, p.content, 
+		SELECT p.id, p.status, p.poster_name, p.poster_email, p.title, p.content, 
 		to_char(p.post_timestamp, 'YYYY-MM-DD HH24:MI:SS') AS post_time, 
 		c.content AS cookies_content
 		FROM post AS p LEFT JOIN cookies AS c ON p.poster_cookies_id = c.id
-		WHERE p.belong_board_id = $1 ORDER BY post_time DESC LIMIT $2 OFFSET $3`,
+		WHERE p.status IN ('repliable', 'readonly') AND p.belong_board_id = $1 
+		ORDER BY post_time DESC LIMIT $2 OFFSET $3`,
 		values: [board_id, GET_SIZE, from]
 	};
 
@@ -40,10 +41,11 @@ export async function GET({ locals, params, url }) {
 
 	let posts = [];
 
-	if (posts_result.rows != undefined && posts_result.rows.length != 0) {
+	if (posts_result.rowCount > 0) {
 		posts_result.rows.forEach((one) => {
 			posts.push({
 				id: one.id,
+				status: one.status,
 				author: one.poster_name == 'null' ? '无名氏' : one.poster_name,
 				email: one.poster_email == 'null' ? 'no@name.net' : one.poster_email,
 				title: one.title == 'null' ? '无标题' : one.title,
@@ -56,7 +58,7 @@ export async function GET({ locals, params, url }) {
 
 	return json({
 		getSize: GET_SIZE,
-		from,
+		from: Number(from),
 		totalPost,
 		posts
 	});

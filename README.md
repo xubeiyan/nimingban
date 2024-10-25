@@ -54,6 +54,7 @@
 > 发送的串
 
 * id uuid
+* status vchar(16) 'repliable' 'readonly' 'hidden'
 * belong_board_id uuid
 * poster_name vchar(256)
 * poster_email vchar(256)

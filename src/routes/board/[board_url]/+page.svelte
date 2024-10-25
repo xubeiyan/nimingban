@@ -153,5 +153,5 @@
 	{/if}
 </div>
 
-<SendForm bind:this={newPostForm} on:sendPost={handleSendPost} />
+<SendForm bind:this={newPostForm} type="post" on:sendPost={handleSendPost} />
 <ImageViewer bind:this={imageViewer} />

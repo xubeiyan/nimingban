@@ -1,5 +1,4 @@
 import { json } from '@sveltejs/kit';
-
 import { JWTAuth } from '$lib/auth.js';
 
 import { validCookies, validateImages } from '$lib/SendForm/validation.js';
@@ -7,15 +6,21 @@ import { uploadImages } from '$lib/SendForm/uploadImage.js';
 
 const CONTENT_MIN_LENGTH = 10;
 
-export async function POST({ locals, request, params }) {
+export const POST = async ({ locals, params, request }) => {
 	const authRes = JWTAuth(request);
-	const { board_url } = params;
-
 	// 认证错误则返回
 	if (authRes.type != 'ok') {
 		return json(authRes);
 	}
 
+	const postId = params.post_id;
+	if (postId == undefined || postId == null) {
+		return json({
+			type: 'error',
+			errorCode: 'INVAILD_POST_ID',
+			extra: 'n p i'
+		});
+	}
 	const formData = await request.formData();
 	const toUploadImages = formData?.getAll('image');
 
@@ -27,6 +32,11 @@ export async function POST({ locals, request, params }) {
 
 	/* 
 	// 未提供cookies字段
+    {
+        "type": "error",
+        "errorCode": "WRONG_COOKIES",
+        "extra": null
+    }
 	*/
 	if (cookies == null) {
 		return json({
@@ -71,61 +81,44 @@ export async function POST({ locals, request, params }) {
 	// 上传图片
 	const { replaceImageUrlContent, uploaded } = uploadImages(content, toUploadImages);
 
-	// 写入数据库
-	// 查找board是否存在
-
-	const boardSearchQuery = {
-		text: `SELECT id, min_post_second, 
-		to_char(min_post_timestamp, 'YYYY-MM-DD HH24:MI:SS') AS min_post_time,
-		to_char(now(), 'YYYY-MM-DD HH24:MI:SS') AS current_time 
-		FROM board WHERE url_name = $1 LIMIT 1`,
-		values: [board_url]
+	// 查找post表中的记录
+	const postSearchQuery = {
+		text: `SELECT status FROM post WHERE id = $1 LIMIT 1`,
+		values: [postId]
 	};
-	const boardSearchResult = await dbconn.query(boardSearchQuery);
 
-	if (boardSearchResult.rowCount != 1) {
+	const postSearchResult = await dbconn.query(postSearchQuery);
+
+	// 不存在对应post
+	if (postSearchResult.rowCount == 0) {
 		return json({
 			type: 'error',
-			errorCode: 'BOARD_NOT_EXIST'
+			errorCode: 'POST_ID_INVALID'
 		});
 	}
 
-	// 是否在发帖限制时间内
-	const { id: board_id, min_post_second, min_post_time, current_time } = boardSearchResult.rows[0];
-
-	const next_send_time = min_post_second * 1000 + new Date(min_post_time).getTime();
-	const this_send_time = new Date(current_time).getTime();
-
-	if (next_send_time > this_send_time) {
+	// post的状态不是可回复
+	if (postSearchResult.rows[0].status != 'repliable') {
 		return json({
 			type: 'error',
-			errorCode: 'POST_TOO_FAST',
-			extra: (next_send_time - this_send_time) / 1000
+			errorCode: 'POST_NOT_REPLIABLE'
 		});
 	}
 
-	const postInsertQuery = {
-		text: `INSERT INTO post (
-			id, 				status, poster_name, 	poster_email, 	title, 	content,	poster_cookies_id,						post_timestamp, belong_board_id
-		) VALUES (
-		 	gen_random_uuid(),	'repliable', $1,				$2,				$3,		$4,			$5,										now(),			$6
-		) RETURNING id`,
-		values: [name, email, title, replaceImageUrlContent, poster_cookies_id, board_id]
+	// 向comment插入新的一行
+	const commentInsertQuery = {
+		text: `INSERT INTO comment (
+            id,                 belong_post_id, poster_name,    poster_email,   title,  content, poster_cookies_id, post_timestamp
+        ) VALUES (
+            gen_random_uuid(),  $1,             $2,             $3,             $4,     $5,     $6,                 now()        
+        ) RETURNING id`,
+		values: [postId, name, email, title, replaceImageUrlContent, poster_cookies_id]
 	};
 
-	const boardInsertResult = await dbconn.query(postInsertQuery);
+	const commentInsertResult = await dbconn.query(commentInsertQuery);
 
-	// 更新发帖时间
-	const updateBoardQuery = {
-		text: `UPDATE board SET min_post_timestamp = now() WHERE id = $1`,
-		values: [board_id]
-	};
+	const comment_id = commentInsertResult.rows[0].id;
 
-	await dbconn.query(updateBoardQuery);
-
-	const post_id = boardInsertResult.rows[0].id;
-
-	// 如果有图片，则需插入post_comment_image表
 	uploaded.forEach(async (one) => {
 		const imageInsertQuery = {
 			text: `INSERT INTO post_comment_image (
@@ -133,13 +126,11 @@ export async function POST({ locals, request, params }) {
 			) VALUES (
 				gen_random_uuid(), 	$1,			'exist',	$2
 			)`,
-			values: [one.type, post_id]
+			values: [one.type, comment_id]
 		};
 
 		await dbconn.query(imageInsertQuery);
 	});
 
-	return json({
-		type: 'ok'
-	});
-}
+	return json({});
+};

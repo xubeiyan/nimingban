@@ -2,6 +2,9 @@
 	import LoadingIcon from '$svgIcon/loading.svelte';
 
 	export let status = 'idle';
+	export let type = 'post';
+
+	$: verb = type == 'post' ? '发串' : '回复串';
 
 	$: text =
 		status == 'idle'
@@ -9,8 +12,8 @@
 			: status == 'sending'
 				? '发送中...'
 				: status == 'failed'
-					? '发串失败，重试'
-					: '发串完成';
+					? `${verb}失败，重试`
+					: `${verb}完成`;
 	$: btnClass = ['idle', 'failed'].includes(status)
 		? 'bg-slate-300/50 dark:bg-slate-50/20 dark:bg-slate-50/10 hover:dark:bg-slate-50/20 hover:shadow-md'
 		: '';
