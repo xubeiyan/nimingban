@@ -98,6 +98,7 @@
 * password_hash vchar(64)
 * password_salt vchar(64)
 * type vchar(16) 'admin' 'user' 'guest'
+* create_timestamp timestamp
 
 ### cookies
 

@@ -11,6 +11,12 @@
 
 	let usingCookies = null;
 
+	// 获取饼干状态
+	let lastGetCookies = {
+		status: 'idle',
+		message: null
+	};
+
 	const getNewCookiesMuation = createMutation({
 		mutationFn: async () => {
 			let headers = {};
@@ -24,9 +30,9 @@
 			const res = await fetch('/user/getNewCookies', {
 				method: 'GET',
 				headers
-			});
+			}).then((r) => r.json());
 
-			return await res.json();
+			return res;
 		}
 	});
 
@@ -42,9 +48,23 @@
 	const getNewCookies = async () => {
 		const res = await $getNewCookiesMuation.mutateAsync();
 		if (res.type != 'ok') {
+			lastGetCookies.status = 'failed';
+			const errorMessages = {
+				'1st need 1 day': '第 1 个饼干需要注册 1 天后才能领取',
+				'2nd need 30 days': '第 2 个饼干需要注册 30 天后才能领取',
+				'3rd need 90 days': '第 3 个饼干需要注册 90 天后才能领取',
+				'4th need 180 days': '第 4 个饼干需要注册 180 天后才能领取',
+				'5th need 365 days': '第 5 个饼干需要注册 365 天后才能领取'
+			};
+			lastGetCookies.message = errorMessages[res.extra];
+
 			return;
 		}
 
+		lastGetCookies = {
+			status: 'ok',
+			message: null
+		};
 		const cookies = res.cookies;
 
 		userStore.update((store) => {
@@ -92,18 +112,32 @@
 			</button>
 		{/each}
 		{#if $userStore.cookies.length < 5}
-			<button
-				on:click={getNewCookies}
-				class="w-full bg-orange-50 dark:bg-orange-700/50 hover:bg-orange-100 dark:hover:bg-orange-600/50
-                rounded-sm h-[2em] flex justify-center items-center"
-				disabled={$getNewCookiesMuation.isPending}
-			>
-				{#if $getNewCookiesMuation.isPending}
-					<LoadingIcon />
-				{:else}
-					<PlusIcon />
+			<div class="relative">
+				<button
+					on:click={getNewCookies}
+					class="w-full group bg-orange-50 dark:bg-orange-700/50 hover:bg-orange-100 dark:hover:bg-orange-600/50
+			rounded-sm h-[2em] flex justify-center items-center"
+					disabled={$getNewCookiesMuation.isPending}
+				>
+					{#if $getNewCookiesMuation.isPending}
+						<LoadingIcon />
+					{:else}
+						<PlusIcon />
+					{/if}
+				</button>
+				{#if lastGetCookies.status == 'failed'}
+					<div
+						class="group-hover:visible invisible absolute top-[100%] left-[50%] translate-x-[-50%] w-auto"
+					>
+						<div
+							class="size-[1em] bg-gray-200 rotate-45 absolute top-[.5em] left-[50%] translate-x-[-50%]"
+						></div>
+						<div class="rounded-md shadow-sm shadow-gray-700 bg-gray-200 p-2 text-nowrap mt-[1em]">
+							{lastGetCookies.message}
+						</div>
+					</div>
 				{/if}
-			</button>
+			</div>
 		{/if}
 	</div>
 </button>

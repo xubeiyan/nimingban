@@ -32,8 +32,8 @@ export async function POST({ locals, request }) {
 
 	const createUserQuery = {
 		text: `INSERT INTO "user"
-			(id, 				status, 	username, 	password_hash, 	password_salt, 	type) VALUES 
-			(gen_random_uuid(), 'enable', 	$1, 		$2, 			$3, 			'user')`,
+			(id, 				status, 	username, 	password_hash, 	password_salt, 	type, 	create_timestamp) VALUES 
+			(gen_random_uuid(), 'enable', 	$1, 		$2, 			$3, 			'user', now())`,
 		values: [username, hashWithSalt, salt]
 	};
 
