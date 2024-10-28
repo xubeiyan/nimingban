@@ -10,8 +10,18 @@
 
 | 功能  | 路径（和请求方法）        | 携带参数 |
 | ----  | ---------------         | ------- |
-| 主页  | GET /                    |         |
-| 某个版 | GET /board/{board_name} |         | 
+| 主页               | GET /                  |         |
+| 某个版             | GET /board/{board_url} |         | 
+| 获取某个版的串    | GET /getPosts/{board_url} |         | 
+| 发送串           | POST /board/sendPost/{board_url} |    |
+| 发送回复串       | POST /board/sendComment/{post_id} |    |
+| 获取某串回复     | POST /comment/{post_id} |    |
+| 获取某串最新回复  | POST /comment/latest/{post_id} |    |
+| 查看某串         | GET /post/{post_id} | |
+| 登录            | POST /login | |
+| 注册            | POST /register | |
+| 获取饼干        | GET /user/getNewCookies | |
+
 
 ## 参数设置
 
@@ -19,7 +29,6 @@
 
 * 版规
 * 是否允许发帖
-* 允许组/禁止组
 * 发帖间隔
 * 串最大长度
 * 串附件图片最大数
