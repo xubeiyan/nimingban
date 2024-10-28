@@ -36,12 +36,12 @@
 			<span class="text-slate-400">没有回复</span>
 		{:else}
 			{#if rowCount > 5}
-				<p class="shadow-inner p-2 mb-2 rounded-md bg-gray-300 dark:bg-gray-800">
+				<p class="shadow-inner p-2 mb-2 rounded-md bg-gray-300 dark:bg-sky-900">
 					<span>此为最新 5 条回复，共 {rowCount} 条回复，点击右上角“详情”查看</span>
 				</p>
 			{/if}
 			{#each comments as comment}
-				<div class="rounded-md odd:bg-slate-300 dark:even:bg-sky-800 px-4 py-2">
+				<div class="rounded-md odd:bg-slate-300 dark:odd:bg-sky-800 px-4 py-2">
 					<p class="space-x-2">
 						<span class="font-bold">标题：{comment.title}</span>
 						<span>作者：{comment.poster_name}</span>
