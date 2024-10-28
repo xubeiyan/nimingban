@@ -29,6 +29,7 @@ export const POST = async ({ locals, params, request }) => {
 	const title = formData?.get('title');
 	const content = formData?.get('content');
 	const cookies = formData?.get('cookies');
+	const commentReplyContent = formData?.get('commentReplyContent');
 
 	/* 
 	// 未提供cookies字段
@@ -79,7 +80,7 @@ export const POST = async ({ locals, params, request }) => {
 	}
 
 	// 上传图片
-	const { replaceImageUrlContent, uploaded } = uploadImages(content, toUploadImages);
+	let { replaceImageUrlContent, uploaded } = uploadImages(content, toUploadImages);
 
 	// 查找post表中的记录
 	const postSearchQuery = {
@@ -103,6 +104,10 @@ export const POST = async ({ locals, params, request }) => {
 			type: 'error',
 			errorCode: 'POST_NOT_REPLIABLE'
 		});
+	}
+
+	if (commentReplyContent != undefined) {
+		replaceImageUrlContent = `${commentReplyContent}\n\n${replaceImageUrlContent}`;
 	}
 
 	// 向comment插入新的一行

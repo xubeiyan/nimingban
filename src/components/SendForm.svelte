@@ -27,7 +27,9 @@
 		name: null,
 		email: null,
 		title: null,
-		content: null
+		content: null,
+		// 回复某串的部分
+		commentReplyContent: null
 	};
 
 	let attachFile = null;
@@ -160,6 +162,10 @@
 			form.append('title', post.title);
 			form.append('content', post.content);
 
+			if (type == 'comment') {
+				form.append('commentReplyContent', post.commentReplyContent);
+			}
+
 			// 有usingCookies则附上
 			const usingCookies = window.localStorage.getItem('usingCookies');
 			if (usingCookies != undefined) {
@@ -213,7 +219,7 @@
 
 	export const showForm = (params) => {
 		if (params != undefined && params.content != undefined) {
-			post.content = params.content;
+			post.commentReplyContent = params.content;
 		}
 		show = true;
 	};
@@ -263,6 +269,7 @@
 			<MutilineContent
 				label="正文"
 				value={post.content}
+				replyContent={post.commentReplyContent}
 				on:input={(e) => handleInput('content', e.target.value)}
 			/>
 			<button
@@ -274,11 +281,12 @@
 
 			{#if expand}
 				<div class="w-[50%] mt-10">
+					<MarkdownContent content={post.commentReplyContent} />
 					<MarkdownContent content={post.content} />
 				</div>
 			{/if}
 		</div>
-		<div class="mt-2 flex flex-col">
+		<div class="mt-2 flex flex-col items-start">
 			<label class="mb-1">
 				<span>附加图片</span>
 				<input

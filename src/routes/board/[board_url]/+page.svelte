@@ -137,9 +137,9 @@
 						<span class="dark:text-green-100 font-bold">标题：{post.title}</span>
 					</a>
 					<span class="dark:text-yellow-100">作者：{post.author}</span>
-					<span class="italic">邮箱：{post.email}</span>
+					<span class="dark:text-red-100 italic">邮箱：{post.email}</span>
 					<span>写于：{post.post_time}</span>
-					<span>饼干: {post.cookies_content}</span>
+					<span class="dark:text-indigo-100">饼干: {post.cookies_content}</span>
 				</p>
 				<a href="/post/{post.id}">
 					<SecondaryBtn>详情</SecondaryBtn>
