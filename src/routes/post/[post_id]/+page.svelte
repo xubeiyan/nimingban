@@ -31,7 +31,7 @@
 	const openCommentForm = (fromCommentId) => {
 		if (newCommentForm == null) return;
 		if (fromCommentId != undefined) {
-			const content = `回复 [此串](#${fromCommentId})\n\n`;
+			const content = `回复 [此串](#id-${fromCommentId})\n\n`;
 			newCommentForm.showForm({ content });
 			return;
 		}
@@ -47,7 +47,7 @@
 				r.json()
 			);
 
-			GET_SIZE = res.GET_SIZE;
+			GET_SIZE = res.getSize;
 
 			let ids = comments.map((c) => c.id);
 
@@ -99,6 +99,8 @@
 		if (data.post.cookies_content == undefined) return '';
 		return c == data.post.cookies_content ? 'po' : '';
 	};
+
+	let postId = null;
 
 	onMount(() => {
 		boardStore.update((b) => {
@@ -183,7 +185,9 @@
 					{/if}
 					<span>饼干: {comment.cookies_content} </span>
 					{#if post_author(comment.cookies_content) != ''}
-						<span class="shadow-inner shadow-slate-300 dark:shadow-slate-700 bg-slate-200 dark:bg-slate-600 px-2 py-1 rounded-md">
+						<span
+							class="shadow-inner shadow-slate-300 dark:shadow-slate-700 bg-slate-200 dark:bg-slate-600 px-2 py-1 rounded-md"
+						>
 							{post_author(comment.cookies_content)}
 						</span>
 					{/if}

@@ -7,7 +7,7 @@ export const GET = async ({ locals, params, url }) => {
 	const GET_SIZE = 20;
 
 	let from = url.searchParams.get('from');
-	if (from == undefined) {
+	if (from == undefined || isNaN(from)) {
 		from = 0;
 	}
 
