@@ -40,20 +40,22 @@
 					<span>此为最新 5 条回复，共 {rowCount} 条回复，点击右上角“详情”查看</span>
 				</p>
 			{/if}
-			{#each comments as comment}
-				<div class="rounded-md odd:bg-slate-300 dark:odd:bg-sky-800 px-4 py-2">
-					<p class="space-x-2">
-						<span class="dark:text-green-100 font-bold">标题：{comment.title}</span>
-						<span class="dark:text-yellow-100">作者：{comment.poster_name}</span>
-						<span class="dark:text-red-100 italic">邮箱：{comment.poster_email}</span>
-						<span>写于：{comment.comment_time}</span>
-						<span class="dark:text-indigo-100">饼干：{comment.cookies_content}</span>
-					</p>
-					<div class="border border-cyan-600 mt-1 py-2 px-4 rounded-sm">
-						<PostContent content={comment.content} on:largeImage />
+			<div>
+				{#each comments as comment}
+					<div class="rounded-md even:bg-slate-300 dark:even:bg-sky-800 px-4 py-2">
+						<p class="space-x-2">
+							<span class="dark:text-green-100 font-bold">标题：{comment.title}</span>
+							<span class="dark:text-yellow-100">作者：{comment.poster_name}</span>
+							<span class="dark:text-red-100 italic">邮箱：{comment.poster_email}</span>
+							<span>写于：{comment.comment_time}</span>
+							<span class="dark:text-indigo-100">饼干：{comment.cookies_content}</span>
+						</p>
+						<div class="border border-cyan-600 mt-1 py-2 px-4 rounded-sm">
+							<PostContent content={comment.content} on:largeImage />
+						</div>
 					</div>
-				</div>
-			{/each}
+				{/each}
+			</div>
 		{/if}
 	{/if}
 </div>
