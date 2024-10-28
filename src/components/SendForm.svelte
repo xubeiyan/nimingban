@@ -212,9 +212,8 @@
 	};
 
 	export const showForm = (params) => {
-		const { content } = params;
-		if (content != undefined) {
-			post.content = content;
+		if (params != undefined && params.content != undefined) {
+			post.content = params.content;
 		}
 		show = true;
 	};

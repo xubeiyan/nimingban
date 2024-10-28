@@ -51,6 +51,7 @@ export async function GET({ locals, params, url }) {
 				title: one.title == 'null' ? '无标题' : one.title,
 				content: one.content,
 				post_time: one.post_time,
+				comments: 'fetching',
 				cookies_content: one.cookies_content == null ? '神秘饼干' : one.cookies_content
 			});
 		});

@@ -10,6 +10,7 @@
 	import SecondaryBtn from '../../../components/SecondaryBtn.svelte';
 	import PrimaryBtn from '../../../components/PrimaryBtn.svelte';
 	import ErrorPage from '../../../components/ErrorPage.svelte';
+	import CommentArea from '../../../components/CommentArea.svelte';
 
 	export let data;
 
@@ -78,6 +79,8 @@
 		imageViewer.openDialog(url);
 	};
 
+	// 获取
+
 	onMount(() => {
 		boardStore.update((b) => {
 			const boardUrl = window.location.href.split('/').at(-1);
@@ -124,7 +127,8 @@
 	{/if}
 	{#each posts as post}
 		<div
-			class="rounded-md bg-slate-100 dark:bg-sky-800 px-4 py-2 mt-4 shadow-inner"
+			class="rounded-t-md bg-slate-100 dark:bg-sky-800
+			px-4 py-2 mt-4 shadow-inner"
 			id="id-{post.id}"
 		>
 			<div class="flex justify-between items-end">
@@ -145,6 +149,7 @@
 				<PostContent content={post.content} on:largeImage={(e) => openImageViewer(e.detail)} />
 			</div>
 		</div>
+		<CommentArea postId={post.id} on:largeImage={(e) => openImageViewer(e.detail)} />
 	{/each}
 	{#if data.name}
 		<div class="rounded-md bg-sky-200 dark:bg-sky-400/50 p-4 my-2 mt-4" id="getMore">

@@ -157,7 +157,7 @@
 				<span>饼干: {data.post.cookies_content}</span>
 			</p>
 			{#if data.post.status == 'repliable'}
-				<SecondaryBtn on:click={openCommentForm}>回复</SecondaryBtn>
+				<SecondaryBtn on:click={() => openCommentForm()}>回复</SecondaryBtn>
 			{:else if data.post.status == 'readonly'}
 				<span
 					class="shadow-inner shadow-slate-300 dark:shadow-slate-900 rounded-md px-2 py-1 bg-orange-100 dark:bg-orange-800"
