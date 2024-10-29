@@ -20,7 +20,7 @@
 	$: formTitle = type == 'post' ? '发新串' : '回复串';
 
 	let show = false;
-	$: showStyle = show ? 'top-0' : 'top-[100%]';
+	$: showStyle = show ? '' : 'translate-y-[-100%]';
 
 	// 发送帖子内容
 	let post = {
@@ -242,10 +242,11 @@
 </script>
 
 <div
-	class="z-20 fixed {showStyle} transition-all duration-500 w-screen h-screen max-h-screen overflow-y-auto bg-gray-300/50 dark:bg-gray-100/30"
+	class="z-10 fixed inset-0 {showStyle} transition duration-500 bg-gray-300/50 dark:bg-gray-100/30 
+	flex justify-center items-center"
 >
 	<form
-		class="relative {formWidthClass} w-[90%] transition-all duration-500 mx-auto my-[5em] bg-sky-100 dark:bg-sky-800 py-4 px-6 rounded-md"
+		class="relative {formWidthClass} w-[90%] transition-all duration-500 bg-sky-100 dark:bg-sky-800 py-4 px-6 rounded-md"
 	>
 		<h1 class="text-2xl mb-6">{formTitle}</h1>
 		<div class="flex gap-2 mb-2">
