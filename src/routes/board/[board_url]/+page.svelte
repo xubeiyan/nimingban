@@ -1,6 +1,6 @@
 <script>
-	import { onMount } from 'svelte';
-	import { onNavigate } from '$app/navigation';
+	import { onDestroy, onMount } from 'svelte';
+	import { afterNavigate } from '$app/navigation';
 
 	import { boardStore } from '../../../store/boardStore';
 
@@ -22,11 +22,9 @@
 	$: fetchDataText = $getPostMutation.isPending ? '加载中...' : '已经到底了';
 	const getPostMutation = createMutation({
 		mutationFn: async () => {
-			const board_url = window.location.href.split('/').at(-1);
-
-			const res = await fetch(`/board/getPosts/${board_url}?from=${$boardStore.from}`).then((r) =>
-				r.json()
-			);
+			const res = await fetch(
+				`/board/getPosts/${$boardStore.boardUrl}?from=${$boardStore.from}`
+			).then((r) => r.json());
 
 			let ids = posts.map((post) => post.id);
 
@@ -84,9 +82,13 @@
 	};
 
 	// 路由切换时重新请求帖子数据
-	onNavigate(() => {
+	afterNavigate(() => {
+		// 跳转到帖子页面时不进行请求
+		const type = window.location.href.split('/').at(-2);
+		if (type != 'board') return;
+
+		const boardUrl = window.location.href.split('/').at(-1);
 		boardStore.update((b) => {
-			const boardUrl = window.location.href.split('/').at(-1);
 			return { ...b, from: 0, boardUrl };
 		});
 
@@ -96,28 +98,32 @@
 		if ($boardStore.from == 0) {
 			posts = [];
 			$getPostMutation.mutate();
-
-			// 增加observer使其能够在滚动到页面底部时触发新的请求
-			let observer = new IntersectionObserver((entries) => {
-				entries.forEach((entry) => {
-					if (entry.isIntersecting) {
-						if ($boardStore.from > $boardStore.total) {
-							return;
-						}
-						// 避免在页面加载时同时发起
-						if ($getPostMutation.isSuccess) {
-							$getPostMutation.mutate();
-						}
-					}
-				});
-			}, {});
-
-			const getMore = document.querySelector('#getMore');
-			if (getMore == undefined) return;
-
-			observer.observe(getMore);
 		}
 	});
+
+	onMount(() => {
+		// 增加observer使其能够在滚动到页面底部时触发新的请求
+		let observer = new IntersectionObserver((entries) => {
+			entries.forEach((entry) => {
+				if (entry.isIntersecting) {
+					if ($boardStore.from > $boardStore.total) {
+						return;
+					}
+					// 避免在页面加载时同时发起
+					if ($getPostMutation.isSuccess) {
+						$getPostMutation.mutate();
+					}
+				}
+			});
+		}, {});
+
+		const getMore = document.querySelector('#getMore');
+		if (getMore == undefined) return;
+
+		observer.observe(getMore);
+	});
+
+	onDestroy(() => {});
 </script>
 
 <div class="container m-auto">
