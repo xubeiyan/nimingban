@@ -12,8 +12,8 @@
 		"format": "prettier --write ."
 	},
 	"devDependencies": {
-		"@sveltejs/adapter-auto": "^3.0.0",
-		"@sveltejs/kit": "^2.0.0",
+		"@sveltejs/adapter-node": "^5.2.9",
+		"@sveltejs/kit": "^2.7.3",
 		"@sveltejs/vite-plugin-svelte": "^3.0.0",
 		"@types/eslint": "^8.56.0",
 		"autoprefixer": "^10.4.19",
@@ -32,7 +32,6 @@
 	"type": "module",
 	"dependencies": {
 		"@tanstack/svelte-query": "^5.59.0",
-		"marked": "^14.1.2",
 		"pg": "^8.11.5"
 	}
 }

@@ -1,7 +1,7 @@
 <script>
 	import AlertTriangle from '$svgIcon/alertTriangle.svelte';
 
-	export let type = 'error';
+	export const type = 'error';
 
 	export let message = null;
 
