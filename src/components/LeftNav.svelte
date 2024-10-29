@@ -12,7 +12,7 @@
 >
 	<div class="container h-full m-auto">
 		<div class="w-[15em] bg-sky-100 dark:bg-sky-800 h-full p-4">
-			<ForumList {forums} />
+			<ForumList {forums} on:click/>
 		</div>
 	</div>
 </div>

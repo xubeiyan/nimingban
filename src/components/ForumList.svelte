@@ -12,9 +12,10 @@
 		<ul class="pl-4 space-y-1">
 			{#each forum.boards as board}
 				<li>
-					<a href={`/board/${board.board_url}`} data-sveltekit-reload>
+					<a href={`/board/${board.board_url}`}>
 						<button
 							class="bg-sky-200 hover:bg-cyan-200/70 dark:bg-sky-900 dark:hover:bg-cyan-800/70 px-2 py-1 rounded-md w-full text-left"
+							on:click
 						>
 							{board.board_name}
 						</button>

@@ -1,5 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
+	import { onNavigate } from '$app/navigation';
+
 	import { boardStore } from '../../../store/boardStore';
 
 	import SendForm from '../../../components/SendForm.svelte';
@@ -15,13 +17,16 @@
 	export let data;
 
 	let posts = [];
-	let fetchDataText = '加载中...';
+	let observer = null;
 
+	$: fetchDataText = $getPostMutation.isPending ? '加载中...' : '已经到底了';
 	const getPostMutation = createMutation({
 		mutationFn: async () => {
-			const res = await fetch(
-				`/board/getPosts/${$boardStore.boardUrl}?from=${$boardStore.from}`
-			).then((r) => r.json());
+			const board_url = window.location.href.split('/').at(-1);
+
+			const res = await fetch(`/board/getPosts/${board_url}?from=${$boardStore.from}`).then((r) =>
+				r.json()
+			);
 
 			let ids = posts.map((post) => post.id);
 
@@ -68,8 +73,7 @@
 			};
 		});
 		posts = [];
-		fetchDataText = '加载中...';
-		$getPostMutation.mutateAsync();
+		$getPostMutation.mutate();
 	};
 
 	// 打开图片预览
@@ -79,9 +83,8 @@
 		imageViewer.openDialog(url);
 	};
 
-	// 获取
-
-	onMount(() => {
+	// 路由切换时重新请求帖子数据
+	onNavigate(() => {
 		boardStore.update((b) => {
 			const boardUrl = window.location.href.split('/').at(-1);
 			return { ...b, from: 0, boardUrl };
@@ -89,23 +92,31 @@
 
 		window.localStorage.setItem('board', JSON.stringify($boardStore));
 
-		//
-		let observer = new IntersectionObserver((entries) => {
-			entries.forEach((entry) => {
-				if (entry.isIntersecting) {
-					if ($boardStore.from > $boardStore.total) {
-						fetchDataText = '没有更多了';
-						return;
+		// 如果重新请求则将post重置为0
+		if ($boardStore.from == 0) {
+			posts = [];
+			$getPostMutation.mutate();
+
+			// 增加observer使其能够在滚动到页面底部时触发新的请求
+			let observer = new IntersectionObserver((entries) => {
+				entries.forEach((entry) => {
+					if (entry.isIntersecting) {
+						if ($boardStore.from > $boardStore.total) {
+							return;
+						}
+						// 避免在页面加载时同时发起
+						if ($getPostMutation.isSuccess) {
+							$getPostMutation.mutate();
+						}
 					}
-					$getPostMutation.mutateAsync();
-				}
-			});
-		}, {});
+				});
+			}, {});
 
-		const getMore = document.querySelector('#getMore');
-		if (getMore == undefined) return;
+			const getMore = document.querySelector('#getMore');
+			if (getMore == undefined) return;
 
-		observer.observe(getMore);
+			observer.observe(getMore);
+		}
 	});
 </script>
 
