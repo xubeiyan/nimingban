@@ -7,6 +7,9 @@
 	import Page from '../../routes/+page.svelte';
 	import HoriRule from '../SvelteMarked/HoriRule.svelte';
 
+	import { supportLang } from '$lib/MarkdownContent/utils';
+	import CodeBlock from '../SvelteMarked/CodeBlock.svelte';
+
 	export let content = '';
 
 	// 整体
@@ -24,11 +27,38 @@
 		let inTable = false;
 		// 在代码块区块
 		let inCodeBlock = false;
+		let codeBlockTemp = [];
 		// 在列表区块
 		let inList = false;
 		// 缓冲区
 		const inputArray = input.split('\n');
 		for (let line of inputArray) {
+			/**
+			 * codeblock 是如下形式
+			 * ```[lang]
+			 * ...
+			 * ```
+			 */
+			if (line.substring(0, 3) == '```') {
+				inTable = false;
+				inList = false;
+				inCodeBlock = !inCodeBlock;
+				// 退出了codeblock
+				if (!inCodeBlock) {
+					codeBlockTemp.push(line);
+					const codeBlockObj = codeBlockLexer(codeBlockTemp);
+					result.children.push(codeBlockObj);
+
+					codeBlockTemp = [];
+					continue;
+				}
+			}
+
+			if (inCodeBlock) {
+				codeBlockTemp.push(line);
+				continue;
+			}
+
 			const lineObj = inlineLexer(line);
 
 			result.children.push(lineObj);
@@ -37,6 +67,31 @@
 		// console.log(result.children);
 
 		return result;
+	};
+
+	const codeBlockLexer = (codeblockArray) => {
+		// console.log(codeblockArray);
+		const langText = codeblockArray[0].substring(3);
+
+		let language = '普通文本';
+
+		if (langText != '') {
+			const filtered = supportLang.filter((one) => one.name == langText);
+			if (filtered.length == 1) {
+				language = filtered[0].display;
+			}
+		}
+
+		codeblockArray.shift();
+		codeblockArray.pop();
+
+		let content = codeblockArray.join('\n');
+
+		return {
+			type: 'codeblock',
+			language,
+			content
+		};
 	};
 
 	// 返回text节点
@@ -268,6 +323,8 @@
 			<HoriRule border={one.border} />
 		{:else if one.type == 'paragraph'}
 			<Paragraph children={one.children} on:largeImage />
+		{:else if one.type == 'codeblock'}
+			<CodeBlock language={one.language} content={one.content} />
 		{/if}
 	{/each}
 </div>
