@@ -9,6 +9,8 @@
 
 	import { supportLang } from '$lib/MarkdownContent/utils';
 	import CodeBlock from '../SvelteMarked/CodeBlock.svelte';
+	import UnorderList from '../SvelteMarked/UnorderList.svelte';
+	import OrderList from '../SvelteMarked/OrderList.svelte';
 
 	export let content = '';
 
@@ -30,14 +32,16 @@
 		let codeBlockTemp = [];
 		// 在列表区块
 		let inList = false;
+		let listType = '';
+		let listTemp = [];
 		// 缓冲区
 		const inputArray = input.split('\n');
 		for (let line of inputArray) {
 			/**
 			 * codeblock 是如下形式
-			 * ```[lang]
-			 * ...
-			 * ```
+			 ```[lang]
+			 ...
+			 ```
 			 */
 			if (line.substring(0, 3) == '```') {
 				inTable = false;
@@ -59,16 +63,79 @@
 				continue;
 			}
 
+			/**
+			 * list 是如下形式
+			 - first
+			 - second
+			 - third
+			 或者如下
+			 3. 三个饼
+			 4. 四杯水
+			 5. 五根薯条
+			*/
+
+			if (['- ', '+ ', '* '].includes(line.substring(0, 2))) {
+				// 检查是否已经在order中，有要退出
+				if (inList && listType == 'order') {
+					const listObj = listLexer(listTemp, 'order');
+					result.children.push(listObj);
+					listTemp = [];
+				}
+
+				listType = 'unoreder';
+				inList = true;
+				inTable = false;
+				inCodeBlock = false;
+				listTemp.push(line);
+				continue;
+			} else if (/^\d{1,2}\. .?/.test(line)) {
+				// 检查是否已经在unorder中，有要退出
+				if (inList && listType == 'unorder') {
+					const listObj = listLexer(listTemp, 'unorder');
+					result.children.push(listObj);
+					listTemp = [];
+				}
+				listType = 'order';
+				inList = true;
+				inTable = false;
+				inCodeBlock = false;
+				listTemp.push(line);
+				continue;
+			} else {
+				inList = false;
+				// 退出了list
+				if (listTemp.length > 0) {
+					const listObj = listLexer(listTemp, listType);
+					result.children.push(listObj);
+					listTemp = [];
+				}
+				listType = '';
+			}
+
 			const lineObj = inlineLexer(line);
 
 			result.children.push(lineObj);
 		}
 
-		// console.log(result.children);
+		// 处理解析完但代码块缓存还有数据的情况
+		if (codeBlockTemp.length > 0) {
+			codeBlockTemp.push('```');
+			const codeBlockObj = codeBlockLexer(codeBlockTemp);
+			codeBlockTemp = [];
+			result.children.push(codeBlockObj);
+		}
+
+		// 处理解析完但列表块缓存还有数据的情况
+		if (listTemp.length > 0) {
+			const listObj = listLexer(listTemp, listType);
+			result.children.push(listObj);
+			listTemp = [];
+		}
 
 		return result;
 	};
 
+	// 返回codeblock节点
 	const codeBlockLexer = (codeblockArray) => {
 		// console.log(codeblockArray);
 		const langText = codeblockArray[0].substring(3);
@@ -91,6 +158,21 @@
 			type: 'codeblock',
 			language,
 			content
+		};
+	};
+
+	// 返回list节点
+	const listLexer = (tempList, listType = 'unorder') => {
+		let type = listType == 'order' ? 'orderlist' : 'unorderlist';
+		return {
+			type,
+			children: tempList.map((one) => {
+				const removePrefixItem = one.split(' ').toSpliced(0, 1).join(' ');
+				return {
+					type: 'listitem',
+					children: restInlineLexer(removePrefixItem, ['list'])
+				};
+			})
 		};
 	};
 
@@ -325,6 +407,10 @@
 			<Paragraph children={one.children} on:largeImage />
 		{:else if one.type == 'codeblock'}
 			<CodeBlock language={one.language} content={one.content} />
+		{:else if one.type == 'unorderlist'}
+			<UnorderList children={one.children} />
+		{:else if one.type == 'orderlist'}
+			<OrderList children={one.children} />
 		{/if}
 	{/each}
 </div>
