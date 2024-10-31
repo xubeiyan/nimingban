@@ -40,7 +40,7 @@
 </svelte:head>
 
 <QueryClientProvider client={queryClient}>
-	<div class="flex flex-col h-screen">
+	<div class="flex flex-col h-screen dark:[color-scheme:dark]">
 		<Header on:message={handleMessage} {leftNavOpen} />
 		<div class="h-screen relative overflow-x-hidden dark:bg-sky-900 dark:text-white">
 			<LeftNav

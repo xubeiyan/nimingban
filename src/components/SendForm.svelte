@@ -276,6 +276,7 @@
 			<button
 				class="absolute right-0 top-0 {markdownBtnClass} px-2 rounded-md hover:shadow-md"
 				on:click={toggleEdit}
+				type="button"
 			>
 				<MarkdownIcon highlight={expand} />
 			</button>
@@ -310,6 +311,7 @@
 				<button
 					class="border-2 border-slate-500 dark:border-slate-100 border-dashed hover:bg-slate-500/10 hover:dark:bg-slate-50/10 rounded-lg size-16 flex justify-center items-center"
 					on:click={openAttachSelect}
+					type="button"
 				>
 					<AddPlusIcon />
 				</button>
