@@ -22,6 +22,19 @@ const hashStringWithSalt = (salt, origin) => {
 };
 
 // 生成饼干字符串（根据index）
+/**
+ * 第一行偏移是
+ * index % tempLen 
+ * 第二行偏移是
+ * index % tempLen + 
+ * 	Math.floor(index / tempLen)
+ * 第三行偏移是
+ * index % tempLen +
+ * 	Math.floor(Math.floor(index / tempLen) / tempLen)
+ * 以此类推
+ * 生成顺序是'ZxDWTC' 'GcFDcI' 'uV0QbU'...
+ * 'GxDWTC' 'ucFDcI' 'NV0QbU'...
+ */
 const generateCookiesString = (index) => {
 	const template = [
 		'ZGuNHcDwpsObhYegLBylm8rTan34xMAiqKdVJXS6W2RCQ5EtzkvofPj79FIU01',
@@ -32,16 +45,20 @@ const generateCookiesString = (index) => {
 		'CIUX9svFNitTpLfc1zJBM2qQ30SZAjhdEmHkGewORbVPDKaxygW5748urloYn6'
 	];
 
-	let templateIndex = [];
+	let offsetArray = [];
+	const offset = index % template[0].length;
+	for (let i = 0; i < template.length; ++i) {
+		index = Math.floor(index / template[0].length);
+		const o = (offset + index) % template[0].length;
+		offsetArray.push(o);
+	}
 	
-	for (let i = template.length - 1; i >= 0; i--) {
-		const len = template[i].length;
-		const idx = index % len;
-		templateIndex.unshift(template[i][idx]);
-		index = Math.floor(index / len);
+	let resultStr = '';
+	for (let i = 0; i < template.length; ++i) {
+		resultStr += template[i][offsetArray[i]];
 	}
 
-	return templateIndex.join('');
+	return resultStr;
 };
 
 export { generateRandomSaltString, hashStringWithSalt, generateCookiesString };

@@ -3,16 +3,17 @@
 	import { afterNavigate } from '$app/navigation';
 
 	import { boardStore } from '../../../store/boardStore';
+	import { userStore } from '../../../store/userStore';
 
-	import SendForm from '../../../components/SendForm.svelte';
-	import PostContent from '../../../components/PostContent.svelte';
-	import ImageViewer from '../../../components/ImageViewer.svelte';
+	import SendForm from '$cmpns/SendForm.svelte';
+	import PostContent from '$cmpns/PostContent.svelte';
+	import ImageViewer from '$cmpns/ImageViewer.svelte';
 
 	import { createMutation } from '@tanstack/svelte-query';
-	import SecondaryBtn from '../../../components/SecondaryBtn.svelte';
-	import PrimaryBtn from '../../../components/PrimaryBtn.svelte';
-	import ErrorPage from '../../../components/ErrorPage.svelte';
-	import CommentArea from '../../../components/CommentArea.svelte';
+	import SecondaryBtn from '$cmpns/SecondaryBtn.svelte';
+	import PrimaryBtn from '$cmpns/PrimaryBtn.svelte';
+	import ErrorPage from '$cmpns/ErrorPage.svelte';
+	import CommentArea from '$cmpns/CommentArea.svelte';
 
 	export let data;
 
