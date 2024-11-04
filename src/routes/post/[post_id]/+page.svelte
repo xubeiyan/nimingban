@@ -132,7 +132,7 @@
 	});
 </script>
 
-<div class="container m-auto">
+<div class="px-2 md:px-0 grow container m-auto">
 	<div class="mt-4">
 		<a href={`/board/${$boardStore.boardUrl}`}>
 			<PrimaryBtn>

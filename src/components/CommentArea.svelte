@@ -25,11 +25,11 @@
 	});
 </script>
 
-<div class="rounded-b-md bg-slate-200 p-4 dark:bg-sky-700 shadow-inner">
+<div class="rounded-b-md bg-slate-200 px-4 py-2 dark:bg-sky-700 shadow-inner">
 	{#if $getCommentMutation.isPending}
 		<div class="flex gap-2 items-center">
 			<LoadingIcon />
-			<span> 正在获取最新回复</span>
+			<span>正在获取最新回复</span>
 		</div>
 	{:else if $getCommentMutation.isSuccess}
 		{#if comments.length == 0}

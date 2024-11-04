@@ -130,7 +130,7 @@
 	onDestroy(() => {});
 </script>
 
-<div class="container m-auto">
+<div class="px-2 md:px-0 container grow mx-auto">
 	{#if data.type == 'error'}
 		<ErrorPage message="访问的地址不存在" />
 	{:else}
@@ -149,7 +149,7 @@
 	{#each posts as post}
 		<div
 			class="rounded-t-md bg-slate-100 dark:bg-sky-800
-			px-4 py-2 mt-4 shadow-inner"
+			px-4 py-2 mt-2 shadow-inner"
 			id="id-{post.id}"
 		>
 			<div class="flex justify-between items-end">
