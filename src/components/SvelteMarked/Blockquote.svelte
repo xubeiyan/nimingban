@@ -5,7 +5,7 @@
 	export let children = [];
 </script>
 
-<blockquote class="border-l-8 border-l-blue-400 pl-4">
+<blockquote class="border-l-8 border-l-blue-300 pl-4 py-1">
 	{#each children as child}
 		{#if child.type == 'text'}
 			<Text content={child.content} />

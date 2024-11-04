@@ -12,7 +12,7 @@
 <label class="grow flex flex-col gap-1 mt-3">
 	<span>{label}</span>
 	{#if replyContent != null}
-		<p class="border border-slate-400 rounded-md px-2">{replyContent}</p>
+		<p class="border border-slate-400 rounded-md px-2 py-1">{replyContent}</p>
 	{/if}
 	<textarea class="{inputStyle} px-2 py-1 grow" rows="10" bind:value on:input></textarea>
 </label>

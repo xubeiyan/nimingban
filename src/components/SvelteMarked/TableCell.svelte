@@ -11,7 +11,7 @@
 	$: tag = type == 'header' ? 'th' : 'td';
 </script>
 
-<svelte:element this={tag} class="border border-slate-400 px-2 py-0.5">
+<svelte:element this={tag} class="border border-slate-500 dark:border-slate-200 px-2 py-0.5">
 	{#each children as c}
 		{#if c.type == 'text' && c.content != ''}
 			<Text content={c.content} />
