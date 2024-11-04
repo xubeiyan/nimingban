@@ -21,7 +21,7 @@
 </script>
 
 <div
-	class="fixed inset-0 transition duration-500 ease-out
+	class="fixed inset-0 transition duration-500
 	z-10 {showStyle} backdrop-blur-sm bg-slate-500/50
 	flex justify-center items-center p-8"
 	bind:this={dialog}

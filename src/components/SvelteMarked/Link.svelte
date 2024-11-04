@@ -6,4 +6,6 @@
 	$: target = url[0] == '#' ? '_self' : '_blank';
 </script>
 
-<a class="text-blue-500 dark:text-blue-200 underline-offset-2 hover:underline" {target} href={url}>{text}</a>
+<a class="text-blue-500 dark:text-blue-200 underline-offset-2 hover:underline" {target} href={url}
+	>{text}</a
+>

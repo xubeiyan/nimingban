@@ -52,7 +52,7 @@
 			/>
 			<LoginAndRegister open={loginAndRegistermOpen} on:message={handleMessage} />
 			<slot />
+			<Footer />
 		</div>
-		<Footer />
 	</div>
 </QueryClientProvider>
