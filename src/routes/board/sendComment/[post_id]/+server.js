@@ -106,9 +106,13 @@ export const POST = async ({ locals, params, request }) => {
 		});
 	}
 
-	if (commentReplyContent != undefined) {
+	// commentReplyContent为null会导致回复前面有null字样
+	console.log(replaceImageUrlContent);
+
+	if (commentReplyContent != undefined && commentReplyContent != 'null') {
 		replaceImageUrlContent = `${commentReplyContent}\n\n${replaceImageUrlContent}`;
 	}
+
 
 	// 向comment插入新的一行
 	const commentInsertQuery = {

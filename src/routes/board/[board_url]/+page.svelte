@@ -89,6 +89,9 @@
 		if (type != 'board') return;
 
 		const boardUrl = window.location.href.split('/').at(-1);
+		if (boardUrl == 'null') {
+			return;
+		}
 		boardStore.update((b) => {
 			return { ...b, from: 0, boardUrl };
 		});

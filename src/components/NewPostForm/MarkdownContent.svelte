@@ -11,6 +11,7 @@
 	import CodeBlock from '../SvelteMarked/CodeBlock.svelte';
 	import UnorderList from '../SvelteMarked/UnorderList.svelte';
 	import OrderList from '../SvelteMarked/OrderList.svelte';
+	import Table from '../SvelteMarked/Table.svelte';
 
 	export let content = '';
 
@@ -27,6 +28,8 @@
 
 		// 在表格区块
 		let inTable = false;
+		let hasHeader = false;
+		let tableTemp = [];
 		// 在代码块区块
 		let inCodeBlock = false;
 		let codeBlockTemp = [];
@@ -74,7 +77,7 @@
 			 5. 五根薯条
 			*/
 
-			if (['- ', '+ ', '* '].includes(line.substring(0, 2))) {
+			if (new Set(['- ', '+ ', '* ']).has(line.substring(0, 2))) {
 				// 检查是否已经在order中，有要退出
 				if (inList && listType == 'order') {
 					const listObj = listLexer(listTemp, 'order');
@@ -112,6 +115,39 @@
 				listType = '';
 			}
 
+			/**
+			 * table是如下形式
+			 | head1 | head2 | head3 |
+			 | ----- | ----- | ----- |
+			 | content1 | content2 | content3 |
+			 */
+			if (line.slice(0, 1) == '|' && line.slice(-1) == '|') {
+				if (inTable == false) {
+					inTable = true;
+				}
+
+				if (hasHeader) {
+					tableTemp.push(tableLineLexer(line, 'body'));
+				} else {
+					tableTemp.push(tableLineLexer(line, 'header'));
+					hasHeader = true;
+				}
+				continue;
+			}
+
+			if (inTable) {
+				// 必须是三个或以上才会渲染成表格
+				if (tableTemp.length >= 3) {
+					const tableObj = tableLexer(tableTemp);
+					result.children.push(tableObj);
+				} else {
+					result.children.push(...tableTemp.map((one) => inlineLexer(one.rawText)));
+				}
+				inTable = false;
+				hasHeader = false;
+				tableTemp = [];
+			}
+
 			// 是普通一行
 			const lineObj = inlineLexer(line);
 
@@ -132,6 +168,20 @@
 			result.children.push(listObj);
 			listTemp = [];
 		}
+
+		// 处理解析完成但表格缓存还有数据的情况
+		// 至少需要三行才会渲染表格
+		if (tableTemp.length >= 3) {
+			const tableObj = tableLexer(tableTemp);
+			result.children.push(tableObj);
+			inTable = false;
+			hasHeader = false;
+			tableTemp = [];
+		} else {
+			result.children.push(...tableTemp.map((one) => inlineLexer(one.rawText)));
+		}
+
+		// console.log(result.children);
 
 		return result;
 	};
@@ -175,6 +225,48 @@
 				};
 			})
 		};
+	};
+
+	// 返回table行节点
+	const tableLineLexer = (tableLine, lineType = 'body') => {
+		const tableRow = tableLine.split('|');
+		const tableRowObj = {
+			type: 'tablerow',
+			rawText: tableLine,
+			lineType,
+			children: []
+		};
+
+		tableRow
+			.map((one) => one.trim())
+			.filter((one) => one != '')
+			.forEach((one) => {
+				if (/^-+$/.test(one)) {
+					tableRowObj.lineType = 'line';
+				}
+				tableRowObj.children.push(restInlineLexer(one));
+			});
+
+		return tableRowObj;
+	};
+
+	// 返回table节点
+	const tableLexer = (tableTemp) => {
+		const tableObj = {
+			type: 'table',
+			header: [],
+			body: []
+		};
+
+		for (let line of tableTemp) {
+			if (line.lineType == 'header') {
+				tableObj.header.push(line);
+			} else if (line.lineType == 'body') {
+				tableObj.body.push(line);
+			}
+		}
+
+		return tableObj;
 	};
 
 	// 返回text节点
@@ -412,6 +504,8 @@
 			<UnorderList children={one.children} />
 		{:else if one.type == 'orderlist'}
 			<OrderList children={one.children} />
+		{:else if one.type == 'table'}
+			<Table header={one.header} body={one.body} />
 		{/if}
 	{/each}
 </div>
