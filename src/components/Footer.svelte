@@ -8,7 +8,7 @@
 		<div class="inline-flex gap-1 items-center">
 			<CopyleftIcon />
 			<span>2024</span>
-			<span>nimingban </span>
+			<a href="/" class="hover:underline underline-offset-4">nimingban </a>
 			<span class="text-slate-500 dark:text-slate-300 hidden md:inline">An anonymous board created with Svelte and </span>
 			<span class="text-red-400 hidden md:inline">♥</span>
 		</div>

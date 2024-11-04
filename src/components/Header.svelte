@@ -70,7 +70,7 @@
 			>
 				<WidgetIcon open={leftNavOpen} />
 			</button>
-			<span>匿名版</span>
+			<a href="/" class="hover:underline underline-offset-4">匿名版</a>
 		</div>
 		<div class="flex gap-2 items-center">
 			{#if $userStore.username != null}
