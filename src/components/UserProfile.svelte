@@ -2,14 +2,13 @@
 	import CloseBtn from './Dialog/CloseBtn.svelte';
 	import TextInput from './UserProfile/TextInput.svelte';
 	import PasswordInput from './UserProfile/PasswordInput.svelte';
+	import InputLabel from './UserProfile/InputLabel.svelte';
 
 	import CheckIcon from '$svgIcon/check.svelte';
 	import LoadingIcon from '$svgIcon/loading.svelte';
 
 	import { userStore } from '../store/userStore';
-	import InputLabel from './UserProfile/InputLabel.svelte';
 	import { createMutation } from '@tanstack/svelte-query';
-	import Loading from '$svgIcon/loading.svelte';
 
 	let show = false;
 
@@ -18,14 +17,15 @@
 	};
 
 	const closeDialog = () => {
-		show = false;
 		form = {
 			oldPass: '',
 			newPass: '',
 			confirm: ''
 		};
+
 		error = null;
 		success = null;
+		show = false;
 	};
 
 	let form = {
@@ -168,7 +168,7 @@
 				</div>
 				<div class="flex justify-end items-center mt-4 gap-2">
 					{#if error != null}
-						<span class="text-red-500">{error}</span>
+						<span class="text-red-500 dark:text-red-400">{error}</span>
 					{/if}
 					{#if success != null}
 						<span class="text-green-500">{success}</span>

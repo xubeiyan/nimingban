@@ -12,6 +12,7 @@
     border-slate-500 focus-within:border-slate-900
 	dark:border-cyan-100 focus-within:dark:border-cyan-200
     outline-none text-slate-500 dark:text-cyan-100"
+		{value}
 		on:input
 	/>
 	{#if value != ''}
