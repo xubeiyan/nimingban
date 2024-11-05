@@ -73,10 +73,11 @@
 
 		// 登录成功
 		if (res.type == 'OK') {
-			const { username, type, token, cookies } = res.user;
+			const { username, type, createTime, token, cookies } = res.user;
 
 			userStore.set({
 				username,
+				createTime,
 				type,
 				token,
 				cookies
@@ -87,6 +88,7 @@
 				'user',
 				JSON.stringify({
 					username,
+					createTime,
 					type,
 					token,
 					cookies

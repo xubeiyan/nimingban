@@ -1,5 +1,5 @@
 <script>
-	import CloseIcon from '$svgIcon/close.svelte';
+	import CloseBtn from './Dialog/CloseBtn.svelte';
 
 	let dialog = null;
 	let imageUrl = null;
@@ -26,15 +26,6 @@
 	flex justify-center items-center p-8"
 	bind:this={dialog}
 >
-	<button
-		class="absolute right-2 top-2 rounded-full size-[2em] bg-red-300 dark:bg-red-700
-flex justify-center items-center
-hover:outline outline-offset-1 outline-red-500"
-		on:click={closeDialog}
-	>
-		<CloseIcon />
-	</button>
-	
+	<CloseBtn place="inBorder" on:click={closeDialog} />
 	<img class="max-w-full max-h-full" alt src={imageUrl} />
-
 </div>

@@ -10,8 +10,11 @@
 	import { createEventDispatcher, onMount } from 'svelte';
 	import LoginoutButton from './Header/LoginoutButton.svelte';
 	import CookiesStatusButton from './Header/CookiesStatusButton.svelte';
+	import UserProfile from './UserProfile.svelte';
 
 	export let leftNavOpen;
+
+	let userProfile = null;
 
 	const dispatch = createEventDispatcher();
 
@@ -40,6 +43,12 @@
 
 		window.localStorage.removeItem('usingCookies');
 		window.localStorage.removeItem('user');
+	};
+
+	// 打开UserProfile
+	const openUserProfile = () => {
+		if (userProfile == null) return;
+		userProfile.openDialog();
 	};
 
 	onMount(() => {
@@ -81,6 +90,7 @@
 					bg-transparent
 					hover:bg-sky-200 hover:dark:bg-sky-800
 					 rounded-md px-2 h-[2em]"
+					on:click={openUserProfile}
 				>
 					<UserAvatarIcon />
 					<span>{$userStore.username}</span>
@@ -97,3 +107,4 @@
 		</div>
 	</div>
 </nav>
+<UserProfile bind:this={userProfile} />
