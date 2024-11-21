@@ -49,6 +49,14 @@
 							<span class="dark:text-red-100 italic">邮箱：{comment.poster_email}</span>
 							<span>写于：{comment.comment_time}</span>
 							<span class="dark:text-indigo-100">饼干：{comment.cookies_content}</span>
+							{#if comment.edit_time != null}
+								<span
+									class="
+									bg-red-100
+									dark:text-fuchsia-100 dark:bg-violet-700/20
+									rounded-md px-2 py-1">编辑于：{comment.edit_time}</span
+								>
+							{/if}
 						</p>
 						<div class="border border-cyan-600 mt-1 py-2 px-4 rounded-sm">
 							<PostContent content={comment.content} on:largeImage />

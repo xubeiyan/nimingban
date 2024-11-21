@@ -142,9 +142,11 @@
 		>
 			<PostContent content={data.intro} />
 		</p>
-		<p>
-			<PrimaryBtn on:click={showNewPostForm}>发新串</PrimaryBtn>
-		</p>
+		{#if $userStore.type == 'user'}
+			<p>
+				<PrimaryBtn on:click={showNewPostForm}>发新串</PrimaryBtn>
+			</p>
+		{/if}
 	{/if}
 	{#each posts as post}
 		<div
@@ -161,6 +163,14 @@
 					<span class="dark:text-red-100 italic">邮箱：{post.email}</span>
 					<span>写于：{post.post_time}</span>
 					<span class="dark:text-indigo-100">饼干: {post.cookies_content}</span>
+					{#if post.edit_time != null}
+						<span
+							class="
+						bg-red-100
+						dark:text-fuchsia-100 dark:bg-violet-700/20
+						rounded-md px-2 py-1">编辑于：{post.edit_time}</span
+						>
+					{/if}
 				</p>
 				<a href="/post/{post.id}">
 					<SecondaryBtn>详情</SecondaryBtn>

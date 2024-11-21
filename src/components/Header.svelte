@@ -83,7 +83,9 @@
 		</div>
 		<div class="flex gap-2 items-center">
 			{#if $userStore.username != null}
-				<CookiesStatusButton />
+				{#if $userStore.type == 'user'}
+					<CookiesStatusButton />
+				{/if}
 				<button
 					class="flex gap-1 items-center
 					border border-sky-700 dark:border-sky-100

@@ -1,5 +1,4 @@
 // 验证是否携带Authorization字段且是否合理
-
 import { verifyJWTToken } from '$lib/jwt.js';
 import { JWTSECRET } from '$env/static/private';
 
@@ -53,6 +52,7 @@ export const JWTAuth = (req) => {
 
 	return {
 		type: 'ok',
-		username: payload.username
+		username: payload.username,
+		userType: payload.type
 	};
 };

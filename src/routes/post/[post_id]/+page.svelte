@@ -9,8 +9,11 @@
 	import BackIcon from '$svgIcon/back.svelte';
 
 	import { boardStore } from '../../../store/boardStore';
+	import { userStore } from '../../../store/userStore';
+
 	import SecondaryBtn from '../../../components/SecondaryBtn.svelte';
 	import PrimaryBtn from '../../../components/PrimaryBtn.svelte';
+	import SuperOperationBtn from '$cmpns/SuperOperationBtn.svelte';
 
 	let imageViewer = null;
 	let newCommentForm = null;
@@ -27,16 +30,26 @@
 		imageViewer.openDialog(url);
 	};
 
+	// 回复对话框类型
+	let oprType = 'comment';
+
 	// 打开评论框
 	const openCommentForm = (fromCommentId) => {
 		if (newCommentForm == null) return;
 		if (fromCommentId != undefined) {
-			const content = `> 回复 [此串](#id-${fromCommentId})`;
-			newCommentForm.showForm({ content });
+			const reply = `> 回复 [此串](#id-${fromCommentId})`;
+			newCommentForm.showForm({ reply });
 			return;
 		}
 
 		newCommentForm.showForm();
+	};
+
+	// 打开编辑对话框
+	const openEditForm = (content, postId) => {
+		if (newCommentForm == null) return;
+		oprType = 'edit';
+		newCommentForm.showForm({ content, postId });
 	};
 
 	//
@@ -92,6 +105,43 @@
 
 			$getCommentMutation.mutateAsync();
 		}
+	};
+
+	// 获取单条评论的mutation
+	const getSingleCommentMutation = createMutation({
+		mutationFn: async (commentId) => {
+			const res = await fetch(`/comment/single/${commentId}`).then((r) => r.json());
+
+			if (res.type != 'ok') return [];
+
+			return res.comment;
+		}
+	});
+
+	// 处理更新评论
+	const handleUpdateComment = async (e) => {
+		const prefixCommentId = e.detail;
+		const commentId = prefixCommentId.split('_')[1];
+
+		if (commentId == undefined) return;
+		const updatedComment = await $getSingleCommentMutation.mutateAsync(commentId);
+
+		if (updatedComment == []) return;
+
+		const filtered = comments.filter((c) => c.id == updatedComment.id);
+
+		if (filtered.length != 1) return;
+
+		let { poster_name, poster_email, title, content, edit_time } =
+			updatedComment;
+
+		filtered[0].content = content;
+		filtered[0].edit_time = edit_time;
+		filtered[0].poster_email = poster_email;
+		filtered[0].poster_name = poster_name;
+		filtered[0].title = title;
+
+		comments = comments;
 	};
 
 	// 是否post_author
@@ -151,18 +201,29 @@
 				<span class="dark:text-yellow-100">作者：{data.post.author}</span>
 				<span class="dark:text-red-100 italic">邮箱：{data.post.email}</span>
 				<span>写于：{data.post.post_time}</span>
-				{#if data.post.edit_time != null}
-					<span>编辑于：{data.post.edit_time}</span>
-				{/if}
 				<span class="dark:text-indigo-100">饼干: {data.post.cookies_content}</span>
+				{#if data.post.edit_time != null}
+					<span
+						class="
+					bg-red-100
+					dark:text-fuchsia-100 dark:bg-violet-700/20
+					rounded-md px-2 py-1">编辑于：{data.post.edit_time}</span
+					>
+				{/if}
 			</p>
-			{#if data.post.status == 'repliable'}
-				<SecondaryBtn on:click={() => openCommentForm()}>回复</SecondaryBtn>
-			{:else if data.post.status == 'readonly'}
-				<span
-					class="shadow-inner shadow-slate-300 dark:shadow-slate-900 rounded-md px-2 py-1 bg-orange-100 dark:bg-orange-800"
-					>此串不允许回复</span
+			{#if $userStore.type == 'admin'}
+				<SuperOperationBtn on:click={() => openEditForm(data.post.content, `post_${data.post.id}`)}
+					>编辑</SuperOperationBtn
 				>
+			{:else if $userStore.type == 'user'}
+				{#if data.post.status == 'repliable'}
+					<SecondaryBtn on:click={() => openCommentForm()}>回复</SecondaryBtn>
+				{:else if data.post.status == 'readonly'}
+					<span
+						class="shadow-inner shadow-slate-300 dark:shadow-slate-900 rounded-md px-2 py-1 bg-orange-100 dark:bg-orange-800"
+						>此串不允许回复</span
+					>
+				{/if}
 			{/if}
 		</div>
 		<div class="border border-cyan-600 mt-2 py-2 px-4 rounded-sm">
@@ -180,9 +241,6 @@
 					<span class="dark:text-yellow-100">作者：{comment.poster_name}</span>
 					<span class="dark:text-red-100 italic">邮箱：{comment.poster_email}</span>
 					<span>写于：{comment.comment_time}</span>
-					{#if comment.edit_time != null}
-						<span>编辑于：{comment.edit_time}</span>
-					{/if}
 					<span class="dark:text-indigo-100">饼干: {comment.cookies_content} </span>
 					{#if post_author(comment.cookies_content) != ''}
 						<span
@@ -191,13 +249,27 @@
 							{post_author(comment.cookies_content)}
 						</span>
 					{/if}
+					{#if comment.edit_time != null}
+						<span
+							class="
+						bg-red-100
+						dark:text-fuchsia-100 dark:bg-violet-700/20
+						rounded-md px-2 py-1">编辑于：{comment.edit_time}</span
+						>
+					{/if}
 				</p>
-				{#if data.post.status == 'repliable'}
-					<SecondaryBtn on:click={() => openCommentForm(comment.id)}>回复</SecondaryBtn>
-				{:else if data.post.status == 'readonly'}
-					<span class="shadow-inner rounded-md px-2 py-1 bg-orange-100 dark:bg-orange-800"
-						>此串不允许回复</span
+				{#if $userStore.type == 'admin'}
+					<SuperOperationBtn on:click={() => openEditForm(comment.content, `comment_${comment.id}`)}
+						>编辑</SuperOperationBtn
 					>
+				{:else if $userStore.type == 'user'}
+					{#if data.post.status == 'repliable'}
+						<SecondaryBtn on:click={() => openCommentForm(comment.id)}>回复</SecondaryBtn>
+					{:else if data.post.status == 'readonly'}
+						<span class="shadow-inner rounded-md px-2 py-1 bg-orange-100 dark:bg-orange-800"
+							>此串不允许回复</span
+						>
+					{/if}
 				{/if}
 			</div>
 			<div class="border border-cyan-600 mt-2 py-2 px-4 rounded-sm">
@@ -212,5 +284,10 @@
 		</div>
 	{/if}
 </div>
-<SendForm bind:this={newCommentForm} type="comment" on:sendComment={handleSendComment} />
+<SendForm
+	bind:this={newCommentForm}
+	type={oprType}
+	on:sendComment={handleSendComment}
+	on:edit={handleUpdateComment}
+/>
 <ImageViewer bind:this={imageViewer} />

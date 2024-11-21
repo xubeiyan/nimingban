@@ -25,6 +25,7 @@ export const GET = async ({ locals, params, url }) => {
 	const commentSearchQuery = {
 		text: `SELECT c.id, c.poster_name, c,poster_email, c.title, c.content, 
         to_char(c.post_timestamp, 'YYYY-MM-DD HH24:MI:SS') AS comment_time,
+		to_char(c.edit_timestamp, 'YYYY-MM-DD HH24:MI:SS') AS edit_time,
         cookies.content AS cookies_content
         FROM comment AS c LEFT JOIN cookies ON c.poster_cookies_id = cookies.id
         WHERE c.belong_post_id = $1 
@@ -39,7 +40,16 @@ export const GET = async ({ locals, params, url }) => {
 
 	if (commentSearchResult.rowCount > 0) {
 		commentSearchResult.rows.forEach((one) => {
-			const { id, poster_name, poster_email, title, content, comment_time, cookies_content } = one;
+			const {
+				id,
+				poster_name,
+				poster_email,
+				title,
+				content,
+				comment_time,
+				edit_time,
+				cookies_content
+			} = one;
 
 			comments.push({
 				id,
@@ -48,6 +58,7 @@ export const GET = async ({ locals, params, url }) => {
 				title: title == 'null' ? '无标题' : title,
 				content,
 				comment_time,
+				edit_time,
 				cookies_content: cookies_content == null ? '神秘饼干' : cookies_content
 			});
 		});

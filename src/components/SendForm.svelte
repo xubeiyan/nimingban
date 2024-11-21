@@ -17,7 +17,9 @@
 	const dispatch = createEventDispatcher();
 
 	export let type = 'post';
-	$: formTitle = type == 'post' ? '发新串' : '回复串';
+	export let postId = null;
+
+	$: formTitle = type == 'post' ? '发新串' : type == 'edit' ? `编辑串` : '回复串';
 
 	let show = false;
 	$: showStyle = show ? '' : 'translate-y-[-100%]';
@@ -121,6 +123,14 @@
 				sendResponseError = {
 					text: `${verb}太快了，请等待 ${res.extra} 秒后重试`
 				};
+			} else if (res.errorCode == 'OPERATION_NOT_ALLOWED') {
+				sendResponseError = {
+					text: `当前用户不允许编辑串或回复`
+				};
+			} else if (res.errorCode == 'POST_OR_COMMENT_ID_INVALID') {
+				sendResponseError = {
+					text: `串或回复的ID不正确`
+				};
 			}
 
 			sendBtnStatus = 'failed';
@@ -135,6 +145,8 @@
 		} else if (type == 'comment') {
 			// 发送回帖消息
 			dispatch('sendComment');
+		} else if (type == 'edit') {
+			dispatch('edit', postId);
 		}
 
 		// 清空发帖部分
@@ -184,11 +196,13 @@
 				};
 			}
 
-			// 发串和回复串不同
+			// 发串，回复，编辑串不同
 			let url = `/board/sendPost/${$boardStore.boardUrl}`;
 			if (type == 'comment') {
 				const urlArray = window.location.href.split('/');
 				url = `/board/sendComment/${urlArray.at(-1)}`;
+			} else if (type == 'edit') {
+				url = `/board/editPostOrComment/${postId}`;
 			}
 
 			const res = await fetch(url, {
@@ -218,8 +232,11 @@
 	};
 
 	export const showForm = (params) => {
-		if (params != undefined && params.content != undefined) {
-			post.commentReplyContent = params.content;
+		if (params != undefined && params.reply != undefined) {
+			post.commentReplyContent = params.reply;
+		} else if (params != undefined && params.content != undefined && params.postId != undefined) {
+			post.content = params.content;
+			postId = params.postId;
 		}
 		show = true;
 	};
@@ -242,7 +259,7 @@
 </script>
 
 <div
-	class="z-10 fixed inset-0 {showStyle} transition duration-500 bg-gray-300/50 dark:bg-gray-100/30 
+	class="z-10 fixed inset-0 {showStyle} transition duration-500 bg-gray-300/50 dark:bg-gray-100/30
 	flex justify-center items-center"
 >
 	<form
@@ -308,9 +325,11 @@
 						on:insertImageToPost={handleInsertImageToPost}
 					/>
 				{/each}
+
 				<button
 					class="border-2 border-slate-500 dark:border-slate-100 border-dashed hover:bg-slate-500/10 hover:dark:bg-slate-50/10 rounded-lg size-16 flex justify-center items-center"
 					on:click={openAttachSelect}
+					disabled={type == 'edit'}
 					type="button"
 				>
 					<AddPlusIcon />
