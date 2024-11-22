@@ -40,9 +40,9 @@
 </svelte:head>
 
 <QueryClientProvider client={queryClient}>
-	<div class="flex flex-col h-screen dark:[color-scheme:dark]">
+	<div class="flex flex-col h-screen dark:[color-scheme:dark] dark:text-white">
 		<Header on:message={handleMessage} {leftNavOpen} />
-		<div class="flex flex-col grow overflow-x-hidden dark:bg-sky-900 dark:text-white">
+		<div class="flex flex-col overflow-x-hidden grow dark:bg-sky-900">
 			<LeftNav
 				open={leftNavOpen}
 				forums={data.forums}

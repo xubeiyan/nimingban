@@ -3,7 +3,7 @@
 	height="1.25em"
 	viewBox="0 0 24 24"
 	fill="none"
-	class="stroke-slate-900 dark:stroke-slate-100"
+	class="stroke-slate-500 dark:stroke-slate-100"
 	xmlns="http://www.w3.org/2000/svg"
 >
 	<path

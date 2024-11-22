@@ -1,6 +1,10 @@
+<script>
+	export let size = '1em';
+</script>
+
 <svg
-	width="1em"
-	height="1em"
+	width={size}
+	height={size}
 	class="stroke-slate-800 dark:stroke-slate-100"
 	viewBox="0 0 24 24"
 	fill="none"
