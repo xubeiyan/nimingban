@@ -4,7 +4,7 @@ export const load = async ({ locals }) => {
 	const result = await dbconn.query(
 		`SELECT 
             s.id AS section_id, s.section_name, 
-            b.id AS board_id, b.name AS board_name, b.url_name, b.intro, b.order 
+            b.id AS board_id, b.min_post_second, b.access_type, b.name AS board_name, b.url_name, b.intro, b.order 
         FROM section AS s LEFT JOIN board AS b ON s.id = b.parent_section_id ORDER BY b.order;`
 	);
 	// 没有则返回空
@@ -60,6 +60,9 @@ export const load = async ({ locals }) => {
 				board_id: one.board_id,
 				board_name: one.board_name,
 				board_url: one.url_name,
+				order: one.order,
+				min_post_second: one.min_post_second,
+				access_type: one.access_type,
 				intro: one.intro
 			});
 		}

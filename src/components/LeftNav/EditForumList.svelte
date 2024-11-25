@@ -3,6 +3,7 @@
 	import PlusIcon from '$svgIcon/plus.svelte';
 
 	import SingleSection from './EditForumList/SingleSection.svelte';
+	import NewSection from './EditForumList/NewSection.svelte';
 
 	let open = false;
 	let forums = [];
@@ -16,6 +17,7 @@
 		forums = [];
 		open = false;
 	};
+
 	$: showStyle = open ? '' : 'hidden';
 
 	const handleUpdate = (e) => {
@@ -25,7 +27,9 @@
 			const filtered = forums.filter((section) => section.section_id == section_id);
 			if (filtered.length != 1) return;
 			filtered[0].section_name_new = value;
-		} else if (['board_name', 'board_url', 'intro'].includes(type)) {
+		} else if (
+			['board_name', 'board_url', 'intro', 'min_post_second', 'access_type'].includes(type)
+		) {
 			const filteredSection = forums.filter((s) => s.section_id == section_id);
 
 			if (filteredSection.length != 1) return;
@@ -38,6 +42,10 @@
 				filtered[0].board_url_new = value;
 			} else if (type == 'intro') {
 				filtered[0].intro_new = value;
+			} else if (type == 'min_post_second') {
+				filtered[0].min_post_second_new = value;
+			} else if (type == 'access_type') {
+				filtered[0].access_type_new = value;
 			}
 		}
 		forums = forums;
@@ -50,7 +58,9 @@
 
 			if (filtered.length != 1) return;
 			filtered[0].section_name_new = undefined;
-		} else if (['board_name', 'board_url', 'intro'].includes(type)) {
+		} else if (
+			['board_name', 'board_url', 'intro', 'min_post_second', 'access_type'].includes(type)
+		) {
 			const filteredSection = forums.filter((s) => s.section_id == section_id);
 
 			if (filteredSection.length != 1) return;
@@ -63,6 +73,10 @@
 				filtered[0].board_url_new = undefined;
 			} else if (type == 'intro') {
 				filtered[0].intro_new = undefined;
+			} else if (type == 'min_post_second') {
+				filtered[0].min_post_second_new = undefined;
+			} else if (type == 'access_type') {
+				filtered[0].access_type_new = undefined;
 			}
 		}
 		forums = forums;
@@ -109,6 +123,27 @@
 
 		forums = forums;
 	};
+
+	const handleTempBoardOpr = (e) => {
+		const { type, section_id, board } = e.detail;
+		const filtered = forums.filter((s) => s.section_id == section_id);
+		if (filtered.length != 1) return;
+
+		if (type == 'add') {
+			filtered[0].boards.push({
+				board_id: board.id,
+				board_name: board.name,
+				board_url: board.url,
+				intro: board.intro
+			});
+		} else if (type == 'delete') {
+			filtered[0].boards = filtered[0].boards.filter((b) => b.board_id != board.id);
+		}
+
+		forums = forums;
+	};
+
+	let sectionAdd = null;
 </script>
 
 <div
@@ -119,18 +154,30 @@
 		<CloseIcon />
 	</button>
 	<h1 class="text-2xl my-4">版块管理</h1>
-	<!-- {JSON.stringify(forums)} -->
+	{JSON.stringify(forums)}
 	<ul class="space-y-1 max-h-full">
 		{#each forums as forum}
-			<SingleSection {forum} on:undo={handleUndo} on:update={handleUpdate} on:move={handleMove} />
+			<SingleSection
+				{forum}
+				on:undo={handleUndo}
+				on:update={handleUpdate}
+				on:move={handleMove}
+				on:tempBoard={handleTempBoardOpr}
+			/>
 		{/each}
+		<li
+			class="w-full h-[4em]
+        bg-violet-200/70 dark:bg-indigo-400/30
+        hover:bg-violet-200 dark:hover:bg-indigo-400/50
+        rounded-md mt-1"
+		>
+			{#if sectionAdd == null}
+				<button class="w-full h-full flex justify-center items-center">
+					<PlusIcon size="1.5em" />
+				</button>
+			{:else}
+				<NewSection />
+			{/if}
+		</li>
 	</ul>
-	<button
-		class="flex justify-center items-center w-full h-[4em]
-    bg-violet-200/70 dark:bg-indigo-400/30
-    hover:bg-violet-200 dark:hover:bg-indigo-400/50
-    rounded-md mt-1"
-	>
-		<PlusIcon size="1.5em" />
-	</button>
 </div>

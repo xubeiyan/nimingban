@@ -1,12 +1,15 @@
 <script>
 	export let value = null;
+	export let suffix = null;
 </script>
 
-<input
-	type="text"
-	bind:value
-	class="grow bg-slate-100 dark:bg-slate-600 px-2 py-1 rounded-md
+<div
+	class="grow flex bg-slate-100 dark:bg-slate-600 px-2 py-1 rounded-md
     shadow-inner shadow-slate-300 dark:shadow-slate-700
-    focus-within:outline-none focus-within:bg-white dark:focus-within:bg-black"
-	on:input
-/>
+     focus-within:bg-white dark:focus-within:bg-black"
+>
+	<input type="text" bind:value on:input class="grow focus-within:outline-none" />
+	{#if suffix != null}
+		<span>{suffix}</span>
+	{/if}
+</div>

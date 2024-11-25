@@ -1,6 +1,6 @@
 <script>
 	export let turn = 0;
-	$: style = turn == 90 ? 'rotate-90' : '';
+	$: style = turn == 90 ? 'rotate-90' : turn == -90 ? '-rotate-90' : '';
 </script>
 
 <svg
