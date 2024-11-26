@@ -4,38 +4,43 @@ export const load = async ({ locals }) => {
 	const result = await dbconn.query(
 		`SELECT 
             s.id AS section_id, s.section_name, 
-            b.id AS board_id, b.min_post_second, b.access_type, b.name AS board_name, b.url_name, b.intro, b.order 
-        FROM section AS s LEFT JOIN board AS b ON s.id = b.parent_section_id ORDER BY b.order;`
+            b.name AS board_name, b.url_name, b.intro
+        FROM section AS s LEFT JOIN board AS b ON 
+			b.access_type IN ('all', 'view_only') AND s.id = b.parent_section_id 
+		ORDER BY b.order;`
 	);
 	// 没有则返回空
-	if (result.rows == undefined || result.rows.length == 0) {
+	if (result.rowCount == 0) {
 		return {
 			forums: []
 		};
 	}
-
 	/* 将查询的结果
     [{
         section_id: "1",
         section_name: "综合",
-        board_id: "11",
         board_name: "综合版"
+		url_name: "notopic"
+		intro: "随便写点"
     }, {
         section_id: "1",
         section_name: "综合",
-        board_id: "11",
-        board_name: "欢乐恶搞"
+        board_name: "欢乐恶搞",
+		url_name: "funny"
+		intro: "既不欢乐也不恶搞"
     }]
     转变为如下的结构
     [{
         section_id: "1"
         section_name: "综合",
         boards: [{
-            board_id: "11",
             board_name: "综合版",
+			url_name: "notopic"
+			intro: "随便写点"
         }, {
-            board_id: "12",
-            board_name: "欢乐恶搞"
+            board_name: "欢乐恶搞",
+			url_name: "funny"
+			intro: "既不欢乐也不恶搞"
         }]
     }]
     */
@@ -52,22 +57,15 @@ export const load = async ({ locals }) => {
 			});
 		}
 
-		if (one.board_id != null) {
-			// 插入了之后需要重新获取，filtered不会自动更新
-			const filtered = forums.filter((f) => f.section_id == section_id);
-			if (filtered.length != 1) return;
-			filtered[0].boards.push({
-				board_id: one.board_id,
-				board_name: one.board_name,
-				board_url: one.url_name,
-				order: one.order,
-				min_post_second: one.min_post_second,
-				access_type: one.access_type,
-				intro: one.intro
-			});
-		}
+		// 插入了之后需要重新获取，filtered不会自动更新
+		const filteredSection = forums.filter((f) => f.section_id == section_id);
+		if (filteredSection.length != 1) return;
+		filteredSection[0].boards.push({
+			board_name: one.board_name,
+			board_url: one.url_name,
+			intro: one.intro
+		});
 	});
 
-	// console.log(forums);
 	return { forums };
 };
