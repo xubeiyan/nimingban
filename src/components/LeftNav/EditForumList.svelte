@@ -1,5 +1,5 @@
 <script>
-    import { userStore } from '../../store/userStore';
+	import { userStore } from '../../store/userStore';
 
 	import CloseIcon from '$svgIcon/close.svelte';
 	import PlusIcon from '$svgIcon/plus.svelte';
@@ -12,8 +12,11 @@
 	let open = false;
 	let forums = [];
 
+	let errorText = null;
+
 	export const showForm = () => {
 		open = true;
+        errorText = null;
 		$fetchForumList.mutate();
 	};
 
@@ -28,17 +31,25 @@
 
 	const fetchForumList = createMutation({
 		mutationFn: async () => {
-            let headers = {};
-            if ($userStore.token != null) {
+			let headers = {};
+			if ($userStore.token != null) {
 				headers = {
 					Authorization: `Bearer ${$userStore.token}`
 				};
 			}
-            
+
 			const res = await fetch('/manage/getForumList', {
-                headers
-            }).then((r) => r.json());
+				headers
+			}).then((r) => r.json());
+
 			if (res.type != 'ok') {
+				if (res.errorCode == 'OPERATION_NOT_ALLOWED') {
+					errorText = '当前用户不允许此操作';
+				} else if (['COOKIES_MALFORM', 'INVALID_AUTHORIZATION_HEADER'].includes(res.errorCode)) {
+					errorText = `认证字段不正确`;
+				} else if (res.errorCode == 'AUTHORIZATION_EXPIRE') {
+					errorText = `需要退出后重新登录`;
+				}
 				return;
 			}
 
@@ -58,24 +69,30 @@
 	{#if $fetchForumList.isPending}
 		<p>获取板块列表...</p>
 	{:else if $fetchForumList.isSuccess}
-		<ul class="space-y-1 max-h-full">
-			{#each forums as forum}
-				<SingleSection {forum} on:updateAllSectionBoard={() => $fetchForumList.mutate()} />
-			{/each}
-			<li
-				class="w-full h-[4em]
+		{#if errorText == null}
+			<ul class="space-y-1 max-h-full">
+				{#each forums as forum}
+					<SingleSection {forum} on:updateAllSectionBoard={() => $fetchForumList.mutate()} />
+				{/each}
+				<li
+					class="w-full h-[4em]
         bg-violet-200/70 dark:bg-indigo-400/30
         hover:bg-violet-200 dark:hover:bg-indigo-400/50
         rounded-md mt-1"
-			>
-				{#if sectionAdd == null}
-					<button class="w-full h-full flex justify-center items-center">
-						<PlusIcon size="1.5em" />
-					</button>
-				{:else}
-					<NewSection />
-				{/if}
-			</li>
-		</ul>
+				>
+					{#if sectionAdd == null}
+						<button class="w-full h-full flex justify-center items-center">
+							<PlusIcon size="1.5em" />
+						</button>
+					{:else}
+						<NewSection />
+					{/if}
+				</li>
+			</ul>
+		{:else}
+			<div>
+				{errorText}
+			</div>
+		{/if}
 	{/if}
 </div>

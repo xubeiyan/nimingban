@@ -108,7 +108,10 @@
 		}
 	});
 
-	const openDeleteConfirm = () => {};
+	const openDeleteConfirm = () => {
+		if (deleteDialog == null) return;
+		deleteDialog.openDialog({ name: board.name, id: board.id });
+	};
 </script>
 
 <li
@@ -118,7 +121,7 @@
 	<div class="flex flex-col gap-4 justify-center self-stretch">
 		<IconBtn hintText="上移" on:click={() => moveBoardBackward(index)}>👆</IconBtn>
 		<IconBtn hintText="下移" on:click={() => moveBoardForward(index)}>👇</IconBtn>
-		<IconBtn hintText="删除" on:click={() => openDeleteConfirm()}>
+		<IconBtn hintText="删除" on:click={openDeleteConfirm}>
 			<TrashIcon size="1.5em" />
 		</IconBtn>
 	</div>
@@ -147,6 +150,7 @@
 			<span class="pl-1">最短发串间隔</span>
 			<div class="flex gap-1">
 				<Input
+					suffix="秒"
 					value={newBoard.minPostSecond != undefined
 						? newBoard.minPostSecond
 						: board.min_post_second}
@@ -189,4 +193,4 @@
 		</IconBtn>
 	</div>
 </li>
-<DeleteDialog bind:this={deleteDialog}/>
+<DeleteDialog bind:this={deleteDialog} on:updateAllSectionBoard/>

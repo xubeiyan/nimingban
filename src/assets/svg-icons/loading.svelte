@@ -1,7 +1,11 @@
+<script>
+	export let size = '1em';
+</script>
+
 <svg
-	width="1em"
-	height="1em"
-    class="fill-slate-800 dark:fill-slate-100 animate-spin"
+	width={size}
+	height={size}
+	class="fill-slate-800 dark:fill-slate-100 animate-spin"
 	viewBox="0 0 16 16"
 	xmlns="http://www.w3.org/2000/svg"
 	fill="none"
