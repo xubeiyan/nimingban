@@ -14,7 +14,7 @@
 
 	const openEditForumList = () => {
 		if (editForumList == null) return;
-		editForumList.showForm(forums);
+		editForumList.showForm();
 	};
 </script>
 

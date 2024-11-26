@@ -2,7 +2,7 @@
 	export let hintText = null;
 </script>
 
-<div class="relative flex group">
+<div class="relative inline-flex group">
 	<button
 		class="group flex justify-center items-center bg-indigo-200 dark:bg-indigo-400 size-[2em] rounded-md"
 		on:click
@@ -11,7 +11,7 @@
 	</button>
 	{#if hintText != null}
 		<div
-			class="hidden min-w-[3em] group-hover:block absolute left-[50%] top-[140%] translate-x-[-50%] z-30"
+			class="hidden break-keep group-hover:block absolute left-[50%] top-[140%] translate-x-[-50%] z-30"
 		>
 			<span
 				class="absolute left-[50%] top-[-70%] translate-x-[-50%] size-0

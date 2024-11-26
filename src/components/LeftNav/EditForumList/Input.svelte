@@ -8,7 +8,7 @@
     shadow-inner shadow-slate-300 dark:shadow-slate-700
      focus-within:bg-white dark:focus-within:bg-black"
 >
-	<input type="text" bind:value on:input class="grow focus-within:outline-none" />
+	<input type="text" bind:value on:input class="grow bg-transparent focus-within:outline-none" />
 	{#if suffix != null}
 		<span>{suffix}</span>
 	{/if}

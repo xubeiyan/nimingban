@@ -42,7 +42,8 @@
 </script>
 
 <div
-	class="relative grow flex bg-slate-100 dark:bg-slate-600 px-2 py-1 rounded-md
+	class="relative grow flex px-2 py-1 rounded-md
+    bg-slate-100 dark:bg-slate-600
     shadow-inner shadow-slate-300 dark:shadow-slate-700"
 >
 	<span class="grow">{labelText(value)}</span>
@@ -54,13 +55,14 @@
 		<RightIcon turn={selectOpen ? -90 : 90} />
 	</button>
 	<div
-		class="absolute w-full left-0 top-[100%] z-10 {selectListStyle} rounded-md overflow-hidden
-    divide-y divide-indigo-200
-    shadow-sm shadow-indigo-400"
+		class="absolute w-full left-0 top-[100%] z-10 {selectListStyle} transition origin-top rounded-md overflow-hidden
+    divide-y divide-indigo-200 dark:divide-sky-600
+    shadow-sm shadow-indigo-400 dark:shadow-slate-900"
 	>
 		{#each selectOptions as s}
 			<button
-				class="block w-full px-2 py-1 bg-indigo-100/80 hover:bg-indigo-200"
+				class="block w-full px-2 py-1
+                bg-indigo-100/80 hover:bg-indigo-200 dark:bg-sky-700/70 dark:hover:bg-sky-600"
 				on:click={() => selectOne(s.value)}>{s.label}</button
 			>
 		{/each}
