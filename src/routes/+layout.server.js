@@ -5,7 +5,7 @@ export const load = async ({ locals }) => {
 		`SELECT 
             s.id AS section_id, s.section_name, 
             b.name AS board_name, b.url_name, b.intro
-        FROM section AS s LEFT JOIN board AS b ON 
+        FROM section AS s JOIN board AS b ON 
 			b.access_type IN ('all', 'view_only') AND s.id = b.parent_section_id 
 		ORDER BY b.order;`
 	);

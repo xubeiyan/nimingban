@@ -92,7 +92,7 @@
 		{#if errorText == null}
 			<ul class="space-y-1 max-h-full">
 				{#each forums as forum}
-					<SingleSection {forum} on:updateAllSectionBoard={() => $fetchForumList.mutate()} />
+					<SingleSection {forum} on:updateSections={() => $fetchForumList.mutate()} />
 				{/each}
 				<li class="mr-10 mt-1">
 					{#if sectionAdd == null}

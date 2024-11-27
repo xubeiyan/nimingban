@@ -31,6 +31,7 @@
 	let open = false;
 
 	let errorText = null;
+	let sectionErrorText = null;
 
 	// 打开/关闭分区列表
 	const toggleSectionOpen = () => {
@@ -81,6 +82,41 @@
 
 	let boardModifyMessage = null;
 
+	const deleteSection = async () => {
+		const res = await $deleteMutation.mutateAsync();
+
+		if (res.type != 'ok') {
+			if (res.errorCode == 'OPERATION_NOT_ALLOWED') {
+				sectionErrorText = '当前用户不允许此操作';
+			} else if (['COOKIES_MALFORM', 'INVALID_AUTHORIZATION_HEADER'].includes(res.errorCode)) {
+				sectionErrorText = `认证字段不正确`;
+			} else if (res.errorCode == 'AUTHORIZATION_EXPIRE') {
+				sectionErrorText = `需要退出后重新登录`;
+			} else if (res.errorCode == 'SECTION_EXIST_BOARD') {
+				sectionErrorText = `分区中有板块不能删除`;
+			}
+			return;
+		}
+
+		dispatch('updateSections');
+	};
+
+	const deleteMutation = createMutation({
+		mutationFn: async () => {
+			let headers = {};
+			if ($userStore.token != null) {
+				headers = {
+					Authorization: `Bearer ${$userStore.token}`
+				};
+			}
+			const res = await fetch(`/manage/removeSection/${forum.id}`, {
+				headers
+			}).then((r) => r.json());
+
+			return res;
+		}
+	});
+
 	// 分区向后移
 	const moveSectionForward = () => {};
 
@@ -116,7 +152,8 @@
 
 <li class="relative flex gap-2 items-center">
 	<div
-		class="grow flex items-center gap-6 bg-violet-100 dark:bg-indigo-400/30 px-4 py-2 rounded-md"
+		class="grow relative flex items-center gap-6 bg-violet-100 dark:bg-indigo-400/30
+		px-4 py-2 rounded-md"
 	>
 		<div class="flex flex-col">
 			<IconBtn hintText={open ? '收起' : '展开'} on:click={toggleSectionOpen}>
@@ -126,19 +163,36 @@
 		<div class="flex flex-col grow">
 			<span class="mb-1 pl-1">分区名称</span>
 			<div class="flex gap-1">
-				<Input
-					value={newForum.name != undefined ? newForum.name : forum.name}
-					on:input={(e) => {
-						newForum.name = e.target.value;
-					}}
-				/>
-				<UndoBtn
-					show={newForum.name != undefined}
-					on:click={() => {
-						newForum.name = undefined;
-					}}
-				/>
+				<div class="flex gap-1 w-1/2">
+					<Input
+						value={newForum.name != undefined ? newForum.name : forum.name}
+						on:input={(e) => {
+							newForum.name = e.target.value;
+						}}
+					/>
+					<UndoBtn
+						show={newForum.name != undefined}
+						on:click={() => {
+							newForum.name = undefined;
+						}}
+					/>
+				</div>
+				<div class="w-1/2">
+					{#if sectionErrorText != null}
+						<div class="flex justify-end">
+							<span
+								class="mr-8 px-2 rounded-md border border-red-400 dark:border-red-400
+								text-red-400 dark:text-red-400">{sectionErrorText}</span
+							>
+						</div>
+					{/if}
+				</div>
 			</div>
+		</div>
+		<div class="absolute top-2 right-2">
+			<IconBtn hintText="删除" on:click={deleteSection}>
+				<TrashIcon size="1.5em" />
+			</IconBtn>
 		</div>
 	</div>
 	<div class={newForum.name == undefined ? 'invisible' : ''}>

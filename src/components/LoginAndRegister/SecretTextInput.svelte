@@ -36,6 +36,7 @@
 		/>
 		{#if content != ''}
 			<button
+				type="button"
 				class="absolute right-0 top-0 w-[2em] h-full flex justify-center items-center"
 				on:click={() => (dot = !dot)}
 			>

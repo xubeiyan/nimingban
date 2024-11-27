@@ -65,11 +65,11 @@
 	// 提交版块修改
 	const updateBoard = async () => {
 		// console.log(board);
-		const { id, name, url, min_post_second, access_type, intro } = board;
+		const { id, name, url_name, min_post_second, access_type, intro } = board;
 		const postBody = {
 			id,
 			name: newBoard.name ? newBoard.name : name,
-			url: newBoard.url ? newBoard.url : url,
+			url: newBoard.url ? newBoard.url : url_name,
 			minPostSecond: newBoard.minPostSecond ? newBoard.minPostSecond : min_post_second,
 			accessType: newBoard.accessType ? newBoard.accessType : access_type,
 			intro: newBoard.intro ? newBoard.intro : intro
