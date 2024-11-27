@@ -45,15 +45,15 @@ export const POST = async ({ locals, request }) => {
 	const fetchBoardQuery = {
 		text: `SELECT 1 FROM board WHERE url_name = $1`,
 		values: [url]
-	}
+	};
 
 	const fetchBoardResult = await dbconn.query(fetchBoardQuery);
 
 	if (fetchBoardResult.rowCount > 0) {
 		return json({
 			type: 'error',
-			errorCode: 'DUPLICATE_BOARD_URL',
-		})
+			errorCode: 'DUPLICATE_BOARD_URL'
+		});
 	}
 
 	const updateQuery = {
@@ -61,14 +61,15 @@ export const POST = async ({ locals, request }) => {
             id,                 parent_section_id, min_post_second, min_post_timestamp, access_type, name, url_name, intro, "order"
         ) VALUES (
             gen_random_uuid(),  $1,                $2,              now(),              $3,          $4,   $5,       $6,    (SELECT COUNT(*) + 1 FROM board WHERE parent_section_id = $1)
-        );
+        ) RETURNING id;
         `,
 		values: [sectionId, minPostSecond, accessType, name, url, intro]
 	};
 
-	await dbconn.query(updateQuery);
+	const updateResult = await dbconn.query(updateQuery);
 
 	return json({
-		type: 'ok'
+		type: 'ok',
+		boardId: updateResult.rows[0].id
 	});
 };

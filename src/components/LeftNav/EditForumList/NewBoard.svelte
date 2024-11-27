@@ -1,15 +1,17 @@
 <script>
-	import { json } from '@sveltejs/kit';
 	import { userStore } from '../../../store/userStore';
 
 	import AccessTypeSelect from './AccessTypeSelect.svelte';
 	import Input from './Input.svelte';
 	import TextArea from './TextArea.svelte';
 
+	import CloseIcon from '$svgIcon/close.svelte';
+	import CheckIcon from '$svgIcon/check.svelte';
+	import LoadingIcon from '$svgIcon/loading.svelte';
+
 	import { createMutation } from '@tanstack/svelte-query';
 
 	import { createEventDispatcher } from 'svelte';
-	import Close from '$svgIcon/close.svelte';
 	const dispatch = createEventDispatcher();
 
 	export let sectionId = null;
@@ -60,6 +62,14 @@
 				return;
 			}
 		}
+
+		dispatch('btnClick', {
+			type: 'ok',
+			board: {
+				id: res.boardId,
+				...board
+			}
+		});
 	};
 
 	const addBoardMutation = createMutation({
@@ -91,7 +101,7 @@
 		hover:bg-slate-300 dark:hover:bg-slate-200/50"
 		on:click={() => dispatch('btnClick', { type: 'cancel' })}
 	>
-		<Close />
+		<CloseIcon />
 	</button>
 	<h1 class="text-zinc-200xl pb-2">新增版块</h1>
 	<div class="grid grid-cols-2 gap-2 grow">
@@ -168,8 +178,12 @@
 			</div>
 		{/if}
 
-		<button class="rounded-md bg-violet-300/80 dark:bg-violet-400/70 px-2 py-1" on:click={addClick}
-			>添加</button
-		>
+		<button class="rounded-md bg-violet-300/80 dark:bg-violet-400/70 px-2 py-1" on:click={addClick}>
+			{#if $addBoardMutation.isPending}
+				<LoadingIcon size="1.25em"/>
+			{:else}
+				<CheckIcon />
+			{/if}
+		</button>
 	</div>
 </li>

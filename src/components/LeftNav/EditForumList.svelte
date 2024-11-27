@@ -38,7 +38,7 @@
 				};
 			}
 
-			const res = await fetch('/manage/getForumList', {
+			const res = await fetch('/manage/getSectionList', {
 				headers
 			}).then((r) => r.json());
 

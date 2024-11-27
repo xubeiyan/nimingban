@@ -85,7 +85,7 @@
 				accessType: undefined,
 				intro: undefined
 			};
-			dispatch('updateAllSectionBoard');
+			dispatch('updateBoards');
 		}
 	};
 
@@ -140,7 +140,7 @@
 			<span class="pl-1">版块URL</span>
 			<div class="flex gap-1">
 				<Input
-					value={newBoard.url != undefined ? newBoard.url : board.url}
+					value={newBoard.url != undefined ? newBoard.url : board.url_name}
 					on:input={(e) => update('url', e.target.value)}
 				/>
 				<UndoBtn show={newBoard.url != undefined} on:click={() => undo('url')} />
@@ -193,4 +193,4 @@
 		</IconBtn>
 	</div>
 </li>
-<DeleteDialog bind:this={deleteDialog} on:updateAllSectionBoard/>
+<DeleteDialog bind:this={deleteDialog} on:updateBoards={() => dispatch('updateBoards')} />

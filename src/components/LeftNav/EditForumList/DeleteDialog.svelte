@@ -48,8 +48,8 @@
 			return;
 		}
 
+		dispatch('updateBoards');
 		closeDialog();
-		dispatch('updateAllSectionBoard');
 	};
 
 	const deleteMutation = createMutation({
@@ -89,7 +89,8 @@
 				>
 			{/if}
 			<button
-				class="rounded-md bg-sky-700/80 hover:bg-sky-700 px-4 py-1"
+				class="rounded-md bg-sky-200/70 hover:bg-sky-200
+				dark:bg-sky-700/80 dark:hover:bg-sky-700 px-4 py-1"
 				disabled={$deleteMutation.isPending}
 				on:click={confirmDelete}
 			>
