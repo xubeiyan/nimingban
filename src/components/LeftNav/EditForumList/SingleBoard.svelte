@@ -125,7 +125,7 @@
 			<TrashIcon size="1.5em" />
 		</IconBtn>
 	</div>
-	<div class="grid grid-cols-2 gap-2 grow bg-indigo-100 dark:bg-sky-400/30 px-2 py-2 rounded-md">
+	<div class="grid grid-cols-2 gap-2 grow bg-indigo-100 dark:bg-sky-400/30 px-4 py-4 rounded-md">
 		<div class="flex flex-col">
 			<span class="pl-1">版块名称</span>
 			<div class="flex gap-1">

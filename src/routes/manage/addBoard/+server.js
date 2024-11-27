@@ -56,7 +56,7 @@ export const POST = async ({ locals, request }) => {
 		});
 	}
 
-	const updateQuery = {
+	const insertQuery = {
 		text: `INSERT INTO board ( 
             id,                 parent_section_id, min_post_second, min_post_timestamp, access_type, name, url_name, intro, "order"
         ) VALUES (
@@ -66,10 +66,10 @@ export const POST = async ({ locals, request }) => {
 		values: [sectionId, minPostSecond, accessType, name, url, intro]
 	};
 
-	const updateResult = await dbconn.query(updateQuery);
+	const insertResult = await dbconn.query(insertQuery);
 
 	return json({
 		type: 'ok',
-		boardId: updateResult.rows[0].id
+		boardId: insertResult.rows[0].id
 	});
 };

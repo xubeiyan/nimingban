@@ -8,6 +8,7 @@
 	import NewSection from './EditForumList/NewSection.svelte';
 
 	import { createMutation } from '@tanstack/svelte-query';
+	import StatusText from './EditForumList/StatusText.svelte';
 
 	let open = false;
 	let forums = [];
@@ -16,7 +17,7 @@
 
 	export const showForm = () => {
 		open = true;
-        errorText = null;
+		errorText = null;
 		$fetchForumList.mutate();
 	};
 
@@ -28,6 +29,12 @@
 	$: showStyle = open ? '' : 'hidden';
 
 	let sectionAdd = null;
+
+	const createSectionAddTemplate = () => {
+		sectionAdd = {
+			name: null
+		};
+	};
 
 	const fetchForumList = createMutation({
 		mutationFn: async () => {
@@ -56,6 +63,19 @@
 			forums = res.forumList;
 		}
 	});
+
+	// 处理添加/取消点击
+	const handleBtnClick = (e) => {
+		const { type } = e.detail;
+		if (type == 'cancel') {
+			sectionAdd = null;
+		} else if (type == 'ok') {
+			const { section } = e.detail;
+			forums.push(section);
+			forums = forums;
+			sectionAdd = null;
+		}
+	};
 </script>
 
 <div
@@ -67,32 +87,32 @@
 	</button>
 	<h1 class="text-2xl my-4">版块管理</h1>
 	{#if $fetchForumList.isPending}
-		<p>获取板块列表...</p>
+		<StatusText>获取板块列表...</StatusText>
 	{:else if $fetchForumList.isSuccess}
 		{#if errorText == null}
 			<ul class="space-y-1 max-h-full">
 				{#each forums as forum}
 					<SingleSection {forum} on:updateAllSectionBoard={() => $fetchForumList.mutate()} />
 				{/each}
-				<li
-					class="w-full h-[4em]
-        bg-violet-200/70 dark:bg-indigo-400/30
-        hover:bg-violet-200 dark:hover:bg-indigo-400/50
-        rounded-md mt-1"
-				>
+				<li class="mr-10 mt-1">
 					{#if sectionAdd == null}
-						<button class="w-full h-full flex justify-center items-center">
+						<button
+							class="bg-violet-200/70 dark:bg-indigo-400/30
+                            hover:bg-violet-200 dark:hover:bg-indigo-400/50
+                            rounded-md w-full h-[4em] flex justify-center items-center"
+							on:click={createSectionAddTemplate}
+						>
 							<PlusIcon size="1.5em" />
 						</button>
 					{:else}
-						<NewSection />
+						<NewSection on:btnClick={handleBtnClick} />
 					{/if}
 				</li>
 			</ul>
 		{:else}
-			<div>
+			<StatusText type="error">
 				{errorText}
-			</div>
+			</StatusText>
 		{/if}
 	{/if}
 </div>

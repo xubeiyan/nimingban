@@ -22,6 +22,10 @@
 
 	export let forum = {};
 
+	let newForum = {
+		name: undefined
+	};
+
 	let boards = [];
 
 	let open = false;
@@ -39,6 +43,7 @@
 		if (open == true) {
 			// 清空版块
 			boards = [];
+			errorText = null;
 		}
 
 		open = !open;
@@ -77,20 +82,10 @@
 	let boardModifyMessage = null;
 
 	// 分区向后移
-	const moveSectionForward = () => {
-		dispatch('move', {
-			type: 'sectionForward',
-			section_id: forum.section_id
-		});
-	};
+	const moveSectionForward = () => {};
 
 	// 分区向前移
-	const moveSectionBackward = () => {
-		dispatch('move', {
-			type: 'sectionBackward',
-			section_id: forum.section_id
-		});
-	};
+	const moveSectionBackward = () => {};
 
 	// 新增的版块
 	let boardAdd = null;
@@ -119,21 +114,37 @@
 	};
 </script>
 
-<li
-	class="relative flex items-center gap-4
-    bg-violet-100 dark:bg-indigo-400/30 px-4 py-2 rounded-md"
->
-	<div class="flex flex-col gap-2">
-		<IconBtn hintText={open ? '收起' : '展开'} on:click={toggleSectionOpen}>
-			<RightIcon turn={open ? 90 : 0} />
-		</IconBtn>
-	</div>
-	<div class="flex flex-col grow mr-2">
-		<span class="mb-1 pl-1">分区名称</span>
-		<div class="flex gap-1">
-			<Input value={forum.name} on:input={() => {}} />
-			<UndoBtn show={forum.section_name_new != undefined} on:click={() => {}} />
+<li class="relative flex gap-2 items-center">
+	<div
+		class="grow flex items-center gap-6 bg-violet-100 dark:bg-indigo-400/30 px-4 py-2 rounded-md"
+	>
+		<div class="flex flex-col">
+			<IconBtn hintText={open ? '收起' : '展开'} on:click={toggleSectionOpen}>
+				<RightIcon turn={open ? 90 : 0} />
+			</IconBtn>
 		</div>
+		<div class="flex flex-col grow">
+			<span class="mb-1 pl-1">分区名称</span>
+			<div class="flex gap-1">
+				<Input
+					value={newForum.name != undefined ? newForum.name : forum.name}
+					on:input={(e) => {
+						newForum.name = e.target.value;
+					}}
+				/>
+				<UndoBtn
+					show={newForum.name != undefined}
+					on:click={() => {
+						newForum.name = undefined;
+					}}
+				/>
+			</div>
+		</div>
+	</div>
+	<div class={newForum.name == undefined ? 'invisible' : ''}>
+		<IconBtn>
+			<CheckIcon />
+		</IconBtn>
 	</div>
 </li>
 {#if $fetchBoards.isPending}
@@ -160,8 +171,8 @@
 			</li>
 		</ul>
 	{:else}
-		<div>
+		<StatusText type="error">
 			{errorText}
-		</div>
+		</StatusText>
 	{/if}
 {/if}
