@@ -12,6 +12,8 @@
 	import { boardStore } from '../store/boardStore';
 	import { createMutation } from '@tanstack/svelte-query';
 
+	import { refreshToken } from '$lib/refreshToken';
+
 	import { createEventDispatcher } from 'svelte';
 	import SendBtn from './NewPostForm/SendBtn.svelte';
 	const dispatch = createEventDispatcher();
@@ -195,6 +197,9 @@
 					Authorization: `Bearer ${$userStore.token}`
 				};
 			}
+
+			// 必要时刷新Token
+			refreshToken($userStore.token);
 
 			// 发串，回复，编辑串不同
 			let url = `/board/sendPost/${$boardStore.boardUrl}`;

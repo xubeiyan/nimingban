@@ -1,6 +1,8 @@
 import { json } from '@sveltejs/kit';
 import { JWTAuth } from '$lib/auth.js';
 
+import { nullToDefaultString } from '$lib/SendForm/string.js';
+
 const CONTENT_MIN_LENGTH = 10;
 
 export const POST = async ({ locals, params, request }) => {
@@ -29,9 +31,9 @@ export const POST = async ({ locals, params, request }) => {
 	}
 	const formData = await request.formData();
 
-	const name = formData?.get('name');
-	const email = formData?.get('email');
-	const title = formData?.get('title');
+	const name = nullToDefaultString(formData?.get('name'));
+	const email = nullToDefaultString(formData?.get('email'));
+	const title = nullToDefaultString(formData?.get('title'));
 	const content = formData?.get('content');
 
 	const { dbconn } = locals;
