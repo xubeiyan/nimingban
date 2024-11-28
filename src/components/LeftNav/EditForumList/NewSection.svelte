@@ -7,6 +7,7 @@
 	import CloseIcon from '$svgIcon/close.svelte';
 
 	import { createMutation } from '@tanstack/svelte-query';
+	import { refreshToken } from '$lib/refreshToken';
 
 	import { createEventDispatcher } from 'svelte';
 	const dispatch = createEventDispatcher();
@@ -19,6 +20,10 @@
 					Authorization: `Bearer ${$userStore.token}`
 				};
 			}
+
+			// 必要时刷新Token
+			refreshToken($userStore.token);
+
 			const res = await fetch('/manage/addSection', {
 				method: 'POST',
 				body: JSON.stringify({

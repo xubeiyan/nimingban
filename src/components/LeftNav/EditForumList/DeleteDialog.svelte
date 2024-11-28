@@ -5,6 +5,7 @@
 
 	import { userStore } from '../../../store/userStore';
 
+	import { refreshToken } from '$lib/refreshToken';
 	import { createMutation } from '@tanstack/svelte-query';
 
 	import { createEventDispatcher } from 'svelte';
@@ -60,6 +61,9 @@
 					Authorization: `Bearer ${$userStore.token}`
 				};
 			}
+
+			// 必要时刷新Token
+			refreshToken($userStore.token);
 			const res = await fetch(`/manage/removeBoard/${boardId}`, {
 				headers
 			}).then((r) => r.json());

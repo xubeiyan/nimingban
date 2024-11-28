@@ -1,8 +1,9 @@
 import { connectToDB } from '$lib/db';
 
 import { PGHOST, PGUSER, PGDATABASE, PGPASSWORD, PGPORT } from '$env/static/private';
+import { sequence } from '@sveltejs/kit/hooks';
 
-export async function handle({ event, resolve }) {
+const db = async ({ event, resolve }) => {
 	const dbconn = await connectToDB({
 		host: PGHOST,
 		user: PGUSER,
@@ -15,4 +16,5 @@ export async function handle({ event, resolve }) {
 	const response = await resolve(event);
 	dbconn.release();
 	return response;
-}
+};
+export const handle = sequence(db);

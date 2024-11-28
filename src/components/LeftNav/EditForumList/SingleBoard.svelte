@@ -12,6 +12,7 @@
 	import CheckIcon from '$svgIcon/check.svelte';
 
 	import { createMutation } from '@tanstack/svelte-query';
+	import { refreshToken } from '$lib/refreshToken';
 
 	import { createEventDispatcher } from 'svelte';
 	import DeleteDialog from './DeleteDialog.svelte';
@@ -97,6 +98,9 @@
 					Authorization: `Bearer ${$userStore.token}`
 				};
 			}
+
+			// 必要时刷新Token
+			refreshToken($userStore.token);
 
 			const res = await fetch('/manage/updateBoard', {
 				method: 'POST',

@@ -9,6 +9,7 @@
 
 	import { createMutation } from '@tanstack/svelte-query';
 	import StatusText from './EditForumList/StatusText.svelte';
+	import { refreshToken } from '$lib/refreshToken';
 
 	let open = false;
 	let forums = [];
@@ -44,6 +45,9 @@
 					Authorization: `Bearer ${$userStore.token}`
 				};
 			}
+
+			// 必要时刷新Token
+			refreshToken($userStore.token);
 
 			const res = await fetch('/manage/getSectionList', {
 				headers

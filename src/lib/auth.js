@@ -53,6 +53,7 @@ export const JWTAuth = (req) => {
 	return {
 		type: 'ok',
 		username: payload.username,
-		userType: payload.type
+		userType: payload.type,
+		expire: payload.expire
 	};
 };

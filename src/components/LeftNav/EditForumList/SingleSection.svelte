@@ -16,7 +16,7 @@
 	import SortIcon from '$svgIcon/sort.svelte';
 
 	import { createEventDispatcher } from 'svelte';
-	import Sort from '$svgIcon/sort.svelte';
+	import { refreshToken } from '$lib/refreshToken';
 	import { createMutation } from '@tanstack/svelte-query';
 	const dispatch = createEventDispatcher();
 
@@ -58,6 +58,10 @@
 					Authorization: `Bearer ${$userStore.token}`
 				};
 			}
+
+			// 必要时刷新Token
+			refreshToken($userStore.token);
+
 			const res = await fetch(`/manage/getBoardList/${forum.id}`, {
 				headers
 			}).then((r) => r.json());
@@ -109,6 +113,10 @@
 					Authorization: `Bearer ${$userStore.token}`
 				};
 			}
+
+			// 必要时刷新Token
+			refreshToken($userStore.token);
+
 			const res = await fetch(`/manage/removeSection/${forum.id}`, {
 				headers
 			}).then((r) => r.json());

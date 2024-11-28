@@ -10,6 +10,7 @@
 	import LoadingIcon from '$svgIcon/loading.svelte';
 
 	import { createMutation } from '@tanstack/svelte-query';
+	import { refreshToken } from '$lib/refreshToken';
 
 	import { createEventDispatcher } from 'svelte';
 	import AddBtn from './AddBtn.svelte';
@@ -81,6 +82,10 @@
 					Authorization: `Bearer ${$userStore.token}`
 				};
 			}
+
+			// 必要时刷新Token
+			refreshToken($userStore.token);
+
 			const res = await fetch('/manage/addBoard', {
 				method: 'POST',
 				body: JSON.stringify({
