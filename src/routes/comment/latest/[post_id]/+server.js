@@ -1,3 +1,4 @@
+import { nullToDefaultString } from '$lib/SendForm/string.js';
 import { json } from '@sveltejs/kit';
 
 export const GET = async ({ params, locals }) => {
@@ -33,12 +34,21 @@ export const GET = async ({ params, locals }) => {
 	let comments = [];
 
 	result.rows.forEach((one) => {
-		const { id, poster_name, poster_email, title, content, comment_time, edit_time, cookies_content } = one;
+		const {
+			id,
+			poster_name,
+			poster_email,
+			title,
+			content,
+			comment_time,
+			edit_time,
+			cookies_content
+		} = one;
 		comments.push({
 			id,
-			poster_name: poster_name == 'null' ? '无名氏' : poster_name,
-			poster_email: poster_email == 'null' ? 'no@name.net' : poster_email,
-			title: title == 'null' ? '无标题' : title,
+			poster_name: nullToDefaultString({ type: 'poster_name', value: poster_name }),
+			poster_email: nullToDefaultString({ type: 'poster_email', value: poster_email }),
+			title: nullToDefaultString({ type: 'title', value: title }),
 			content,
 			comment_time,
 			edit_time,

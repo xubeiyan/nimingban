@@ -3,6 +3,7 @@ import { JWTAuth } from '$lib/auth.js';
 
 import { validCookies, validateImages } from '$lib/SendForm/validation.js';
 import { uploadImages } from '$lib/SendForm/uploadImage.js';
+import { nullStringToEmpty } from '$lib/SendForm/string.js';
 
 const CONTENT_MIN_LENGTH = 10;
 
@@ -24,12 +25,12 @@ export const POST = async ({ locals, params, request }) => {
 	const formData = await request.formData();
 	const toUploadImages = formData?.getAll('image');
 
-	const name = formData?.get('name');
-	const email = formData?.get('email');
-	const title = formData?.get('title');
-	const content = formData?.get('content');
-	const cookies = formData?.get('cookies');
-	const commentReplyContent = formData?.get('commentReplyContent');
+	const name = nullStringToEmpty(formData?.get('name'));
+	const email = nullStringToEmpty(formData?.get('email'));
+	const title = nullStringToEmpty(formData?.get('title'));
+	const content = nullStringToEmpty(formData?.get('content'));
+	const cookies = nullStringToEmpty(formData?.get('cookies'));
+	const commentReplyContent = nullStringToEmpty(formData?.get('commentReplyContent'));
 
 	/* 
 	// 未提供cookies字段
@@ -110,7 +111,6 @@ export const POST = async ({ locals, params, request }) => {
 	if (commentReplyContent != undefined && commentReplyContent != 'null') {
 		replaceImageUrlContent = `${commentReplyContent}\n\n${replaceImageUrlContent}`;
 	}
-
 
 	// 向comment插入新的一行
 	const commentInsertQuery = {

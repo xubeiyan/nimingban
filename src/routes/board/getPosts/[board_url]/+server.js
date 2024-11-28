@@ -1,4 +1,5 @@
 import { json } from '@sveltejs/kit';
+import { nullToDefaultString } from '$lib/SendForm/string.js';
 
 export async function GET({ locals, params, url }) {
 	const { board_url } = params;
@@ -47,9 +48,9 @@ export async function GET({ locals, params, url }) {
 			posts.push({
 				id: one.id,
 				status: one.status,
-				author: one.poster_name == 'null' ? '无名氏' : one.poster_name,
-				email: one.poster_email == 'null' ? 'no@name.net' : one.poster_email,
-				title: one.title == 'null' ? '无标题' : one.title,
+				author: nullToDefaultString({ type: 'poster_name', value: one.poster_name }),
+				email: nullToDefaultString({ type: 'poster_email', value: one.poster_email }),
+				title: nullToDefaultString({ type: 'title', value: one.title }),
 				content: one.content,
 				post_time: one.post_time,
 				edit_time: one.edit_time,

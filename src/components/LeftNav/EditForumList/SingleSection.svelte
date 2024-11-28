@@ -178,22 +178,32 @@
 					/>
 				</div>
 				<div class="w-1/2">
-					{#if sectionErrorText != null}
-						<div class="flex justify-end">
+					<div class="flex justify-end gap-2">
+						{#if sectionErrorText != null}
 							<span
-								class="mr-8 px-2 rounded-md border border-red-400 dark:border-red-400
-								text-red-400 dark:text-red-400">{sectionErrorText}</span
-							>
-						</div>
-					{/if}
+								class="flex items-center gap-1 px-2 rounded-md
+								border border-red-400 dark:border-red-400
+								text-red-400 dark:text-red-400"
+								>{sectionErrorText}
+								<button
+									on:click={() => {
+										sectionErrorText = null;
+									}}>×</button
+								>
+							</span>
+						{/if}
+						<IconBtn hintText="删除" on:click={deleteSection}>
+							{#if $deleteMutation.isPending}
+								<LoadingIcon size="1.5em" />
+							{:else}
+								<TrashIcon size="1.5em" />
+							{/if}
+						</IconBtn>
+					</div>
 				</div>
 			</div>
 		</div>
-		<div class="absolute top-2 right-2">
-			<IconBtn hintText="删除" on:click={deleteSection}>
-				<TrashIcon size="1.5em" />
-			</IconBtn>
-		</div>
+		<div class="absolute top-2 right-2"></div>
 	</div>
 	<div class={newForum.name == undefined ? 'invisible' : ''}>
 		<IconBtn>

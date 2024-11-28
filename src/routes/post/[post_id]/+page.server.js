@@ -37,9 +37,9 @@ export const load = async ({ locals, params }) => {
 		post: {
 			id,
 			status,
-			author: poster_name == 'null' ? '无名氏' : poster_name,
-			email: poster_email == 'null' ? 'no@name.net' : poster_email,
-			title: title == 'null' ? '无标题' : title,
+			author: poster_name == null ? '无名氏' : poster_name,
+			email: poster_email == null ? 'no@name.net' : poster_email,
+			title: title == null ? '无标题' : title,
 			content,
 			post_time,
 			edit_time,
