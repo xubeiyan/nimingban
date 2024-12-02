@@ -14,6 +14,11 @@
 	import PrimaryBtn from '$cmpns/PrimaryBtn.svelte';
 	import ErrorPage from '$cmpns/ErrorPage.svelte';
 	import CommentArea from '$cmpns/CommentArea.svelte';
+	import SuperOperationBtn from '$cmpns/SuperOperationBtn.svelte';
+	import PostStatusDialog from '$cmpns/PostManage/PostStatusDialog.svelte';
+	import PostStatusBar from '$cmpns/PostManage/PostStatusBar.svelte';
+
+	import { reduceContent } from '$lib/PostManage/utils';
 
 	export let data;
 
@@ -23,9 +28,16 @@
 	$: fetchDataText = $getPostMutation.isPending ? '加载中...' : '已经到底了';
 	const getPostMutation = createMutation({
 		mutationFn: async () => {
-			const res = await fetch(
-				`/board/getPosts/${$boardStore.boardUrl}?from=${$boardStore.from}`
-			).then((r) => r.json());
+			let headers = {};
+			if ($userStore.token != null) {
+				headers = {
+					Authorization: `Bearer ${$userStore.token}`
+				};
+			}
+
+			const res = await fetch(`/board/getPosts/${$boardStore.boardUrl}?from=${$boardStore.from}`, {
+				headers
+			}).then((r) => r.json());
 
 			let ids = posts.map((post) => post.id);
 
@@ -105,6 +117,21 @@
 		}
 	});
 
+	let postStatusDialog = null;
+	// 打开修改串可见性对话框
+	const openModifyPostDialog = (id, status, content) => {
+		if (postStatusDialog == null) return;
+
+		postStatusDialog.openDialog({ id, status, content: reduceContent(content) });
+	};
+
+	const handleStatusUpdate = ({ id, status }) => {
+		const filtered = posts.filter((p) => p.id == id);
+		if (filtered.length != 1) return;
+		filtered[0].status = status;
+		posts = posts;
+	};
+
 	onMount(() => {
 		// 增加observer使其能够在滚动到页面底部时触发新的请求
 		let observer = new IntersectionObserver((entries) => {
@@ -126,8 +153,6 @@
 
 		observer.observe(getMore);
 	});
-
-	onDestroy(() => {});
 </script>
 
 <div class="px-2 md:px-0 container grow mx-auto">
@@ -172,9 +197,23 @@
 						>
 					{/if}
 				</p>
-				<a href="/post/{post.id}">
-					<SecondaryBtn>详情</SecondaryBtn>
-				</a>
+				<div class="flex gap-2 items-center">
+					{#if $userStore.type == 'admin'}
+						<PostStatusBar
+							status={post.status}
+							on:click={() => openModifyPostDialog(post.id, post.status, post.content)}
+						/>
+					{/if}
+					{#if post.status == 'readonly' && $userStore.type == 'user'}
+						<span
+							class="shadow-inner shadow-slate-300 dark:shadow-slate-900 rounded-md px-2 py-1 bg-orange-200 dark:bg-orange-800/80"
+							>此串不允许回复</span
+						>
+					{/if}
+					<a href="/post/{post.id}">
+						<SecondaryBtn>详情</SecondaryBtn>
+					</a>
+				</div>
 			</div>
 			<div class="border border-cyan-600 mt-2 py-2 px-4 rounded-sm">
 				<PostContent content={post.content} on:largeImage={(e) => openImageViewer(e.detail)} />
@@ -191,3 +230,4 @@
 
 <SendForm bind:this={newPostForm} type="post" on:sendPost={handleSendPost} />
 <ImageViewer bind:this={imageViewer} />
+<PostStatusDialog bind:this={postStatusDialog} on:update={(e) => handleStatusUpdate(e.detail)} />

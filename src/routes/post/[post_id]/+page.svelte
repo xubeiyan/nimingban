@@ -16,7 +16,7 @@
 	import SecondaryBtn from '$cmpns/SecondaryBtn.svelte';
 	import PrimaryBtn from '$cmpns/PrimaryBtn.svelte';
 	import SuperOperationBtn from '$cmpns/SuperOperationBtn.svelte';
-	import RemoveConfirmDialog from '$cmpns/PostManage/removeConfirmDialog.svelte';
+	import RemoveConfirmDialog from '$cmpns/PostManage/RemoveConfirmDialog.svelte';
 
 	let imageViewer = null;
 	let newCommentForm = null;
@@ -231,15 +231,15 @@
 				<SuperOperationBtn on:click={() => openEditForm(data.post.content, `post_${data.post.id}`)}
 					>编辑</SuperOperationBtn
 				>
-			{:else if $userStore.type == 'user'}
-				{#if data.post.status == 'repliable'}
-					<SecondaryBtn on:click={() => openCommentForm()}>回复</SecondaryBtn>
-				{:else if data.post.status == 'readonly'}
-					<span
-						class="shadow-inner shadow-slate-300 dark:shadow-slate-900 rounded-md px-2 py-1 bg-orange-100 dark:bg-orange-800"
-						>此串不允许回复</span
-					>
-				{/if}
+			{/if}
+
+			{#if data.post.status == 'repliable' && $userStore.type == 'user'}
+				<SecondaryBtn on:click={() => openCommentForm()}>回复</SecondaryBtn>
+			{:else if data.post.status == 'readonly' && $userStore.type == 'user'}
+				<span
+					class="shadow-inner shadow-slate-300 dark:shadow-slate-900 rounded-md px-2 py-1 bg-orange-100 dark:bg-orange-800"
+					>此串不允许回复</span
+				>
 			{/if}
 		</div>
 		<div class="border border-cyan-600 mt-2 py-2 px-4 rounded-sm">
@@ -293,7 +293,7 @@
 					{#if data.post.status == 'repliable'}
 						<SecondaryBtn on:click={() => openCommentForm(comment.id)}>回复</SecondaryBtn>
 					{:else if data.post.status == 'readonly'}
-						<span class="shadow-inner rounded-md px-2 py-1 bg-orange-100 dark:bg-orange-800"
+						<span class="shadow-inner rounded-md px-2 py-1 bg-orange-200 dark:bg-orange-800/80"
 							>此串不允许回复</span
 						>
 					{/if}
