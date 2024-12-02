@@ -103,8 +103,8 @@
 <li class="relative bg-indigo-200/70 dark:bg-sky-600 p-4 rounded-md">
 	<button
 		class="absolute right-4 top-4 rounded-full p-1
-		bg-slate-200 dark:bg-slate-200/30
-		hover:bg-slate-300 dark:hover:bg-slate-200/50"
+		bg-slate-200/60 dark:bg-slate-200/30
+		hover:bg-slate-200 dark:hover:bg-slate-200/50"
 		on:click={() => dispatch('btnClick', { type: 'cancel' })}
 	>
 		<CloseIcon />

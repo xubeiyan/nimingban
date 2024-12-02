@@ -1,4 +1,6 @@
 <script>
+	import EditIcon from '$svgIcon/edit.svelte';
+
 	export let status = null;
 
 	const statusTextArray = {
@@ -18,12 +20,15 @@
 					: '';
 </script>
 
-<div class="shadow-inner shadow-slate-200 dark:shadow-sky-700 pl-2 pr-1 py-1 {bgStyle} rounded-md">
+<div class="shadow-inner shadow-slate-200 dark:shadow-sky-700 pl-2 pr-1 py-1 {bgStyle} rounded-md flex items-center gap-1">
 	<span>{statusText}</span>
 	<button
-		class="bg-indigo-200/80 hover:bg-indigo-200
+		class="bg-indigo-100/80 hover:bg-indigo-100
 	  dark:bg-sky-700 dark:hover:bg-sky-700/80
-	 	shadow-sm shadow-slate-300 dark:shadow-sky-800 rounded-sm px-1"
-		on:click>修改</button
+	 	shadow-sm shadow-slate-300 dark:shadow-sky-800 rounded-sm size-[1.5em]
+		inline-flex justify-center items-center"
+		on:click
 	>
+		<EditIcon />
+	</button>
 </div>

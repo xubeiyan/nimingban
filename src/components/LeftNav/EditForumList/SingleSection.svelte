@@ -7,6 +7,7 @@
 	import NewBoard from './NewBoard.svelte';
 	import SingleBoard from './SingleBoard.svelte';
 	import StatusText from './StatusText.svelte';
+	import DeleteSectionDialog from './DeleteSectionDialog.svelte';
 
 	import LoadingIcon from '$svgIcon/loading.svelte';
 	import PlusIcon from '$svgIcon/plus.svelte';
@@ -15,9 +16,9 @@
 	import TrashIcon from '$svgIcon/trash.svelte';
 	import SortIcon from '$svgIcon/sort.svelte';
 
-	import { createEventDispatcher } from 'svelte';
 	import { refreshToken } from '$lib/refreshToken';
 	import { createMutation } from '@tanstack/svelte-query';
+	import { createEventDispatcher } from 'svelte';
 	const dispatch = createEventDispatcher();
 
 	export let forum = {};
@@ -86,44 +87,12 @@
 
 	let boardModifyMessage = null;
 
-	const deleteSection = async () => {
-		const res = await $deleteMutation.mutateAsync();
-
-		if (res.type != 'ok') {
-			if (res.errorCode == 'OPERATION_NOT_ALLOWED') {
-				sectionErrorText = '当前用户不允许此操作';
-			} else if (['COOKIES_MALFORM', 'INVALID_AUTHORIZATION_HEADER'].includes(res.errorCode)) {
-				sectionErrorText = `认证字段不正确`;
-			} else if (res.errorCode == 'AUTHORIZATION_EXPIRE') {
-				sectionErrorText = `需要退出后重新登录`;
-			} else if (res.errorCode == 'SECTION_EXIST_BOARD') {
-				sectionErrorText = `分区中有板块不能删除`;
-			}
-			return;
-		}
-
-		dispatch('updateSections');
+	let deleteDialog = null;
+	// 打开删除确认对话框
+	const openDeleteDialog = (id, name) => {
+		if (deleteDialog == null) return;
+		deleteDialog.openDialog({ id, name });
 	};
-
-	const deleteMutation = createMutation({
-		mutationFn: async () => {
-			let headers = {};
-			if ($userStore.token != null) {
-				headers = {
-					Authorization: `Bearer ${$userStore.token}`
-				};
-			}
-
-			// 必要时刷新Token
-			refreshToken($userStore.token);
-
-			const res = await fetch(`/manage/removeSection/${forum.id}`, {
-				headers
-			}).then((r) => r.json());
-
-			return res;
-		}
-	});
 
 	// 分区向后移
 	const moveSectionForward = () => {};
@@ -189,29 +158,10 @@
 						}}
 					/>
 				</div>
-				<div class="w-1/2">
-					<div class="flex justify-end gap-2">
-						{#if sectionErrorText != null}
-							<span
-								class="flex items-center gap-1 px-2 rounded-md
-								border border-red-400 dark:border-red-400
-								text-red-400 dark:text-red-400"
-								>{sectionErrorText}
-								<button
-									on:click={() => {
-										sectionErrorText = null;
-									}}>×</button
-								>
-							</span>
-						{/if}
-						<IconBtn hintText="删除" on:click={deleteSection}>
-							{#if $deleteMutation.isPending}
-								<LoadingIcon size="1.5em" />
-							{:else}
-								<TrashIcon size="1.5em" />
-							{/if}
-						</IconBtn>
-					</div>
+				<div class="w-1/2 flex justify-end">
+					<IconBtn hintText="删除" on:click={() => openDeleteDialog(forum.id, forum.name)}>
+						<TrashIcon size="1.5em" />
+					</IconBtn>
 				</div>
 			</div>
 		</div>
@@ -223,6 +173,7 @@
 		</IconBtn>
 	</div>
 </li>
+<DeleteSectionDialog bind:this={deleteDialog} on:updateSections />
 {#if $fetchBoards.isPending}
 	<StatusText>获取中...</StatusText>
 {:else if $fetchBoards.isSuccess}
