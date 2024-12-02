@@ -159,8 +159,12 @@
 </script>
 
 <li class="relative flex gap-2 items-center">
+	<div class="flex flex-col gap-2 justify-around">
+		<IconBtn hintText="上移">👆</IconBtn>
+		<IconBtn hintText="下移">👇</IconBtn>
+	</div>
 	<div
-		class="grow relative flex items-center gap-6 bg-violet-100 dark:bg-indigo-400/30
+		class="grow relative flex items-center gap-2 bg-violet-100 dark:bg-indigo-400/30
 		px-4 py-2 rounded-md"
 	>
 		<div class="flex flex-col">
@@ -227,7 +231,7 @@
 			{#each boards as board, index}
 				<SingleBoard {board} {index} on:updateBoards={$fetchBoards.mutate()} />
 			{/each}
-			<li class="ml-14 mr-10">
+			<li class="pl-20 mr-10">
 				{#if boardAdd == null}
 					<button
 						class="bg-indigo-200/50 dark:bg-sky-500/30

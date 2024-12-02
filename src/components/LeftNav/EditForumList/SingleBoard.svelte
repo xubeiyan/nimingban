@@ -120,7 +120,7 @@
 
 <li
 	class="flex items-start gap-2
-        pl-4"
+        pl-10"
 >
 	<div class="flex flex-col gap-4 justify-center self-stretch">
 		<IconBtn hintText="上移" on:click={() => moveBoardBackward(index)}>👆</IconBtn>

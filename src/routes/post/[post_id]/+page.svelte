@@ -3,17 +3,20 @@
 	import { onMount } from 'svelte';
 	import { createMutation } from '@tanstack/svelte-query';
 
-	import SendForm from '../../../components/SendForm.svelte';
-	import PostContent from '../../../components/PostContent.svelte';
-	import ImageViewer from '../../../components/ImageViewer.svelte';
 	import BackIcon from '$svgIcon/back.svelte';
 
 	import { boardStore } from '../../../store/boardStore';
 	import { userStore } from '../../../store/userStore';
 
-	import SecondaryBtn from '../../../components/SecondaryBtn.svelte';
-	import PrimaryBtn from '../../../components/PrimaryBtn.svelte';
+	import { reduceContent } from '$lib/PostManage/utils';
+
+	import SendForm from '$cmpns/SendForm.svelte';
+	import PostContent from '$cmpns/PostContent.svelte';
+	import ImageViewer from '$cmpns/ImageViewer.svelte';
+	import SecondaryBtn from '$cmpns/SecondaryBtn.svelte';
+	import PrimaryBtn from '$cmpns/PrimaryBtn.svelte';
 	import SuperOperationBtn from '$cmpns/SuperOperationBtn.svelte';
+	import RemoveConfirmDialog from '$cmpns/PostManage/removeConfirmDialog.svelte';
 
 	let imageViewer = null;
 	let newCommentForm = null;
@@ -132,8 +135,7 @@
 
 		if (filtered.length != 1) return;
 
-		let { poster_name, poster_email, title, content, edit_time } =
-			updatedComment;
+		let { poster_name, poster_email, title, content, edit_time } = updatedComment;
 
 		filtered[0].content = content;
 		filtered[0].edit_time = edit_time;
@@ -151,6 +153,20 @@
 	};
 
 	let postId = null;
+
+	let removeConfirmDialog = null;
+
+	// 打开删除评论对话框
+	const openRemoveConfirmDialog = (id) => {
+		if (removeConfirmDialog == null) return;
+
+		removeConfirmDialog.openDialog(id);
+	};
+
+	// 删除某条评论
+	const removeComment = ({ id }) => {
+		comments = comments.filter((one) => one.id != id);
+	};
 
 	onMount(() => {
 		boardStore.update((b) => {
@@ -259,9 +275,20 @@
 					{/if}
 				</p>
 				{#if $userStore.type == 'admin'}
-					<SuperOperationBtn on:click={() => openEditForm(comment.content, `comment_${comment.id}`)}
-						>编辑</SuperOperationBtn
-					>
+					<div class="flex gap-1">
+						<SuperOperationBtn
+							type="delete"
+							on:click={() =>
+								openRemoveConfirmDialog({
+									id: comment.id,
+									content: reduceContent(comment.content)
+								})}>删除</SuperOperationBtn
+						>
+						<SuperOperationBtn
+							on:click={() => openEditForm(comment.content, `comment_${comment.id}`)}
+							>编辑</SuperOperationBtn
+						>
+					</div>
 				{:else if $userStore.type == 'user'}
 					{#if data.post.status == 'repliable'}
 						<SecondaryBtn on:click={() => openCommentForm(comment.id)}>回复</SecondaryBtn>
@@ -291,3 +318,4 @@
 	on:edit={handleUpdateComment}
 />
 <ImageViewer bind:this={imageViewer} />
+<RemoveConfirmDialog bind:this={removeConfirmDialog} on:delete={(e) => removeComment(e.detail)} />
