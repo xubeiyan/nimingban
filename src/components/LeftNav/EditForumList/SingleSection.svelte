@@ -125,6 +125,45 @@
 			boardAdd = null;
 		}
 	};
+
+	// 更新分区
+	const handleSectionUpdate = async () => {
+		const res = await $updateSectionMutation.mutateAsync();
+
+		if (res.type == 'ok') {
+			console.log(res);
+			newForum = {
+				name: undefined
+			};
+
+			dispatch('updateSections');
+		}
+	};
+
+	const updateSectionMutation = createMutation({
+		mutationFn: async () => {
+			let headers = {};
+			if ($userStore.token != null) {
+				headers = {
+					Authorization: `Bearer ${$userStore.token}`
+				};
+			}
+
+			// 必要时刷新Token
+			refreshToken($userStore.token);
+
+			const res = await fetch('/manage/updateSection', {
+				method: 'POST',
+				body: JSON.stringify({
+					id: forum.id,
+					name: newForum.name
+				}),
+				headers
+			}).then((r) => r.json());
+
+			return res;
+		}
+	});
 </script>
 
 <li class="relative flex gap-2 items-center">
@@ -168,7 +207,7 @@
 		<div class="absolute top-2 right-2"></div>
 	</div>
 	<div class={newForum.name == undefined ? 'invisible' : ''}>
-		<IconBtn>
+		<IconBtn on:click={handleSectionUpdate}>
 			<CheckIcon />
 		</IconBtn>
 	</div>

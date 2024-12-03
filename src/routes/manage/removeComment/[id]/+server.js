@@ -27,9 +27,8 @@ export const GET = async ({ params, request, locals }) => {
 
 	const deleteCommentResult = await dbconn.query(deleteCommentQuery);
 
-	console.log(deleteCommentResult);
-
 	return json({
-		type: 'ok'
+		type: 'ok',
+		commentCount: deleteCommentResult.rowCount
 	});
 };

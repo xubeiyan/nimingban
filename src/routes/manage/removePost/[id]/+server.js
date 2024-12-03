@@ -20,6 +20,21 @@ export const GET = async ({ params, request, locals }) => {
 	const { dbconn } = locals;
 	const { id } = params;
 
+	const deletePostQuery = {
+		text: `DELETE FROM post WHERE status = 'hidden' AND id = $1`,
+		values: [id]
+	};
+
+	const deletePostResult = await dbconn.query(deletePostQuery);
+
+	const postCount = deletePostResult.rowCount;
+	if (postCount != 1) {
+		return json({
+			type: 'error',
+			errorCode: 'SUCH_POST_NOT_EXIST'
+		});
+	}
+
 	const deleteCommentQuery = {
 		text: `DELETE FROM comment WHERE belong_post_id = $1`,
 		values: [id]
@@ -27,18 +42,9 @@ export const GET = async ({ params, request, locals }) => {
 
 	const deleteCommentResult = await dbconn.query(deleteCommentQuery);
 
-	console.log(deleteCommentResult);
-
-	const deletePostQuery = {
-		text: `DELETE FROM post WHERE id = $1`,
-		values: [id]
-	};
-
-	const deletePostResult = await dbconn.query(deletePostQuery);
-
-	console.log(deletePostResult);
-
 	return json({
-		type: 'ok'
+		type: 'ok',
+		postCount,
+		commentCount: deleteCommentResult.rowCount
 	});
 };

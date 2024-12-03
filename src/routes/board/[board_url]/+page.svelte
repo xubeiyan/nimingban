@@ -19,6 +19,7 @@
 	import PostStatusBar from '$cmpns/PostManage/PostStatusBar.svelte';
 
 	import { reduceContent } from '$lib/PostManage/utils';
+	import DeleteConfimDialog from '$cmpns/PostManage/DeleteConfimDialog.svelte';
 
 	export let data;
 
@@ -132,6 +133,18 @@
 		posts = posts;
 	};
 
+	let deleteConfirmDialog = null;
+	// 打开
+	const openDeleteDialog = (id, content) => {
+		if (deleteConfirmDialog == null) return;
+		deleteConfirmDialog.openDialog({ id, content: reduceContent(content) });
+	};
+
+	const handlePostDelete = ({ id }) => {
+		console.log(id);
+		posts = posts.filter((p) => p.id != id);
+	};
+
 	onMount(() => {
 		// 增加observer使其能够在滚动到页面底部时触发新的请求
 		let observer = new IntersectionObserver((entries) => {
@@ -163,7 +176,7 @@
 			{data.name}
 		</h1>
 		<p
-			class="bg-slate-200 dark:bg-slate-800/50 rounded-md px-6 py-4 shadow-inner shadow-slate-300 dark:shadow-slate-800 mb-4"
+			class="bg-slate-200 dark:bg-slate-950/30 rounded-md px-6 py-4 shadow-inner shadow-slate-300 dark:shadow-slate-800 mb-4"
 		>
 			<PostContent content={data.intro} />
 		</p>
@@ -201,6 +214,7 @@
 					{#if $userStore.type == 'admin'}
 						<PostStatusBar
 							status={post.status}
+							on:openDeleteDialog={() => openDeleteDialog(post.id, post.content)}
 							on:click={() => openModifyPostDialog(post.id, post.status, post.content)}
 						/>
 					{/if}
@@ -231,3 +245,7 @@
 <SendForm bind:this={newPostForm} type="post" on:sendPost={handleSendPost} />
 <ImageViewer bind:this={imageViewer} />
 <PostStatusDialog bind:this={postStatusDialog} on:update={(e) => handleStatusUpdate(e.detail)} />
+<DeleteConfimDialog
+	bind:this={deleteConfirmDialog}
+	on:deletePost={(e) => handlePostDelete(e.detail)}
+/>
