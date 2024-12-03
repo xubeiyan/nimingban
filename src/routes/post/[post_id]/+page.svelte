@@ -148,7 +148,8 @@
 
 	// 是否post_author
 	$: post_author = (c) => {
-		if (data.post.cookies_content == undefined) return '';
+		if (data.post.cookies_content == undefined || data.post.cookies_content == '神秘饼干')
+			return '';
 		return c == data.post.cookies_content ? 'po' : '';
 	};
 
@@ -237,7 +238,7 @@
 				<SecondaryBtn on:click={() => openCommentForm()}>回复</SecondaryBtn>
 			{:else if data.post.status == 'readonly' && $userStore.type == 'user'}
 				<span
-					class="shadow-inner shadow-slate-300 dark:shadow-slate-900 rounded-md px-2 py-1 bg-orange-100 dark:bg-orange-800"
+					class="shadow-inner shadow-slate-300 dark:shadow-slate-900 rounded-md px-2 py-1 bg-orange-100 dark:bg-orange-800/80"
 					>此串不允许回复</span
 				>
 			{/if}
@@ -293,7 +294,7 @@
 					{#if data.post.status == 'repliable'}
 						<SecondaryBtn on:click={() => openCommentForm(comment.id)}>回复</SecondaryBtn>
 					{:else if data.post.status == 'readonly'}
-						<span class="shadow-inner rounded-md px-2 py-1 bg-orange-200 dark:bg-orange-800/80"
+						<span class="shadow-inner rounded-md px-2 py-1 bg-orange-100 dark:bg-orange-800/80"
 							>此串不允许回复</span
 						>
 					{/if}
