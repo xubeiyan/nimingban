@@ -238,10 +238,15 @@
 
 	export const showForm = (params) => {
 		if (params != undefined && params.reply != undefined) {
+			// 回复评论
 			post.commentReplyContent = params.reply;
 		} else if (params != undefined && params.content != undefined && params.postId != undefined) {
+			// 编辑
 			post.content = params.content;
 			postId = params.postId;
+		} else {
+			// 回复串
+			post.commentReplyContent = null;
 		}
 		show = true;
 	};

@@ -6,6 +6,7 @@
 	import InlineCode from './InlineCode.svelte';
 	import Link from './Link.svelte';
 	import Image from './Image.svelte';
+	import Spoiler from './Spoiler.svelte';
 	export let children = [];
 </script>
 
@@ -25,6 +26,8 @@
 			<Link text={child.text} url={child.url} />
 		{:else if child.type == 'image'}
 			<Image alt={child.alt} url={child.url} title={child.title} on:largeImage />
+		{:else if child.type == 'spolier'}
+			<Spoiler children={child.children} />
 		{/if}
 	{/each}
 </p>
