@@ -27,7 +27,11 @@
 	let posts = [];
 	let observer = null;
 
-	$: fetchDataText = $getPostMutation.isPending ? '加载中...' : '已经到底了';
+	$: fetchDataText = $getPostMutation.isPending
+		? '加载中...'
+		: $boardStore.from > $boardStore.total
+			? '没有更多了'
+			: '已经到底了';
 	const getPostMutation = createMutation({
 		mutationFn: async () => {
 			let headers = {};
@@ -62,10 +66,6 @@
 			});
 
 			window.localStorage.setItem('board', JSON.stringify($boardStore));
-
-			if ($boardStore.from > $boardStore.total) {
-				fetchDataText = '没有更多了';
-			}
 		}
 	});
 

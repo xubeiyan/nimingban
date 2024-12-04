@@ -55,7 +55,11 @@
 	};
 
 	//
-	$: fetchDataText = $getCommentMutation.isPending ? '加载中...' : '已经到底了';
+	$: fetchDataText = $getCommentMutation.isPending
+		? '加载中...'
+		: $boardStore.comment_from > $boardStore.comment_total
+			? '没有更多了'
+			: '已经到底了';
 	const getCommentMutation = createMutation({
 		mutationFn: async () => {
 			const post_id = window.location.href.split('/').at(-1);
@@ -86,10 +90,6 @@
 			});
 
 			window.localStorage.setItem('board', JSON.stringify($boardStore));
-
-			if ($boardStore.comment_from > $boardStore.comment_total) {
-				fetchDataText = '没有更多了';
-			}
 		}
 	});
 
