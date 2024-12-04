@@ -7,6 +7,7 @@
 
 <button
 	disabled={disable}
+	type="submit"
 	on:click
 	class="bg-sky-400 hover:bg-sky-300
  dark:bg-sky-600 hover:dark:bg-sky-500

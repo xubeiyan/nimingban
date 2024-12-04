@@ -156,7 +156,12 @@
 
 <div class="w-full shrink-0 {toRightClass} transition-all duration-500">
 	<FormTitle type="login" />
-	<div class="w-full flex flex-col items-center">
+	<form
+		class="w-full flex flex-col items-center"
+		on:submit={(e) => {
+			e.preventDefault();
+		}}
+	>
 		<div class="w-[20em] flex flex-col">
 			<TextInput label="用户名" on:input={handleUsernameInput} error={err.username} />
 			<SecretTextInput label="密码" error={err.password} on:input={handlePasswordInput} />
@@ -168,7 +173,7 @@
 				没有帐号？点击注册
 			</span>
 		</button>
-	</div>
+	</form>
 	{#if err.server.type != null}
 		<div class="mt-8"></div>
 		<AlertMessage type={err.server.type} message={err.server.message} />
