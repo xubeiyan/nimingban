@@ -76,7 +76,7 @@ export async function POST({ locals, request, params }) {
 	// 查找board是否存在
 
 	const boardSearchQuery = {
-		text: `SELECT id, min_post_second, 
+		text: `SELECT id, min_post_second, access_type, 
 		to_char(min_post_timestamp, 'YYYY-MM-DD HH24:MI:SS') AS min_post_time,
 		to_char(now(), 'YYYY-MM-DD HH24:MI:SS') AS current_time 
 		FROM board WHERE url_name = $1 LIMIT 1`,
@@ -102,6 +102,14 @@ export async function POST({ locals, request, params }) {
 			type: 'error',
 			errorCode: 'POST_TOO_FAST',
 			extra: (next_send_time - this_send_time) / 1000
+		});
+	}
+
+	// 是否允许发帖
+	if (boardSearchResult.rows[0].access_type != 'all') {
+		return json({
+			type: 'error',
+			errorCode: 'NOT_SEND_POST_IN_THIS_BOARD'
 		});
 	}
 

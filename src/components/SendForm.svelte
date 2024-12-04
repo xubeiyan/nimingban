@@ -137,6 +137,10 @@
 				sendResponseError = {
 					text: `当前饼干不允许${verb}`
 				};
+			} else if (res.errorCode == 'NOT_SEND_POST_IN_THIS_BOARD') {
+				sendResponseError = {
+					text: `此版块不允许${verb}`
+				};
 			}
 
 			sendBtnStatus = 'failed';
