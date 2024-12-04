@@ -1,6 +1,8 @@
 <script>
 	export let data;
 	import { onMount } from 'svelte';
+	import { afterNavigate } from '$app/navigation';
+
 	import { createMutation } from '@tanstack/svelte-query';
 
 	import BackIcon from '$svgIcon/back.svelte';
@@ -22,9 +24,6 @@
 	let newCommentForm = null;
 
 	let comments = [];
-	let fetchDataText = '加载中...';
-
-	let GET_SIZE = 0;
 
 	// 打开图片预览
 	const openImageViewer = (url) => {
@@ -56,14 +55,13 @@
 	};
 
 	//
+	$: fetchDataText = $getCommentMutation.isPending ? '加载中...' : '已经到底了';
 	const getCommentMutation = createMutation({
 		mutationFn: async () => {
 			const post_id = window.location.href.split('/').at(-1);
 			const res = await fetch(`/comment/${post_id}?from=${$boardStore.comment_from}`).then((r) =>
 				r.json()
 			);
-
-			GET_SIZE = res.getSize;
 
 			let ids = comments.map((c) => c.id);
 
@@ -82,7 +80,7 @@
 			boardStore.update((old) => {
 				return {
 					...old,
-					comment_from: comments.length + res.getSize,
+					comment_from: old.comment_from + res.getSize,
 					comment_total: res.totalComment
 				};
 			});
@@ -169,7 +167,13 @@
 		comments = comments.filter((one) => one.id != id);
 	};
 
-	onMount(() => {
+	afterNavigate(() => {
+		// 跳转到非串页面时不进行请求
+		const type = window.location.href.split('/').at(-2);
+		if (type != 'post') {
+			return;
+		}
+
 		boardStore.update((b) => {
 			return {
 				...b,
@@ -178,16 +182,27 @@
 			};
 		});
 
-		$getCommentMutation.mutateAsync();
+		window.localStorage.setItem('board', JSON.stringify($boardStore));
 
+		// 如果重新请求则将post重置为0
+		if ($boardStore.comment_from == 0) {
+			comments = [];
+			$getCommentMutation.mutate();
+		}
+	});
+
+	onMount(() => {
+		// 增加observer使其能够在滚动到页面底部时触发新的请求
 		let observer = new IntersectionObserver((entries) => {
 			entries.forEach((entry) => {
 				if (entry.isIntersecting) {
-					if ($boardStore.from > $boardStore.total) {
-						fetchDataText = '没有更多了';
+					if ($boardStore.comment_from > $boardStore.comment_total) {
 						return;
 					}
-					$getCommentMutation.mutateAsync();
+					// 避免在页面加载时同时发起
+					if ($getCommentMutation.isSuccess) {
+						$getCommentMutation.mutate();
+					}
 				}
 			});
 		}, {});
