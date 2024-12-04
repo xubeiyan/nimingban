@@ -31,7 +31,7 @@
 		const res = await $searchMutation.mutateAsync();
 		if (res.type != 'ok') {
 			if (res.errorCode == 'THIS_COOKIE_NOT_VALID') {
-				errorText = '“神秘饼干”并不是一个合理的饼干';
+				errorText = '“神秘饼干”不是合理的饼干';
 			} else if (res.errorCode == 'OPERATION_NOT_ALLOWED') {
 				errorText = '当前用户不允许此操作';
 			} else if (['COOKIES_MALFORM', 'INVALID_AUTHORIZATION_HEADER'].includes(res.errorCode)) {
@@ -151,16 +151,22 @@
 		</form>
 		<fieldset class="border border-slate-400 dark:border-slate-300 rounded-md px-3 py-1 mt-2">
 			<legend class="px-1">搜索结果</legend>
-			{#if cookiesList.length == 0 && $searchMutation.isIdle}
+			{#if $searchMutation.isIdle}
 				<div class="mb-2 px-1">未进行搜索</div>
 			{:else if errorText != null}
 				<div class="mb-2 px-1">
-					<span>{errorText}</span>
+					<span
+						class="border border-red-700 dark:border-red-300
+					rounded-md text-red-700 dark:text-red-300
+					px-2 py-1">{errorText}</span
+					>
 				</div>
 			{:else if $searchMutation.isPending}
 				<div class="mb-2 px-1">
 					<span>搜索中...</span>
 				</div>
+			{:else if cookiesList.length == 0}
+				<div class="mb-2 px-1">什么都没找到</div>
 			{:else}
 				<ResultTable
 					{cookiesList}

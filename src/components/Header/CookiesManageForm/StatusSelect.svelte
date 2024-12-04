@@ -59,7 +59,7 @@
 </script>
 
 <button
-	class="relative shadow-inner shadow-slate-300 dark:shadow-slate-700 w-[5em] flex justify-around rounded-md {bgStyle}"
+	class="relative shadow-inner shadow-slate-300 dark:shadow-slate-700 w-[5em] self-center flex justify-around rounded-md {bgStyle}"
 	on:click={toggleStatus}
 >
 	<div class="absolute left-0 transition duration-300 {placeStyle} w-[50%] h-full p-0.5">

@@ -5,6 +5,14 @@
 	const dispatch = createEventDispatcher();
 
 	export let cookiesList = [];
+
+	$: userTypeText = (type) => {
+		if (type == 'user') {
+			return '普通用户';
+		}
+
+		return '未知用户类型';
+	};
 </script>
 
 <table class="w-full">
@@ -36,25 +44,19 @@
 							})}>搜索此用户</button
 					>
 				</td>
-				<td class="text-center">{c.type}</td>
+				<td class="text-center">{userTypeText(c.type)}</td>
 				<td class="text-center">{c.user_create_time}</td>
-				<td class="flex justify-center">
-					<StatusSelect
-						type="user"
-						status={c.user_status}
-						id={c.user_id}
-						on:updateStatus
-					/>
+				<td>
+					<div class="flex justify-center">
+						<StatusSelect type="user" status={c.user_status} id={c.user_id} on:updateStatus />
+					</div>
 				</td>
 				<td class="text-center">{c.content}</td>
 				<td class="text-center">{c.cookie_create_time}</td>
-				<td class="flex justify-center">
-					<StatusSelect
-						type="cookie"
-						status={c.cookie_status}
-						id={c.cookie_id}
-						on:updateStatus
-					/>
+				<td>
+					<div class="flex justify-center">
+						<StatusSelect type="cookie" status={c.cookie_status} id={c.cookie_id} on:updateStatus />
+					</div>
 				</td>
 			</tr>
 		{/each}

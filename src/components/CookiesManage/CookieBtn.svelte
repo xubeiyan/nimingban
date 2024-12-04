@@ -12,7 +12,10 @@
 			class="bg-sky-200/60 hover:bg-sky-200
             dark:bg-indigo-800/70 dark:hover:bg-indigo-800 rounded-md px-1"
 			on:click={() => {
-				$cookieManageStore.cookie = content;
+				cookieManageStore.update((c) => ({
+					username: null,
+					cookie: content
+				}));
 			}}>{content}</button
 		>
 	{:else}
