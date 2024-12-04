@@ -148,6 +148,7 @@
 						<InputLabel>旧密码</InputLabel>
 						<PasswordInput
 							value={form.oldPass}
+							label="oldpass"
 							on:input={(e) => updateInput('oldPass', e.target.value)}
 						/>
 					</label>
@@ -155,6 +156,7 @@
 						<InputLabel>新密码</InputLabel>
 						<PasswordInput
 							value={form.newPass}
+							label="newpass"
 							on:input={(e) => updateInput('newPass', e.target.value)}
 						/>
 					</label>
@@ -162,6 +164,7 @@
 						<InputLabel>确认密码</InputLabel>
 						<PasswordInput
 							value={form.confirm}
+							label="confirm"
 							on:input={(e) => updateInput('confirm', e.target.value)}
 						/>
 					</label>

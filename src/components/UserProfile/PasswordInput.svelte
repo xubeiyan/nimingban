@@ -3,11 +3,13 @@
 	import EyeClosedIcon from '$svgIcon/eyeClosed.svelte';
 	let hide = true;
 	export let value = '';
+	export let label = '';
 </script>
 
 <div class="inline relative grow">
 	<input
 		type={hide ? 'password' : 'text'}
+		id={label}
 		class="bg-transparent border-b-2 w-full
     border-slate-500 focus-within:border-slate-900
 	dark:border-cyan-100 focus-within:dark:border-cyan-200
