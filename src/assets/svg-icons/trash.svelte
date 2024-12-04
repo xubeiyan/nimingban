@@ -1,7 +1,11 @@
+<script>
+	export let size = '2em';
+</script>
+
 <svg
 	class="fill-slate-600 dark:fill-slate-100"
-	width="2em"
-	height="2em"
+	width={size}
+	height={size}
 	viewBox="0 0 24 24"
 	fill="none"
 	xmlns="http://www.w3.org/2000/svg"

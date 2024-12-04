@@ -24,9 +24,9 @@ const hashStringWithSalt = (salt, origin) => {
 // 生成饼干字符串（根据index）
 /**
  * 第一行偏移是
- * index % tempLen 
+ * index % tempLen
  * 第二行偏移是
- * index % tempLen + 
+ * index % tempLen +
  * 	Math.floor(index / tempLen)
  * 第三行偏移是
  * index % tempLen +
@@ -52,7 +52,7 @@ const generateCookiesString = (index) => {
 		const o = (offset + index) % template[0].length;
 		offsetArray.push(o);
 	}
-	
+
 	let resultStr = '';
 	for (let i = 0; i < template.length; ++i) {
 		resultStr += template[i][offsetArray[i]];
@@ -61,4 +61,8 @@ const generateCookiesString = (index) => {
 	return resultStr;
 };
 
-export { generateRandomSaltString, hashStringWithSalt, generateCookiesString };
+export {
+	generateRandomSaltString,
+	hashStringWithSalt,
+	generateCookiesString,
+};

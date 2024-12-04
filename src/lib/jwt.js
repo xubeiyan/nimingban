@@ -40,6 +40,4 @@ const verifyJWTToken = (base64Header, base64Payload, base64Signature, key) => {
 	return false;
 };
 
-const parseJWTTokenPayload = (payload) => {};
-
 export { generateJWTToken, verifyJWTToken };

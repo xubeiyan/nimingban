@@ -4,7 +4,7 @@
 	export let status = 'idle';
 	export let type = 'post';
 
-	$: verb = type == 'post' ? '发串' : '回复串';
+	$: verb = type == 'post' ? '发串' : type == 'edit' ? '编辑串' : '回复串';
 
 	$: text =
 		status == 'idle'

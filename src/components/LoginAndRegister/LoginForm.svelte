@@ -65,9 +65,14 @@
 		const res = await $loginMutation.mutateAsync();
 
 		// 用户名和密码错误
-		if (res.type == 'error' && res.errorCode == 'USERNAME_OR_PASSWORD_WRONG') {
-			err.server.type = 'error';
-			err.server.message = '用户名或密码错误';
+		if (res.type == 'error') {
+			if (res.errorCode == 'USERNAME_OR_PASSWORD_WRONG') {
+				err.server.type = 'error';
+				err.server.message = '用户名或密码错误';
+			} else if (res.errorCode == 'USER_NOT_ENABLE') {
+				err.server.type = 'error';
+				err.server.message = '用户已被禁止登录';
+			}
 			return;
 		}
 
@@ -151,7 +156,12 @@
 
 <div class="w-full shrink-0 {toRightClass} transition-all duration-500">
 	<FormTitle type="login" />
-	<div class="w-full flex flex-col items-center">
+	<form
+		class="w-full flex flex-col items-center"
+		on:submit={(e) => {
+			e.preventDefault();
+		}}
+	>
 		<div class="w-[20em] flex flex-col">
 			<TextInput label="用户名" on:input={handleUsernameInput} error={err.username} />
 			<SecretTextInput label="密码" error={err.password} on:input={handlePasswordInput} />
@@ -163,7 +173,7 @@
 				没有帐号？点击注册
 			</span>
 		</button>
-	</div>
+	</form>
 	{#if err.server.type != null}
 		<div class="mt-8"></div>
 		<AlertMessage type={err.server.type} message={err.server.message} />

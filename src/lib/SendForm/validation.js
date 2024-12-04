@@ -4,7 +4,7 @@
 const validCookies = async ({ dbconn, cookies, authUsername }) => {
 	// 验证 cookies
 	const cookie_query = {
-		text: `SELECT id, belong_user_id FROM cookies WHERE content = $1 LIMIT 1`,
+		text: `SELECT id, belong_user_id, status FROM cookies WHERE content = $1 LIMIT 1`,
 		values: [cookies]
 	};
 
@@ -23,6 +23,16 @@ const validCookies = async ({ dbconn, cookies, authUsername }) => {
 			type: 'error',
 			errorCode: 'WRONG_COOKIES',
 			extra: 'c n e' // cookies not exist
+		};
+	}
+
+	/**
+	 * cookie状态不为enable
+	 */
+	if (cookies_result.rows[0].status != 'enable') {
+		return {
+			type: 'error',
+			errorCode: 'COOKIE_NOT_ENABLE'
 		};
 	}
 

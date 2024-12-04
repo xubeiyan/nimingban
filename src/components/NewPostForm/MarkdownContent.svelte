@@ -329,15 +329,24 @@
 		};
 	};
 
+	// 返回spoiler节点
+	const spoilerLexer = (inlineInput, inToken = []) => {
+		return {
+			type: 'spolier',
+			children: restInlineLexer(inlineInput, [...inToken, 'spoiler'])
+		};
+	};
+
 	// 处理已经被解析为行节点的剩余部分
 	// 只处理 emphasis(强调 *...*) strong(加粗 **...**) 删除线(~~...~~)
 	// inlineCode(行内代码 `...`) link(链接 [...](...)) image(图片 ![...](... ..))
+	// 增加spolier(行内代码 >!...!<)
 	const restInlineLexer = (inlineInput, inToken = []) => {
 		let children = [];
 		let i;
 		for (i = 0; i < inlineInput.length; ++i) {
 			// 包含这些字符，认为不是text节点
-			if ('*`[!~'.includes(inlineInput[i])) {
+			if ('*`[!~>'.includes(inlineInput[i])) {
 				break;
 			}
 		}
@@ -425,6 +434,19 @@
 			}
 
 			return children;
+		}
+
+		// 处理spolier节点
+		if (!inToken.includes('spolier')) {
+			let spolierRegex = /^\>!(.+?)!\<(.*)/.exec(inlineInput);
+			if (spolierRegex != null) {
+				children.push(spoilerLexer(spolierRegex[1], inToken));
+				// 处理后面的部分
+				if (spolierRegex[2] != '') {
+					children.push(...restInlineLexer(spolierRegex[2], inToken));
+				}
+				return children;
+			}
 		}
 
 		children.push({

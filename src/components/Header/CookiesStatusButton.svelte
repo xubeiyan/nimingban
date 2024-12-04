@@ -130,9 +130,9 @@
 						class="group-hover:visible invisible absolute top-[100%] left-[50%] translate-x-[-50%] w-auto"
 					>
 						<div
-							class="size-[1em] bg-gray-200 rotate-45 absolute top-[.5em] left-[50%] translate-x-[-50%]"
+							class="size-[1em] bg-gray-200 dark:bg-gray-800 rotate-45 absolute top-[.5em] left-[50%] translate-x-[-50%]"
 						></div>
-						<div class="rounded-md shadow-sm shadow-gray-700 bg-gray-200 p-2 text-nowrap mt-[1em]">
+						<div class="rounded-md shadow-sm shadow-gray-700 bg-gray-200 dark:bg-gray-800 p-2 text-nowrap mt-[1em]">
 							{lastGetCookies.message}
 						</div>
 					</div>

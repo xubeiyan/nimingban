@@ -14,18 +14,36 @@
 	import PrimaryBtn from '$cmpns/PrimaryBtn.svelte';
 	import ErrorPage from '$cmpns/ErrorPage.svelte';
 	import CommentArea from '$cmpns/CommentArea.svelte';
+	import SuperOperationBtn from '$cmpns/SuperOperationBtn.svelte';
+	import PostStatusDialog from '$cmpns/PostManage/PostStatusDialog.svelte';
+	import PostStatusBar from '$cmpns/PostManage/PostStatusBar.svelte';
+
+	import { reduceContent } from '$lib/PostManage/utils';
+	import DeleteConfimDialog from '$cmpns/PostManage/DeleteConfimDialog.svelte';
+	import CookieBtn from '$cmpns/CookiesManage/CookieBtn.svelte';
 
 	export let data;
 
 	let posts = [];
 	let observer = null;
 
-	$: fetchDataText = $getPostMutation.isPending ? '加载中...' : '已经到底了';
+	$: fetchDataText = $getPostMutation.isPending
+		? '加载中...'
+		: $boardStore.from > $boardStore.total
+			? '没有更多了'
+			: '已经到底了';
 	const getPostMutation = createMutation({
 		mutationFn: async () => {
-			const res = await fetch(
-				`/board/getPosts/${$boardStore.boardUrl}?from=${$boardStore.from}`
-			).then((r) => r.json());
+			let headers = {};
+			if ($userStore.token != null) {
+				headers = {
+					Authorization: `Bearer ${$userStore.token}`
+				};
+			}
+
+			const res = await fetch(`/board/getPosts/${$boardStore.boardUrl}?from=${$boardStore.from}`, {
+				headers
+			}).then((r) => r.json());
 
 			let ids = posts.map((post) => post.id);
 
@@ -48,10 +66,6 @@
 			});
 
 			window.localStorage.setItem('board', JSON.stringify($boardStore));
-
-			if ($boardStore.from > $boardStore.total) {
-				fetchDataText = '没有更多了';
-			}
 		}
 	});
 
@@ -105,6 +119,32 @@
 		}
 	});
 
+	let postStatusDialog = null;
+	// 打开修改串可见性对话框
+	const openModifyPostDialog = (id, status, content) => {
+		if (postStatusDialog == null) return;
+
+		postStatusDialog.openDialog({ id, status, content: reduceContent(content) });
+	};
+
+	const handleStatusUpdate = ({ id, status }) => {
+		const filtered = posts.filter((p) => p.id == id);
+		if (filtered.length != 1) return;
+		filtered[0].status = status;
+		posts = posts;
+	};
+
+	let deleteConfirmDialog = null;
+	// 打开
+	const openDeleteDialog = (id, content) => {
+		if (deleteConfirmDialog == null) return;
+		deleteConfirmDialog.openDialog({ id, content: reduceContent(content) });
+	};
+
+	const handlePostDelete = ({ id }) => {
+		posts = posts.filter((p) => p.id != id);
+	};
+
 	onMount(() => {
 		// 增加observer使其能够在滚动到页面底部时触发新的请求
 		let observer = new IntersectionObserver((entries) => {
@@ -126,8 +166,6 @@
 
 		observer.observe(getMore);
 	});
-
-	onDestroy(() => {});
 </script>
 
 <div class="px-2 md:px-0 container grow mx-auto">
@@ -138,13 +176,15 @@
 			{data.name}
 		</h1>
 		<p
-			class="bg-slate-200 dark:bg-slate-800/50 rounded-md px-6 py-4 shadow-inner shadow-slate-300 dark:shadow-slate-800 mb-4"
+			class="bg-slate-200 dark:bg-slate-950/30 rounded-md px-6 py-4 shadow-inner shadow-slate-300 dark:shadow-slate-800 mb-4"
 		>
 			<PostContent content={data.intro} />
 		</p>
-		<p>
-			<PrimaryBtn on:click={showNewPostForm}>发新串</PrimaryBtn>
-		</p>
+		{#if $userStore.type == 'user'}
+			<p>
+				<PrimaryBtn on:click={showNewPostForm}>发新串</PrimaryBtn>
+			</p>
+		{/if}
 	{/if}
 	{#each posts as post}
 		<div
@@ -160,11 +200,34 @@
 					<span class="dark:text-yellow-100">作者：{post.author}</span>
 					<span class="dark:text-red-100 italic">邮箱：{post.email}</span>
 					<span>写于：{post.post_time}</span>
-					<span class="dark:text-indigo-100">饼干: {post.cookies_content}</span>
+					<CookieBtn content={post.cookies_content} />
+					{#if post.edit_time != null}
+						<span
+							class="
+						bg-red-100
+						dark:text-fuchsia-100 dark:bg-violet-700/20
+						rounded-md px-2 py-1">编辑于：{post.edit_time}</span
+						>
+					{/if}
 				</p>
-				<a href="/post/{post.id}">
-					<SecondaryBtn>详情</SecondaryBtn>
-				</a>
+				<div class="flex gap-2 items-center">
+					{#if $userStore.type == 'admin'}
+						<PostStatusBar
+							status={post.status}
+							on:openDeleteDialog={() => openDeleteDialog(post.id, post.content)}
+							on:click={() => openModifyPostDialog(post.id, post.status, post.content)}
+						/>
+					{/if}
+					{#if post.status == 'readonly' && $userStore.type == 'user'}
+						<span
+							class="shadow-inner shadow-slate-300 dark:shadow-slate-900 rounded-md px-2 py-1 bg-orange-200 dark:bg-orange-800/80"
+							>此串不允许回复</span
+						>
+					{/if}
+					<a href="/post/{post.id}">
+						<SecondaryBtn>详情</SecondaryBtn>
+					</a>
+				</div>
 			</div>
 			<div class="border border-cyan-600 mt-2 py-2 px-4 rounded-sm">
 				<PostContent content={post.content} on:largeImage={(e) => openImageViewer(e.detail)} />
@@ -181,3 +244,8 @@
 
 <SendForm bind:this={newPostForm} type="post" on:sendPost={handleSendPost} />
 <ImageViewer bind:this={imageViewer} />
+<PostStatusDialog bind:this={postStatusDialog} on:update={(e) => handleStatusUpdate(e.detail)} />
+<DeleteConfimDialog
+	bind:this={deleteConfirmDialog}
+	on:deletePost={(e) => handlePostDelete(e.detail)}
+/>

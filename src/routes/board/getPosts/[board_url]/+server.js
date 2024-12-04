@@ -1,6 +1,8 @@
 import { json } from '@sveltejs/kit';
+import { nullToDefaultString } from '$lib/SendForm/string.js';
+import { JWTAuth } from '$lib/auth';
 
-export async function GET({ locals, params, url }) {
+export async function GET({ locals, params, url, request }) {
 	const { board_url } = params;
 
 	const GET_SIZE = 10;
@@ -8,6 +10,29 @@ export async function GET({ locals, params, url }) {
 	let from = url.searchParams.get('from');
 	if (from == undefined) {
 		from = 0;
+	}
+
+	let sql = `SELECT p.id, p.status, p.poster_name, p.poster_email, p.title, p.content,
+		to_char(p.post_timestamp, 'YYYY-MM-DD HH24:MI:SS') AS post_time, 
+		to_char(p.edit_timestamp, 'YYYY-MM-DD HH24:MI:SS') AS edit_time,
+		c.content AS cookies_content
+		FROM post AS p LEFT JOIN cookies AS c ON p.poster_cookies_id = c.id
+		WHERE p.status IN ('repliable', 'readonly') AND p.belong_board_id = $1 
+		ORDER BY post_time DESC LIMIT $2 OFFSET $3`;
+
+	// 如果有认证字段
+	if (request.headers.get('Authorization') != undefined) {
+		const authRes = JWTAuth(request);
+
+		if (authRes.userType == 'admin') {
+			sql = `SELECT p.id, p.status, p.poster_name, p.poster_email, p.title, p.content,
+			to_char(p.post_timestamp, 'YYYY-MM-DD HH24:MI:SS') AS post_time, 
+			to_char(p.edit_timestamp, 'YYYY-MM-DD HH24:MI:SS') AS edit_time,
+			c.content AS cookies_content
+			FROM post AS p LEFT JOIN cookies AS c ON p.poster_cookies_id = c.id WHERE
+			p.belong_board_id = $1 
+			ORDER BY post_time DESC LIMIT $2 OFFSET $3`;
+		}
 	}
 
 	const { dbconn } = locals;
@@ -27,13 +52,7 @@ export async function GET({ locals, params, url }) {
 
 	// 查询对应帖子
 	const query = {
-		text: `
-		SELECT p.id, p.status, p.poster_name, p.poster_email, p.title, p.content, 
-		to_char(p.post_timestamp, 'YYYY-MM-DD HH24:MI:SS') AS post_time, 
-		c.content AS cookies_content
-		FROM post AS p LEFT JOIN cookies AS c ON p.poster_cookies_id = c.id
-		WHERE p.status IN ('repliable', 'readonly') AND p.belong_board_id = $1 
-		ORDER BY post_time DESC LIMIT $2 OFFSET $3`,
+		text: `${sql}`,
 		values: [board_id, GET_SIZE, from]
 	};
 
@@ -46,11 +65,12 @@ export async function GET({ locals, params, url }) {
 			posts.push({
 				id: one.id,
 				status: one.status,
-				author: one.poster_name == 'null' ? '无名氏' : one.poster_name,
-				email: one.poster_email == 'null' ? 'no@name.net' : one.poster_email,
-				title: one.title == 'null' ? '无标题' : one.title,
+				author: nullToDefaultString({ type: 'poster_name', value: one.poster_name }),
+				email: nullToDefaultString({ type: 'poster_email', value: one.poster_email }),
+				title: nullToDefaultString({ type: 'title', value: one.title }),
 				content: one.content,
 				post_time: one.post_time,
+				edit_time: one.edit_time,
 				comments: 'fetching',
 				cookies_content: one.cookies_content == null ? '神秘饼干' : one.cookies_content
 			});

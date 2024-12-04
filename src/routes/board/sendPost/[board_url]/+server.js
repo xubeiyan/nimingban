@@ -4,6 +4,7 @@ import { JWTAuth } from '$lib/auth.js';
 
 import { validCookies, validateImages } from '$lib/SendForm/validation.js';
 import { uploadImages } from '$lib/SendForm/uploadImage.js';
+import { nullStringToEmpty } from '$lib/SendForm/string.js';
 
 const CONTENT_MIN_LENGTH = 10;
 
@@ -19,11 +20,11 @@ export async function POST({ locals, request, params }) {
 	const formData = await request.formData();
 	const toUploadImages = formData?.getAll('image');
 
-	const name = formData?.get('name');
-	const email = formData?.get('email');
-	const title = formData?.get('title');
-	const content = formData?.get('content');
-	const cookies = formData?.get('cookies');
+	const name = nullStringToEmpty(formData?.get('name'));
+	const email = nullStringToEmpty(formData?.get('email'));
+	const title = nullStringToEmpty(formData?.get('title'));
+	const content = nullStringToEmpty(formData?.get('content'));
+	const cookies = nullStringToEmpty(formData?.get('cookies'));
 
 	/* 
 	// 未提供cookies字段
@@ -75,7 +76,7 @@ export async function POST({ locals, request, params }) {
 	// 查找board是否存在
 
 	const boardSearchQuery = {
-		text: `SELECT id, min_post_second, 
+		text: `SELECT id, min_post_second, access_type, 
 		to_char(min_post_timestamp, 'YYYY-MM-DD HH24:MI:SS') AS min_post_time,
 		to_char(now(), 'YYYY-MM-DD HH24:MI:SS') AS current_time 
 		FROM board WHERE url_name = $1 LIMIT 1`,
@@ -101,6 +102,14 @@ export async function POST({ locals, request, params }) {
 			type: 'error',
 			errorCode: 'POST_TOO_FAST',
 			extra: (next_send_time - this_send_time) / 1000
+		});
+	}
+
+	// 是否允许发帖
+	if (boardSearchResult.rows[0].access_type != 'all') {
+		return json({
+			type: 'error',
+			errorCode: 'NOT_SEND_POST_IN_THIS_BOARD'
 		});
 	}
 

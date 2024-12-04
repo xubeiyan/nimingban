@@ -1,6 +1,3 @@
--- 
-SELECT s.id AS section_id, s.section_name AS section_name, b.id AS board_id, b.board_name AS board_name FROM public.section AS s LEFT JOIN public.board AS b ON s.id = b.parent_section_id;
-
 -- Table: public.board
 
 -- DROP TABLE IF EXISTS public.board;
@@ -10,11 +7,12 @@ CREATE TABLE IF NOT EXISTS public.board
     id uuid NOT NULL,
     parent_section_id uuid NOT NULL,
     min_post_second integer NOT NULL DEFAULT 10,
-    min_post_timestamp timestamp with time zone NOT NULL,
-    access_type character(16) COLLATE pg_catalog."default" NOT NULL DEFAULT 'all'::bpchar,
+    min_post_timestamp timestamp without time zone NOT NULL,
+    access_type character varying(16) COLLATE pg_catalog."default" NOT NULL DEFAULT 'all'::character varying,
     name character varying(256) COLLATE pg_catalog."default" NOT NULL,
     url_name character varying(256) COLLATE pg_catalog."default" NOT NULL,
     intro text COLLATE pg_catalog."default",
+    "order" integer,
     CONSTRAINT board_pkey PRIMARY KEY (id)
 )
 
@@ -30,14 +28,14 @@ ALTER TABLE IF EXISTS public.board
 CREATE TABLE IF NOT EXISTS public.comment
 (
     id uuid NOT NULL,
-    belong_post uuid NOT NULL,
+    belong_post_id uuid NOT NULL,
     poster_name character varying(256) COLLATE pg_catalog."default",
     poster_email character varying(256) COLLATE pg_catalog."default",
     title character varying(256) COLLATE pg_catalog."default",
     content text COLLATE pg_catalog."default",
     poster_cookies_id uuid,
-    post_timestamp timestamp with time zone NOT NULL,
-    edit_timestamp timestamp with time zone,
+    post_timestamp timestamp without time zone NOT NULL,
+    edit_timestamp timestamp without time zone,
     CONSTRAINT comment_pkey PRIMARY KEY (id)
 )
 
@@ -54,9 +52,10 @@ CREATE TABLE IF NOT EXISTS public.cookies
 (
     id uuid NOT NULL,
     belong_user_id uuid NOT NULL,
-    create_timestamp timestamp with time zone NOT NULL,
-    expire_timestamp timestamp with time zone NOT NULL,
-    content character(32) COLLATE pg_catalog."default" NOT NULL,
+    create_timestamp timestamp without time zone NOT NULL,
+    expire_timestamp timestamp without time zone NOT NULL,
+    content character varying(32) COLLATE pg_catalog."default",
+    status character varying(16) COLLATE pg_catalog."default",
     CONSTRAINT cookies_pkey PRIMARY KEY (id)
 )
 
@@ -77,8 +76,10 @@ CREATE TABLE IF NOT EXISTS public.post
     title character varying(256) COLLATE pg_catalog."default",
     content text COLLATE pg_catalog."default",
     poster_cookies_id uuid NOT NULL,
-    post_timestamp timestamp with time zone NOT NULL,
-    edit_timestamp timestamp with time zone,
+    post_timestamp timestamp without time zone NOT NULL,
+    edit_timestamp timestamp without time zone,
+    belong_board_id uuid NOT NULL,
+    status character varying(16) COLLATE pg_catalog."default",
     CONSTRAINT post_pkey PRIMARY KEY (id)
 )
 
@@ -94,8 +95,8 @@ ALTER TABLE IF EXISTS public.post
 CREATE TABLE IF NOT EXISTS public.post_comment_image
 (
     id uuid NOT NULL,
-    image_type character(16) COLLATE pg_catalog."default" NOT NULL,
-    exist_type character(16) COLLATE pg_catalog."default" NOT NULL,
+    image_type character varying(16) COLLATE pg_catalog."default" NOT NULL,
+    exist_type character varying(16) COLLATE pg_catalog."default" NOT NULL,
     post_id uuid,
     CONSTRAINT post_comment_image_pkey PRIMARY KEY (id)
 )
@@ -113,6 +114,7 @@ CREATE TABLE IF NOT EXISTS public.section
 (
     id uuid NOT NULL,
     section_name character varying(256) COLLATE pg_catalog."default" NOT NULL,
+    "order" integer,
     CONSTRAINT section_pkey PRIMARY KEY (id)
 )
 
@@ -128,11 +130,12 @@ ALTER TABLE IF EXISTS public.section
 CREATE TABLE IF NOT EXISTS public."user"
 (
     id uuid NOT NULL,
-    status character(16) COLLATE pg_catalog."default" NOT NULL DEFAULT 'enable'::bpchar,
-    username character varying(256) COLLATE pg_catalog."default" NOT NULL,
-    password_hash character varying(128) COLLATE pg_catalog."default" NOT NULL,
-    password_salt character varying(128) COLLATE pg_catalog."default" NOT NULL,
-    type character(16) COLLATE pg_catalog."default" NOT NULL DEFAULT 'user'::bpchar,
+    status character varying(16) COLLATE pg_catalog."default",
+    username character varying(256) COLLATE pg_catalog."default",
+    password_hash character varying(128) COLLATE pg_catalog."default",
+    password_salt character varying(128) COLLATE pg_catalog."default",
+    type character varying(16) COLLATE pg_catalog."default",
+    create_timestamp timestamp without time zone,
     CONSTRAINT user_pkey PRIMARY KEY (id)
 )
 
