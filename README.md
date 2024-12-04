@@ -165,4 +165,4 @@
 - [x] `image`
 - [x] `list`
 - [x] `table`
-- [ ] `spoiler` reddit `>! hidden text !<`
+- [x] `spoiler` 参考reddit `>! hidden text !<`

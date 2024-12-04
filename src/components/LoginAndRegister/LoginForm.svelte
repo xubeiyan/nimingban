@@ -65,9 +65,14 @@
 		const res = await $loginMutation.mutateAsync();
 
 		// 用户名和密码错误
-		if (res.type == 'error' && res.errorCode == 'USERNAME_OR_PASSWORD_WRONG') {
-			err.server.type = 'error';
-			err.server.message = '用户名或密码错误';
+		if (res.type == 'error') {
+			if (res.errorCode == 'USERNAME_OR_PASSWORD_WRONG') {
+				err.server.type = 'error';
+				err.server.message = '用户名或密码错误';
+			} else if (res.errorCode == 'USER_NOT_ENABLE') {
+				err.server.type = 'error';
+				err.server.message = '用户已被禁止登录';
+			}
 			return;
 		}
 

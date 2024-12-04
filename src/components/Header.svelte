@@ -11,6 +11,8 @@
 	import LoginoutButton from './Header/LoginoutButton.svelte';
 	import CookiesStatusButton from './Header/CookiesStatusButton.svelte';
 	import UserProfile from './UserProfile.svelte';
+	import CookiesManageBtn from './Header/CookiesManageBtn.svelte';
+	import CookiesManageForm from './Header/CookiesManageForm.svelte';
 
 	export let leftNavOpen;
 
@@ -51,6 +53,13 @@
 		userProfile.openDialog();
 	};
 
+	let cookieManage = null;
+	// 打开饼干管理
+	const openCookiesManage = () => {
+		if (cookieManage == null) return;
+		cookieManage.showForm();
+	};
+
 	onMount(() => {
 		const userInLocalStorage = window.localStorage.getItem('user');
 		// localStorage 没有则什么都不做
@@ -82,9 +91,12 @@
 			<a href="/" class="hover:underline underline-offset-4">匿名版</a>
 		</div>
 		<div class="flex gap-2 items-center">
+			{#if $userStore.type == 'admin'}
+				<CookiesManageBtn on:click={openCookiesManage} />
+			{/if}
 			{#if $userStore.username != null}
 				{#if $userStore.type == 'user'}
-					<CookiesStatusButton />
+					<CookiesStatusButton on:click={openCookiesManage} />
 				{/if}
 				<button
 					class="flex gap-1 items-center
@@ -110,3 +122,4 @@
 	</div>
 </nav>
 <UserProfile bind:this={userProfile} />
+<CookiesManageForm bind:this={cookieManage}/>

@@ -26,7 +26,14 @@ export const POST = async ({ locals, request }) => {
 		});
 	}
 
-	const { id, password_hash, password_salt, type, status, create_time: createTime } = result.rows[0];
+	const {
+		id,
+		password_hash,
+		password_salt,
+		type,
+		status,
+		create_time: createTime
+	} = result.rows[0];
 
 	// 此用户状态不是enable
 	if (status != 'enable') {
@@ -58,7 +65,8 @@ export const POST = async ({ locals, request }) => {
 	const cookies_query = {
 		text: `SELECT 
 			to_char(expire_timestamp, 'YYYY-MM-DD HH:MI:SS') AS expire_time, 
-			content FROM cookies 
+			content, status
+			FROM cookies 
 			WHERE belong_user_id = $1 LIMIT 10`,
 		values: [id]
 	};

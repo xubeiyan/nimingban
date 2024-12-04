@@ -133,6 +133,10 @@
 				sendResponseError = {
 					text: `串或回复的ID不正确`
 				};
+			} else if (res.errorCode == 'COOKIE_NOT_ENABLE') {
+				sendResponseError = {
+					text: `当前饼干不允许${verb}`
+				};
 			}
 
 			sendBtnStatus = 'failed';

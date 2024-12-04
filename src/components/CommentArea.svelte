@@ -4,6 +4,7 @@
 
 	import PostContent from './PostContent.svelte';
 	import LoadingIcon from '$svgIcon/loading.svelte';
+	import CookieBtn from './CookiesManage/CookieBtn.svelte';
 
 	export let postId = null;
 
@@ -48,7 +49,7 @@
 							<span class="dark:text-yellow-100">作者：{comment.poster_name}</span>
 							<span class="dark:text-red-100 italic">邮箱：{comment.poster_email}</span>
 							<span>写于：{comment.comment_time}</span>
-							<span class="dark:text-indigo-100">饼干：{comment.cookies_content}</span>
+							<CookieBtn content={comment.cookies_content}/>
 							{#if comment.edit_time != null}
 								<span
 									class="

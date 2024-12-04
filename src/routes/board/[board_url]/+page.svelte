@@ -20,6 +20,7 @@
 
 	import { reduceContent } from '$lib/PostManage/utils';
 	import DeleteConfimDialog from '$cmpns/PostManage/DeleteConfimDialog.svelte';
+	import CookieBtn from '$cmpns/CookiesManage/CookieBtn.svelte';
 
 	export let data;
 
@@ -141,7 +142,6 @@
 	};
 
 	const handlePostDelete = ({ id }) => {
-		console.log(id);
 		posts = posts.filter((p) => p.id != id);
 	};
 
@@ -200,7 +200,7 @@
 					<span class="dark:text-yellow-100">作者：{post.author}</span>
 					<span class="dark:text-red-100 italic">邮箱：{post.email}</span>
 					<span>写于：{post.post_time}</span>
-					<span class="dark:text-indigo-100">饼干: {post.cookies_content}</span>
+					<CookieBtn content={post.cookies_content} />
 					{#if post.edit_time != null}
 						<span
 							class="
