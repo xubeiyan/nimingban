@@ -111,7 +111,7 @@
 </script>
 
 <div class="fixed inset-0 z-10 bg-black/20 dark:bg-white/20 transition duration-500 {showStyle} ">
-	<div class="relative container mx-auto mt-[1em] bg-sky-100 dark:bg-sky-700 rounded-md px-4 py-4">
+	<div class="relative container mx-auto mt-[3em] bg-sky-100 dark:bg-sky-700 rounded-md px-4 py-4">
 		<h1 class="text-2xl">饼干管理</h1>
 		<button class="absolute right-4 top-4" type="button" on:click={hideForm}>
 			<CloseIcon />
