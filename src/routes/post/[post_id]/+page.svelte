@@ -174,9 +174,18 @@
 			return;
 		}
 
+		// 修复帖子页面刷新后会将boardUrl重置为null的问题
+		let boardUrlLocalStorage = null;
+		const boardStr = window.localStorage.getItem('board');
+		if (boardStr != undefined) {
+			const board = JSON.parse(boardStr);
+			boardUrlLocalStorage = board.boardUrl;
+		}
+
 		boardStore.update((b) => {
 			return {
 				...b,
+				boardUrl: boardUrlLocalStorage,
 				comment_from: 0,
 				comment_total: 0
 			};

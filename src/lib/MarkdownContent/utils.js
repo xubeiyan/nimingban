@@ -28,9 +28,13 @@ export const supportLang = [
 		display: 'JavaScript'
 	},
     {
-        name: 'react',
-        display: 'React',
+        name: 'jsx',
+        display: 'JSX',
     },
+	{
+		name: 'python',
+		display: 'Python'
+	},
 	{
 		name: 'rust',
 		display: 'Rust'
