@@ -2,12 +2,12 @@
 	import CookiesIcon from '$svgIcon/cookies.svelte';
 	import LoadingIcon from '$svgIcon/loading.svelte';
 	import PlusIcon from '$svgIcon/plus.svelte';
-	import MaskIcon from '$svgIcon/mask.svelte';
 
 	import { onMount } from 'svelte';
 
 	import { userStore } from '../../store/userStore';
 	import { createMutation } from '@tanstack/svelte-query';
+	import SingleCookie from './CookiesStatusButton/SingleCookie.svelte';
 
 	let usingCookies = null;
 
@@ -97,19 +97,12 @@
         shadow-sm dark:shadow-slate-500"
 	>
 		{#each $userStore.cookies as c}
-			<button
-				class="w-full
-                bg-sky-100/80 dark:bg-sky-800/70 hover:bg-sky-100 dark:hover:bg-sky-800
-                rounded-sm h-[2em] flex justify-center items-center gap-1 px-1"
+			<SingleCookie
+				using={usingCookies == c.content}
+				content={c.content}
+				disable={c.status != 'enable'}
 				on:click={() => useCookies(c.content)}
-			>
-				{#if c.content == usingCookies}
-					<MaskIcon />
-				{:else}
-					<span class="inline-block w-[1.5em]"></span>
-				{/if}
-				{c.content}
-			</button>
+			/>
 		{/each}
 		{#if $userStore.cookies.length < 5}
 			<div class="relative">
@@ -132,7 +125,9 @@
 						<div
 							class="size-[1em] bg-gray-200 dark:bg-gray-800 rotate-45 absolute top-[.5em] left-[50%] translate-x-[-50%]"
 						></div>
-						<div class="rounded-md shadow-sm shadow-gray-700 bg-gray-200 dark:bg-gray-800 p-2 text-nowrap mt-[1em]">
+						<div
+							class="rounded-md shadow-sm shadow-gray-700 bg-gray-200 dark:bg-gray-800 p-2 text-nowrap mt-[1em]"
+						>
 							{lastGetCookies.message}
 						</div>
 					</div>
