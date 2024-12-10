@@ -35,16 +35,16 @@ export const refreshToken = (token) => {
 			 * {
 			 * 	"type": "ok",
 			 * 	"token": "eyMJ..."
-			 * } 
-			 * */ 
-			
+			 * }
+			 * */
+
 			if (res.type != 'ok') {
 				return;
 			}
 
 			userStore.update((u) => ({
-				token: res.token,
-				...u
+				...u,
+				token: res.token
 			}));
 
 			const storage = window.localStorage.getItem('user');
