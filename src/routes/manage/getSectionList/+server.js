@@ -1,8 +1,11 @@
 import { json } from '@sveltejs/kit';
-import { JWTAuth } from '$lib/auth.js';
+import { JWTAuth, getJWTSecretDB } from '$lib/auth';
 
 export const GET = async ({ locals, request }) => {
-	const authRes = JWTAuth(request);
+	const { dbconn } = locals;
+
+	const jwt = await getJWTSecretDB(dbconn);
+	const authRes = JWTAuth(request, jwt);
 
 	// 认证错误则返回
 	if (authRes.type != 'ok') {
@@ -16,8 +19,6 @@ export const GET = async ({ locals, request }) => {
 			errorCode: 'OPERATION_NOT_ALLOWED'
 		});
 	}
-
-	const { dbconn } = locals;
 
 	// 查询section表
 	const result = await dbconn.query(`SELECT id, section_name FROM section ORDER BY "order"`);

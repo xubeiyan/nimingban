@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { nullToDefaultString } from '$lib/SendForm/string.js';
-import { JWTAuth } from '$lib/auth';
+import { JWTAuth, getJWTSecretDB } from '$lib/auth.js';
 
 export async function GET({ locals, params, url, request }) {
 	const { board_url } = params;
@@ -20,9 +20,11 @@ export async function GET({ locals, params, url, request }) {
 		WHERE p.status IN ('repliable', 'readonly') AND p.belong_board_id = $1 
 		ORDER BY post_time DESC LIMIT $2 OFFSET $3`;
 
+	const { dbconn } = locals;
 	// 如果有认证字段
 	if (request.headers.get('Authorization') != undefined) {
-		const authRes = JWTAuth(request);
+		const jwt = await getJWTSecretDB(dbconn);
+		const authRes = JWTAuth(request, jwt);
 
 		if (authRes.userType == 'admin') {
 			sql = `SELECT p.id, p.status, p.poster_name, p.poster_email, p.title, p.content,
@@ -34,8 +36,6 @@ export async function GET({ locals, params, url, request }) {
 			ORDER BY post_time DESC LIMIT $2 OFFSET $3`;
 		}
 	}
-
-	const { dbconn } = locals;
 
 	// 获取此区帖子的数量
 	const count_query = {

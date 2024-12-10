@@ -1,8 +1,11 @@
 import { json } from '@sveltejs/kit';
-import { JWTAuth } from '$lib/auth.js';
+import { JWTAuth,getJWTSecretDB } from '$lib/auth.js';
+
 
 export const POST = async ({ request, locals }) => {
-	const authRes = JWTAuth(request);
+	const { dbconn } = locals;
+	const jwt = await getJWTSecretDB(dbconn);
+	const authRes = JWTAuth(request, jwt);
 
 	// 认证错误则返回
 	if (authRes.type != 'ok') {
@@ -17,7 +20,6 @@ export const POST = async ({ request, locals }) => {
 		});
 	}
 
-	const { dbconn } = locals;
 
 	const { name } = await request.json();
 

@@ -15,6 +15,7 @@
 	import CookiesManageForm from './Header/CookiesManageForm.svelte';
 
 	export let leftNavOpen;
+	export let siteName = '未知名称';
 
 	let userProfile = null;
 
@@ -88,7 +89,7 @@
 			>
 				<WidgetIcon open={leftNavOpen} />
 			</button>
-			<a href="/" class="hover:underline underline-offset-4">匿名版</a>
+			<a href="/" class="hover:underline underline-offset-4">{siteName}</a>
 		</div>
 		<div class="flex gap-2 items-center">
 			{#if $userStore.type == 'admin'}
@@ -122,4 +123,4 @@
 	</div>
 </nav>
 <UserProfile bind:this={userProfile} />
-<CookiesManageForm bind:this={cookieManage}/>
+<CookiesManageForm bind:this={cookieManage} />

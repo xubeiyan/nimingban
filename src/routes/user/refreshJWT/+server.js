@@ -1,11 +1,12 @@
-import { JWTAuth } from '$lib/auth.js';
+import { JWTAuth, getJWTSecretDB} from '$lib/auth';
 import { json } from '@sveltejs/kit';
 import { generateJWTToken } from '$lib/jwt.js';
 
 import { JWTSECRET } from '$env/static/private';
 
 export const GET = ({ request }) => {
-	const authRes = JWTAuth(request);
+	const jwt = await getJWTSecretDB(dbconn);
+	const authRes = JWTAuth(request, jwt);
 
 	if (authRes.type != 'ok') {
 		return json(authRes);

@@ -1,8 +1,8 @@
 // 验证是否携带Authorization字段且是否合理
 import { verifyJWTToken } from '$lib/jwt.js';
-import { JWTSECRET } from '$env/static/private';
+import { DEFAULT_JWT_SECRET } from '$env/static/private';
 
-export const JWTAuth = (req) => {
+export const JWTAuth = (req, jwtSecretDb) => {
 	// 验证请求头是否有Bearer 'ey...'的Authorization字段
 	const tokenWithBearer = req.headers.get('Authorization');
 	if (tokenWithBearer == undefined) {
@@ -30,7 +30,13 @@ export const JWTAuth = (req) => {
 		};
 	}
 
-	if (!verifyJWTToken(base64Header, base64Payload, base64Signature, JWTSECRET)) {
+	let jwtSecret = DEFAULT_JWT_SECRET;
+
+	if (jwtSecretDb != undefined) {
+		jwtSecret = jwtSecretDb;
+	}
+
+	if (!verifyJWTToken(base64Header, base64Payload, base64Signature, jwtSecret)) {
 		return {
 			type: 'error',
 			errorCode: 'INVALID_AUTHORIZATION_HEADER'
@@ -56,4 +62,21 @@ export const JWTAuth = (req) => {
 		userType: payload.type,
 		expire: payload.expire
 	};
+};
+
+// 从数据库中取jwt_secret
+export const getJWTSecretDB = async (dbconn) => {
+	const jwtQuery = {
+		text: `SELECT data_type, value FROM site_settings 
+		WHERE "name" = 'jwt_secret' LIMIT 1`
+	};
+
+	const jwtResult = await dbconn.query(jwtQuery);
+
+	let jwtSecret = undefined;
+	if (jwtResult.rowCount == 1 && jwtResult.rows[0].data_type == 'string') {
+		jwtSecret = jwtResult.rows[0].value;
+	}
+
+	return jwtSecret;
 };

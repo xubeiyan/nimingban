@@ -154,7 +154,7 @@
 			dispatch('sendPost');
 		} else if (type == 'comment') {
 			// 发送回帖消息
-			dispatch('sendComment');
+			dispatch('sendComment', { id: res.commentId});
 		} else if (type == 'edit') {
 			dispatch('edit', postId);
 		}
@@ -166,7 +166,8 @@
 			name: null,
 			email: null,
 			title: null,
-			content: null
+			content: null,
+			commentReplyContent: null
 		};
 		attachFile.value = '';
 		attachedFileList = [];

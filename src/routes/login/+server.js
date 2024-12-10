@@ -2,13 +2,15 @@ import { json } from '@sveltejs/kit';
 
 import { hashStringWithSalt } from '$lib/utils.js';
 import { generateJWTToken } from '$lib/jwt.js';
+import { getJWTSecretDB } from '$lib/auth.js';
 
-import { JWTSECRET } from '$env/static/private';
+import { DEFAULT_JWT_SECRET } from '$env/static/private';
 
 export const POST = async ({ locals, request }) => {
 	const { username, password } = await request.json();
-
 	const { dbconn } = locals;
+	const jwt = await getJWTSecretDB(dbconn);
+
 	const query = {
 		text: `SELECT id, password_hash, password_salt, type, status, 
 			to_char(create_timestamp, 'YYYY-MM-DD HH24:MI:SS') AS create_time
@@ -60,7 +62,12 @@ export const POST = async ({ locals, request }) => {
 		expire: new Date().getTime() + 1000 * 60 * 60
 	};
 
-	const token = generateJWTToken(payload, JWTSECRET);
+	let jwtSecret = DEFAULT_JWT_SECRET;
+	if (jwt != undefined) {
+		jwtSecret = jwt;
+	}
+
+	const token = generateJWTToken(payload, jwtSecret);
 
 	const cookies_query = {
 		text: `SELECT 

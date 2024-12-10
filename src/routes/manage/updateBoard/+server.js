@@ -1,8 +1,10 @@
 import { json } from '@sveltejs/kit';
-import { JWTAuth } from '$lib/auth.js';
+import { JWTAuth, getJWTSecretDB } from '$lib/auth';
 
 export const POST = async ({ locals, request }) => {
-	const authRes = JWTAuth(request);
+	const { dbconn } = locals;
+	const jwt = await getJWTSecretDB(dbconn);
+	const authRes = JWTAuth(request, jwt);
 
 	// 认证错误则返回
 	if (authRes.type != 'ok') {
@@ -16,8 +18,6 @@ export const POST = async ({ locals, request }) => {
 			errorCode: 'OPERATION_NOT_ALLOWED'
 		});
 	}
-
-	const { dbconn } = locals;
 
 	const { id, minPostSecond, accessType, name, url, intro } = await request.json();
 

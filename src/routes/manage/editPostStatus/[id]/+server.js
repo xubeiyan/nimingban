@@ -1,8 +1,11 @@
 import { json } from '@sveltejs/kit';
-import { JWTAuth } from '$lib/auth';
+import { JWTAuth, getJWTSecretDB } from '$lib/auth';
 
 export const POST = async ({ request, params, locals }) => {
-	const authRes = JWTAuth(request);
+	const { dbconn } = locals;
+
+	const jwt = await getJWTSecretDB(dbconn);
+	const authRes = JWTAuth(request, jwt);
 
 	// 认证错误则返回
 	if (authRes.type != 'ok') {
@@ -34,8 +37,6 @@ export const POST = async ({ request, params, locals }) => {
 			errorCode: 'INVALID_STATUS'
 		});
 	}
-
-	const { dbconn } = locals;
 
 	const modifyQuery = {
 		text: `UPDATE post SET status = $1
