@@ -123,6 +123,25 @@ TABLESPACE pg_default;
 ALTER TABLE IF EXISTS public.section
     OWNER to nimingban_user;
 
+
+-- Table: public.site_settings
+
+-- DROP TABLE IF EXISTS public.site_settings;
+
+CREATE TABLE IF NOT EXISTS public.site_settings
+(
+    name character varying(64) COLLATE pg_catalog."default" NOT NULL,
+    data_type character varying(64) COLLATE pg_catalog."default" NOT NULL,
+    value character varying(128) COLLATE pg_catalog."default" NOT NULL,
+    description character varying(256) COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT site_settings_pkey PRIMARY KEY (name)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.site_settings
+    OWNER to nimingban_user;
+
 -- Table: public.user
 
 -- DROP TABLE IF EXISTS public."user";
