@@ -1,5 +1,5 @@
 import { json } from '@sveltejs/kit';
-import { JWTAuth } from '$lib/auth.js';
+import { JWTAuth, getJWTSecretDB } from '$lib/auth.js';
 
 import { validCookies, validateImages } from '$lib/SendForm/validation.js';
 import { uploadImages } from '$lib/SendForm/uploadImage.js';
@@ -8,7 +8,9 @@ import { nullStringToEmpty } from '$lib/SendForm/string.js';
 const CONTENT_MIN_LENGTH = 10;
 
 export const POST = async ({ locals, params, request }) => {
-	const authRes = JWTAuth(request);
+	const { dbconn } = locals;
+	const jwt = await getJWTSecretDB(dbconn);
+	const authRes = JWTAuth(request, jwt);
 	// 认证错误则返回
 	if (authRes.type != 'ok') {
 		return json(authRes);
@@ -47,8 +49,6 @@ export const POST = async ({ locals, params, request }) => {
 			extra: null
 		});
 	}
-
-	const { dbconn } = locals;
 
 	// 验证cookie
 	const cookies_result = await validCookies({ dbconn, cookies, authUsername: authRes.username });
@@ -139,5 +139,8 @@ export const POST = async ({ locals, params, request }) => {
 		await dbconn.query(imageInsertQuery);
 	});
 
-	return json({});
+	return json({
+		type: 'ok',
+		commentId: comment_id
+	});
 };

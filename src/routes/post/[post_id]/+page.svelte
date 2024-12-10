@@ -60,6 +60,7 @@
 		: $boardStore.comment_from > $boardStore.comment_total
 			? '没有更多了'
 			: '已经到底了';
+
 	const getCommentMutation = createMutation({
 		mutationFn: async () => {
 			const post_id = window.location.href.split('/').at(-1);
@@ -93,18 +94,26 @@
 		}
 	});
 
-	// 处理发送
-	const handleSendComment = () => {
-		// 如果已经在最后一页
+	// 处理发送评论
+	const handleSendComment = async (e) => {
+		const commentId = e.detail.id;
+		// 如果已经在最后一页，则只需增加那一串内容即可，无需再请求整个
 		if ($boardStore.comment_from > $boardStore.comment_total) {
-			boardStore.update((b) => {
-				return {
-					...b,
-					comment_from: b.comment_from - GET_SIZE
-				};
+			const newComment = await $getSingleCommentMutation.mutateAsync(commentId);
+			let { id, poster_name, poster_email, title, comment_time, content, cookies_content } =
+				newComment;
+
+			comments.push({
+				id,
+				poster_name,
+				poster_email,
+				title,
+				content,
+				comment_time,
+				cookies_content
 			});
 
-			$getCommentMutation.mutateAsync();
+			comments = comments;
 		}
 	};
 
@@ -174,9 +183,18 @@
 			return;
 		}
 
+		// 修复帖子页面刷新后会将boardUrl重置为null的问题
+		let boardUrlLocalStorage = null;
+		const boardStr = window.localStorage.getItem('board');
+		if (boardStr != undefined) {
+			const board = JSON.parse(boardStr);
+			boardUrlLocalStorage = board.boardUrl;
+		}
+
 		boardStore.update((b) => {
 			return {
 				...b,
+				boardUrl: boardUrlLocalStorage,
 				comment_from: 0,
 				comment_total: 0
 			};

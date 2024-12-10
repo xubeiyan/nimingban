@@ -36,12 +36,12 @@
 </script>
 
 <svelte:head>
-	<title>匿名版</title>
+	<title>{data.siteName}</title>
 </svelte:head>
 
 <QueryClientProvider client={queryClient}>
 	<div class="flex flex-col h-screen dark:[color-scheme:dark] text-slate-800 dark:text-slate-100">
-		<Header on:message={handleMessage} {leftNavOpen} />
+		<Header siteName={data.siteName} on:message={handleMessage} {leftNavOpen} />
 		<div class="flex flex-col overflow-x-hidden grow dark:bg-sky-900">
 			<LeftNav
 				open={leftNavOpen}

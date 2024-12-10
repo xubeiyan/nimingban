@@ -12,8 +12,12 @@
 
 <p class="my-1">
 	{#each children as child}
-		{#if child.type == 'text' && child.content != ''}
-			<Text content={child.content} />
+		{#if child.type == 'text'}
+			{#if child.content != ''}
+				<Text content={child.content} />
+			{:else}
+				<br />
+			{/if}
 		{:else if child.type == 'emphasis'}
 			<Emphasis children={child.children} />
 		{:else if child.type == 'strong'}

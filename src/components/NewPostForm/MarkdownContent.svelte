@@ -25,6 +25,8 @@
 		if (input == null) return result;
 		// 替换\r\n和\r为\n
 		input = input.replace(/\r\n|\r/g, '\n');
+		// 替换多个\n为两个\n
+		input = input.replace(/\n{3,}/g, '\n\n');
 
 		// 在表格区块
 		let inTable = false;
@@ -346,7 +348,12 @@
 		let i;
 		for (i = 0; i < inlineInput.length; ++i) {
 			// 包含这些字符，认为不是text节点
-			if ('*`[!~>'.includes(inlineInput[i])) {
+			if ('*`[!~'.includes(inlineInput[i])) {
+				break;
+			}
+
+			// spoiler
+			if (inlineInput[i] == '>' && inlineInput[i + 1] == '!') {
 				break;
 			}
 		}
@@ -474,7 +481,7 @@
 		}
 
 		// 尝试blockquote
-		let quoteRegex = /> (.+)/.exec(inlineInput);
+		let quoteRegex = /^> (.+)/.exec(inlineInput);
 		if (quoteRegex != null) {
 			return {
 				type: 'blockquote',

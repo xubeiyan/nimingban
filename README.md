@@ -28,7 +28,8 @@
 - [x] 版块管理（新建，删除，修改，列表）
 - [x] 版块简介支持 `Markdown` 语法
 - [x] 用户和饼干管理（查询，修改可用性）
-
+- [x] 匿名版参数修改（网站名，JWT）
+- [ ] 管理者添加和更新
 
 ## 路由设计
 
@@ -50,6 +51,7 @@
 | （管理）编辑串状态         | POST /manage/editPostStatus/{id}        |          |
 | （管理）获取版块列表       | GET /manage/getBoardList/{id}           |          |
 | （管理）获取分区列表       | GET /manage/getSectionList              |          |
+| （管理）获取网站设置       | GET /manage/getSettingList              |          |
 | （管理）删除版块           | GET /manage/removeBoard/{id}            |          |
 | （管理）删除评论           | GET /manage/removeComment/{id}          |          |
 | （管理）删除串             | GET /manage/removePost/{id}             |          |
@@ -58,6 +60,7 @@
 | （管理）切换用户或饼干状态 | POST /manage/toggleUserStatus           |          |
 | （管理）更新版块           | POST /manage/updateBoard                |          |
 | （管理）更新分区           | POST /manage/updateSection              |          |
+| （管理）更新网站设置       | POST /manage/updateSetting              |          |
 | 注册                       | POST /register                          |          |
 | 获取饼干                   | GET /user/getNewCookies                 |          |
 | 刷新JWT                    | POST /user/refreshJWT                   |          |
@@ -184,6 +187,26 @@
 | expire_timestamp | timestamp |                           |
 | content          | vchar(32) |                           |
 | status           | vchar(16) | 可用值 `enable` `disable` |
+
+</details>
+
+### site_settings
+
+<details>
+<summary>点击展开 网站设定 表设计</summary>
+
+| 列名        | 数据类型   | 备注 |
+| ----------- | ---------- | ---- |
+| name        | vchar(64)  |      |
+| data_type   | vchar(64)  |      |
+| value       | vchar(128) |      |
+| description | vchar(256) |      |
+
+| 支持的值     | 说明                | 数据类型 | 默认值              |
+| ------------ | ------------------- | -------- | ------------------- |
+| site_name    | 站点名称            | "string" | "匿名版"            |
+| cookie_limit | 饼干限制            | "number" | "5"                 |
+| jwt_secret   | JSON Web Token 密钥 | "string" | "nimingban20241011" |
 
 </details>
 

@@ -1,6 +1,7 @@
 <script>
 	import Link from './Link.svelte';
 	import Text from './Text.svelte';
+	import InlineCode from './InlineCode.svelte';
 
 	export let children = [];
 </script>
@@ -11,6 +12,8 @@
 			<Text content={child.content} />
 		{:else if child.type == 'link'}
 			<Link text={child.text} url={child.url} />
+		{:else if child.type == 'code'}
+			<InlineCode content={child.content} />
 		{/if}
 	{/each}
 </blockquote>

@@ -1,5 +1,19 @@
+import { DEFAULT_SITE_NAME } from '$env/static/private';
+
 export const load = async ({ locals }) => {
 	const { dbconn } = locals;
+	const siteNameQuery = {
+		text: `SELECT data_type, value FROM site_settings 
+		WHERE "name" = 'site_name' LIMIT 1`
+	};
+
+	const siteNameResult = await dbconn.query(siteNameQuery);
+
+	let siteName = DEFAULT_SITE_NAME;
+	if (siteNameResult.rowCount == 1 && siteNameResult.rows[0].data_type == 'string') {
+		siteName = siteNameResult.rows[0].value;
+	}
+
 	// 查询section表中的id和section_name以及board表中的id和board_name
 	const result = await dbconn.query(
 		`SELECT 
@@ -67,5 +81,8 @@ export const load = async ({ locals }) => {
 		});
 	});
 
-	return { forums };
+	return {
+		siteName,
+		forums
+	};
 };

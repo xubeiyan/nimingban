@@ -154,7 +154,7 @@
 			dispatch('sendPost');
 		} else if (type == 'comment') {
 			// 发送回帖消息
-			dispatch('sendComment');
+			dispatch('sendComment', { id: res.commentId});
 		} else if (type == 'edit') {
 			dispatch('edit', postId);
 		}
@@ -166,7 +166,8 @@
 			name: null,
 			email: null,
 			title: null,
-			content: null
+			content: null,
+			commentReplyContent: null
 		};
 		attachFile.value = '';
 		attachedFileList = [];
@@ -281,7 +282,7 @@
 	flex justify-center items-center"
 >
 	<form
-		class="relative {formWidthClass} w-[90%] transition-all duration-500 bg-sky-100 dark:bg-sky-800 py-4 px-6 rounded-md"
+		class="relative {formWidthClass} w-[90%] max-h-[96%] overflow-y-auto transition-all duration-500 bg-sky-100 dark:bg-sky-800 py-4 px-6 rounded-md"
 	>
 		<h1 class="text-2xl mb-6">{formTitle}</h1>
 		<div class="flex gap-2 mb-2">
@@ -301,7 +302,7 @@
 				on:input={(e) => handleInput('title', e.target.value)}
 			/>
 		</div>
-		<div class="relative flex gap-2">
+		<div class="relative flex gap-2 grow">
 			<MutilineContent
 				label="正文"
 				value={post.content}
@@ -317,7 +318,7 @@
 			</button>
 
 			{#if expand}
-				<div class="w-[50%] mt-10">
+				<div class="w-[50%] h-full mt-10 flex flex-col">
 					<MarkdownContent content={post.commentReplyContent} />
 					<MarkdownContent content={post.content} />
 				</div>

@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { JWTAuth, getJWTSecretDB } from '$lib/auth';
 
-export const GET = async ({ locals, request, params }) => {
+export const GET = async ({ locals, request }) => {
 	const { dbconn } = locals;
 	const jwt = await getJWTSecretDB(dbconn);
 	const authRes = JWTAuth(request, jwt);
@@ -19,17 +19,14 @@ export const GET = async ({ locals, request, params }) => {
 		});
 	}
 
-	const { id } = params;
+	const query = {
+		text: `SELECT "name", "value", description FROM site_settings ORDER BY "name"`
+	};
 
-	// 查询section表
-	const result = await dbconn.query({
-		text: `SELECT id, min_post_second, access_type, name, url_name, intro 
-            FROM board WHERE parent_section_id = $1 ORDER BY "order"`,
-		values: [id]
-	});
+	const result = await dbconn.query(query);
 
 	return json({
 		type: 'ok',
-		boards: result.rows
+		settings: result.rows
 	});
 };

@@ -3,4 +3,4 @@
     $: style = border == 'double' ? 'border-t-4 border-double' : '';
 </script>
 
-<hr class="border-slate-800 dark:border-sky-500 {style}" />
+<hr class="my-1 border-slate-800 dark:border-sky-500 {style}" />

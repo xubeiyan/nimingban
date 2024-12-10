@@ -1,16 +1,16 @@
-import { JWTAuth } from '$lib/auth.js';
+import { JWTAuth, getJWTSecretDB } from '$lib/auth';
 import { generateRandomSaltString, hashStringWithSalt } from '$lib/utils.js';
 import { json } from '@sveltejs/kit';
 
 export const POST = async ({ request, locals }) => {
-	const authRes = JWTAuth(request);
+	const { dbconn } = locals;
+	const jwt = await getJWTSecretDB(dbconn);
+	const authRes = JWTAuth(request, jwt);
 
 	// 认证错误则返回
 	if (authRes.type != 'ok') {
 		return json(authRes);
 	}
-
-	const { dbconn } = locals;
 
 	// 查询对应user的password_hash和password_salt
 	const user_query = {

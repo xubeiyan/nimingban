@@ -1,19 +1,19 @@
 import { json } from '@sveltejs/kit';
-import { JWTAuth } from '$lib/auth.js';
+import { JWTAuth, getJWTSecretDB } from '$lib/auth';
 import { generateCookiesString } from '$lib/utils.js';
 
 import { COOKIES_LIMIT } from '$env/static/private';
 import { isMoreThanTillNow } from '$lib/getNewCookies/time.js';
 
 export const GET = async ({ locals, request }) => {
-	const authRes = JWTAuth(request);
+	const { dbconn } = locals;
+	const jwt = await getJWTSecretDB(dbconn);
+	const authRes = JWTAuth(request, jwt);
 
 	// 认证错误则返回
 	if (authRes.type != 'ok') {
 		return json(authRes);
 	}
-
-	const { dbconn } = locals;
 
 	// 查询对应user的id
 	const user_query = {

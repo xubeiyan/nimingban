@@ -13,8 +13,11 @@
 	import UserProfile from './UserProfile.svelte';
 	import CookiesManageBtn from './Header/CookiesManageBtn.svelte';
 	import CookiesManageForm from './Header/CookiesManageForm.svelte';
+	import SiteSettingBtn from './Header/SiteSettingBtn.svelte';
+	import SiteSettingForm from './Header/SiteSettingForm.svelte';
 
 	export let leftNavOpen;
+	export let siteName = '未知名称';
 
 	let userProfile = null;
 
@@ -60,6 +63,13 @@
 		cookieManage.showForm();
 	};
 
+	let siteSetting = null;
+	// 打开网站设置
+	const openSiteSetting = () => {
+		if (siteSetting == null) return;
+		siteSetting.showForm();
+	};
+
 	onMount(() => {
 		const userInLocalStorage = window.localStorage.getItem('user');
 		// localStorage 没有则什么都不做
@@ -88,7 +98,10 @@
 			>
 				<WidgetIcon open={leftNavOpen} />
 			</button>
-			<a href="/" class="hover:underline underline-offset-4">匿名版</a>
+			<a href="/" class="hover:underline underline-offset-4">{siteName}</a>
+			{#if $userStore.type == 'admin'}
+				<SiteSettingBtn on:click={openSiteSetting} />
+			{/if}
 		</div>
 		<div class="flex gap-2 items-center">
 			{#if $userStore.type == 'admin'}
@@ -122,4 +135,5 @@
 	</div>
 </nav>
 <UserProfile bind:this={userProfile} />
-<CookiesManageForm bind:this={cookieManage}/>
+<CookiesManageForm bind:this={cookieManage} />
+<SiteSettingForm bind:this={siteSetting} />

@@ -182,10 +182,11 @@
                     bg-slate-300 hover:bg-slate-400
                     dark:bg-sky-600 dark:hover:bg-sky-500
                     px-3 py-1"
+						disabled={$changePassMutation.isPending}
 						on:click={changePassSubmit}
 					>
 						{#if $changePassMutation.isPending}
-							<LoadingIcon />
+							<LoadingIcon size="1.25em" />
 						{:else}
 							<CheckIcon />
 						{/if}

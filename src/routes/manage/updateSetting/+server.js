@@ -19,27 +19,29 @@ export const POST = async ({ locals, request }) => {
 		});
 	}
 
-	const { id, minPostSecond, accessType, name, url, intro } = await request.json();
+	const { name, value } = await request.json();
 
-	const updateQuery = {
-		text: `UPDATE board SET 
-            min_post_second = $2,
-            access_type = $3,
-            name = $4,
-            url_name = $5,
-            intro = $6
-        WHERE id = $1`,
-		values: [id, minPostSecond, accessType, name, url, intro]
+	if (name == null || value == null) {
+		return json({
+			type: 'error',
+			errorCode: 'INVALID_NAME_OR_VALUE'
+		});
+	}
+
+	const query = {
+		text: `UPDATE site_settings SET "value" = $1 WHERE "name" = $2`,
+		values: [value, name]
 	};
 
-	const result = await dbconn.query(updateQuery);
+	const result = await dbconn.query(query);
 
 	if (result.rowCount != 1) {
 		return json({
-			type: 'warning',
-			warningCode: 'NOT_AFFECT_ONE_ROW'
+			type: 'error',
+			errorCode: 'NOT_AFFECT_ROWS'
 		});
 	}
+
 	return json({
 		type: 'ok'
 	});
