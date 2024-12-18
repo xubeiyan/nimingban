@@ -1,7 +1,18 @@
 import { DEFAULT_SITE_NAME } from '$env/static/private';
 
 export const load = async ({ locals }) => {
+	let siteName = DEFAULT_SITE_NAME;
+
 	const { dbconn } = locals;
+
+	// 如果没有数据库连接则直接返回
+	if (dbconn == undefined) {
+		return {
+			siteName,
+			forums: []
+		};
+	}
+
 	const siteNameQuery = {
 		text: `SELECT data_type, value FROM site_settings 
 		WHERE "name" = 'site_name' LIMIT 1`
@@ -9,7 +20,6 @@ export const load = async ({ locals }) => {
 
 	const siteNameResult = await dbconn.query(siteNameQuery);
 
-	let siteName = DEFAULT_SITE_NAME;
 	if (siteNameResult.rowCount == 1 && siteNameResult.rows[0].data_type == 'string') {
 		siteName = siteNameResult.rows[0].value;
 	}
