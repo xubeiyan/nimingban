@@ -36,6 +36,7 @@ export const load = async ({ locals }) => {
 	// 没有则返回空
 	if (result.rowCount == 0) {
 		return {
+			siteName,
 			forums: []
 		};
 	}
