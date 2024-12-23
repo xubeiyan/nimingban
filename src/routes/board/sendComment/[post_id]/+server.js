@@ -16,8 +16,8 @@ export const POST = async ({ locals, params, request }) => {
 		return json(authRes);
 	}
 
-	const postId = params.post_id;
-	if (postId == undefined || postId == null) {
+	const postId = params.post_id ?? 'invalid';
+	if (postId == 'invalid') {
 		return json({
 			type: 'error',
 			errorCode: 'INVAILD_POST_ID',

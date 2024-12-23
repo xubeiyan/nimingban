@@ -22,9 +22,10 @@ export const POST = async ({ request, params, locals }) => {
 
 	const id = params.id;
 
-	const { status } = await request.json();
+	let { status } = await request.json();
 
-	if (status == undefined || status == null) {
+	status ??= '';
+	if (status == '') {
 		return json({
 			type: 'error',
 			errorCode: 'CHANGE_STATUS_NOT_FOUND'

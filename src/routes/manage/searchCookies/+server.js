@@ -19,16 +19,19 @@ export const POST = async ({ request, locals }) => {
 		});
 	}
 
-	const { username, cookie } = await request.json();
+	let { username, cookie } = await request.json();
 
-	if (cookie == '神秘饼干') {
+	username ??= '';
+	cookie ??= '';
+
+	if (cookie == '' || cookie == '神秘饼干') {
 		return json({
 			type: 'error',
 			errorCode: 'THIS_COOKIE_NOT_VALID'
 		});
 	}
 
-	if (username != null) {
+	if (username != '') {
 		const userSeachQuery = {
 			text: `SELECT u.id AS user_id, u.username, u.status AS user_status, u.type,
 			to_char(u.create_timestamp, 'YYYY-MM-DD HH24:MI:SS') AS user_create_time,

@@ -7,7 +7,19 @@ import { getJWTSecretDB } from '$lib/auth.js';
 import { DEFAULT_JWT_SECRET } from '$env/static/private';
 
 export const POST = async ({ locals, request }) => {
-	const { username, password } = await request.json();
+	let { username, password } = await request.json();
+
+	username ??= '';
+	password ??= '';
+
+	// 如果是空的则返回错误
+	if (username == '' || password == '') {
+		return json({
+			type: 'error',
+			errorCode: 'MISS_USERNAME_OR_PASSWORD'
+		});
+	}
+
 	const { dbconn } = locals;
 	const jwt = await getJWTSecretDB(dbconn);
 

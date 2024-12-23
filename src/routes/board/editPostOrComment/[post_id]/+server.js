@@ -23,8 +23,8 @@ export const POST = async ({ locals, params, request }) => {
 		});
 	}
 
-	const postId = params.post_id;
-	if (postId == undefined || postId == null) {
+	const postId = params.post_id ?? 'invalid';
+	if (postId == 'invalid') {
 		return json({
 			type: 'error',
 			errorCode: 'INVAILD_POST_ID',
@@ -36,7 +36,7 @@ export const POST = async ({ locals, params, request }) => {
 	const name = nullToDefaultString(formData?.get('name'));
 	const email = nullToDefaultString(formData?.get('email'));
 	const title = nullToDefaultString(formData?.get('title'));
-	const content = formData?.get('content');
+	const content = formData?.get('content') ?? 'empty';
 
 	/*
     // 正文内容太少
@@ -45,7 +45,7 @@ export const POST = async ({ locals, params, request }) => {
         errorCode: "CONTENT_LENGTH_TOO_SHORT"
     }
     */
-	if (content == null || content.length < CONTENT_MIN_LENGTH) {
+	if (content == 'empty' || content.length < CONTENT_MIN_LENGTH) {
 		return json({
 			type: 'error',
 			errorCode: 'CONTENT_LENGTH_TOO_SHORT'
@@ -55,11 +55,9 @@ export const POST = async ({ locals, params, request }) => {
 	const postPrefix = postId.split('_').at(0);
 	const id = postId.split('_').at(1);
 
-	let tableName = null;
+	let tableName = 'post';
 	if (postPrefix == 'comment') {
 		tableName = 'comment';
-	} else {
-		tableName = 'post';
 	}
 
 	// 查找post表中的记录

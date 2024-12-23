@@ -4,7 +4,7 @@ module.exports = {
 	extends: ['eslint:recommended', 'plugin:svelte/recommended', 'prettier'],
 	parserOptions: {
 		sourceType: 'module',
-		ecmaVersion: 2020,
+		ecmaVersion: 2021,
 		extraFileExtensions: ['.svelte']
 	},
 	env: {

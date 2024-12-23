@@ -12,10 +12,13 @@ export const POST = async ({ request }) => {
 		database: PGDATABASE
 	});
 
-	const { username, password } = await request.json();
+	let { username, password } = await request.json();
 
-	// 如果是
-	if (username == undefined || password == undefined || username == null || password == null) {
+	username ??= '';
+	password ??= '';
+
+	// 如果是空值（undefined or null）则返回空值
+	if (username == '' || password == '') {
 		return json({
 			type: 'error',
 			errorCode: 'MISS_USERNAME_OR_PASSWORD'
