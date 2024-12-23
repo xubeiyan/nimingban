@@ -52,7 +52,7 @@
 			/>
 			<LoginAndRegister open={loginAndRegistermOpen} on:message={handleMessage} />
 			<slot />
-			<Footer />
+			<Footer package_version={data.pkgVersion} />
 		</div>
 	</div>
 </QueryClientProvider>

@@ -1,4 +1,5 @@
 import { DEFAULT_SITE_NAME } from '$env/static/private';
+import { npm_package_version } from '$env/static/private';
 
 export const load = async ({ locals }) => {
 	let siteName = DEFAULT_SITE_NAME;
@@ -94,6 +95,7 @@ export const load = async ({ locals }) => {
 
 	return {
 		siteName,
-		forums
+		forums,
+		pkgVersion: npm_package_version
 	};
 };
