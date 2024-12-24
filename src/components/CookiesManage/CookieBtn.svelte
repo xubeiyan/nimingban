@@ -6,8 +6,7 @@
 </script>
 
 <span class="dark:text-indigo-100"
-	>饼干：
-	{#if $userStore.type == 'admin'}
+	>饼干：{#if $userStore.type == 'admin'}
 		<button
 			class="bg-sky-200/60 hover:bg-sky-200
             dark:bg-indigo-800/70 dark:hover:bg-indigo-800 rounded-md px-1"
