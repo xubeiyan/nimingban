@@ -251,7 +251,7 @@
 				<span class="dark:text-yellow-100">作者：{data.post.author}</span>
 				<span class="dark:text-red-100 italic">邮箱：{data.post.email}</span>
 				<span>写于：{data.post.post_time}</span>
-				<span class="dark:text-indigo-100">饼干: {data.post.cookies_content}</span>
+				<span class="dark:text-indigo-100">饼干：{data.post.cookies_content}</span>
 				{#if data.post.edit_time != null}
 					<span
 						class="
@@ -291,7 +291,7 @@
 					<span class="dark:text-yellow-100">作者：{comment.poster_name}</span>
 					<span class="dark:text-red-100 italic">邮箱：{comment.poster_email}</span>
 					<span>写于：{comment.comment_time}</span>
-					<span class="dark:text-indigo-100">饼干: {comment.cookies_content} </span>
+					<span class="dark:text-indigo-100">饼干：{comment.cookies_content} </span>
 					{#if post_author(comment.cookies_content) != ''}
 						<span
 							class="shadow-inner shadow-slate-300 dark:shadow-slate-700 bg-slate-200 dark:bg-slate-600 px-2 py-1 rounded-md"

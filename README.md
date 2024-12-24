@@ -234,6 +234,69 @@
 
 1. PostgreSQL
 
-配置好可用的 PostgreSQL 服务，
+配置好可用的 PostgreSQL 服务，例如
 
-2. 
+```
+PGHOST=localhost
+PGUSER=postgres
+PGDATABASE=nimingban
+PGPASSWORD=postgres
+PGPORT=5432
+```
+
+2. 运行环境
+
+目前只在 `node` 下进行了测试，`bun` 或者 `deno` 尚未测试，欢迎测试并提出 PR
+
+已测试 `v18.20.5` 和 `v20.17.0`
+
+### 打包流程
+
+1. Clone 项目
+
+```shell
+# clone到当前目录
+$ git clone https://github.com/xubeiyan/nimingban ./nimingban
+```
+
+2. 安装依赖
+
+假设使用 `pnpm`，其他包管理类似
+
+```shell
+$ cd nimingban
+
+# P参数只安装运行依赖
+$ pnpm i -P
+```
+
+3. 进行打包
+
+会生成在 `./nimingban/build` 文件夹内
+
+```shell
+$ pnpm build
+```
+
+4. 配置环境变量文件
+
+将 `.env.example` 文件复制为 `.env`，并修改里面的内容
+
+```shell
+$ cp .env.example .env
+
+$ nvim .env
+```
+
+5. 启动项目
+
+```shell
+$ node build/index.js
+```
+
+但实际项目中一般会有域名指向此项目，例如`https://nimingban.name.net`，需要设定 `ORIGIN`，否则提交表单会发生跨域错误
+
+```shell
+# linux 指定环境变量
+$ ORIGIN=https://nimingban.name.net node build/index.js
+```
