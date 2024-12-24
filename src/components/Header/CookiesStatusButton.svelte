@@ -49,14 +49,26 @@
 		const res = await $getNewCookiesMuation.mutateAsync();
 		if (res.type != 'ok') {
 			lastGetCookies.status = 'failed';
-			const errorMessages = {
-				'1st need 1 day': '第 1 个饼干需要注册 1 天后才能领取',
-				'2nd need 30 days': '第 2 个饼干需要注册 30 天后才能领取',
-				'3rd need 90 days': '第 3 个饼干需要注册 90 天后才能领取',
-				'4th need 180 days': '第 4 个饼干需要注册 180 天后才能领取',
-				'5th need 365 days': '第 5 个饼干需要注册 365 天后才能领取'
-			};
-			lastGetCookies.message = errorMessages[res.extra];
+			if (res.errorCode == 'NO_SUCH_USER') {
+				lastGetCookies.message = '对应用户不存在';
+			} else if (res.errorCode == 'OPERATION_NOT_ALLOWED') {
+				lastGetCookies.message = '当前用户不允许此操作';
+			} else if (res.errorCode == 'REACH_COOKIES_LIMIT') {
+				lastGetCookies.message = '已到达饼干上限';
+			} else if (['COOKIES_MALFORM', 'INVALID_AUTHORIZATION_HEADER'].includes(res.errorCode)) {
+				lastGetCookies.message = `认证字段不正确`;
+			} else if (res.errorCode == 'AUTHORIZATION_EXPIRE') {
+				lastGetCookies.message = `需要退出后重新登录`;
+			} else if (res.errorCode == 'COOKIES_GETTIME_LIMIT') {
+				const errorMessages = {
+					'1st need 1 day': '第 1 个饼干需要注册 1 天后才能领取',
+					'2nd need 30 days': '第 2 个饼干需要注册 30 天后才能领取',
+					'3rd need 90 days': '第 3 个饼干需要注册 90 天后才能领取',
+					'4th need 180 days': '第 4 个饼干需要注册 180 天后才能领取',
+					'5th need 365 days': '第 5 个饼干需要注册 365 天后才能领取'
+				};
+				lastGetCookies.message = errorMessages[res.extra];
+			}
 
 			return;
 		}

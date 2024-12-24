@@ -4,6 +4,12 @@ import { PGHOST, PGUSER, PGDATABASE, PGPASSWORD, PGPORT } from '$env/static/priv
 import { sequence } from '@sveltejs/kit/hooks';
 
 const db = async ({ event, resolve }) => {
+	// 在访问install路由时不连接数据库
+	if (event.url.pathname.startsWith('/install')) {
+		const response = await resolve(event);
+		return response;
+	}
+
 	const dbconn = await connectToDB({
 		host: PGHOST,
 		user: PGUSER,

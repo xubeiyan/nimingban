@@ -227,3 +227,13 @@
 - [x] `list`
 - [x] `table`
 - [x] `spoiler` 参考reddit `>! hidden text !<`
+
+## 使用方法
+
+### 前置要求
+
+1. PostgreSQL
+
+配置好可用的 PostgreSQL 服务，
+
+2. 

@@ -8,10 +8,10 @@ CREATE TABLE IF NOT EXISTS public.board
     parent_section_id uuid NOT NULL,
     min_post_second integer NOT NULL DEFAULT 10,
     min_post_timestamp timestamp without time zone NOT NULL,
-    access_type character varying(16) COLLATE pg_catalog."default" NOT NULL DEFAULT 'all'::character varying,
-    name character varying(256) COLLATE pg_catalog."default" NOT NULL,
-    url_name character varying(256) COLLATE pg_catalog."default" NOT NULL,
-    intro text COLLATE pg_catalog."default",
+    access_type character varying(16) NOT NULL DEFAULT 'all'::character varying,
+    name character varying(256) NOT NULL,
+    url_name character varying(256) NOT NULL,
+    intro text,
     "order" integer,
     CONSTRAINT board_pkey PRIMARY KEY (id)
 )
@@ -29,10 +29,10 @@ CREATE TABLE IF NOT EXISTS public.comment
 (
     id uuid NOT NULL,
     belong_post_id uuid NOT NULL,
-    poster_name character varying(256) COLLATE pg_catalog."default",
-    poster_email character varying(256) COLLATE pg_catalog."default",
-    title character varying(256) COLLATE pg_catalog."default",
-    content text COLLATE pg_catalog."default",
+    poster_name character varying(256),
+    poster_email character varying(256),
+    title character varying(256),
+    content text,
     poster_cookies_id uuid,
     post_timestamp timestamp without time zone NOT NULL,
     edit_timestamp timestamp without time zone,
@@ -54,8 +54,8 @@ CREATE TABLE IF NOT EXISTS public.cookies
     belong_user_id uuid NOT NULL,
     create_timestamp timestamp without time zone NOT NULL,
     expire_timestamp timestamp without time zone NOT NULL,
-    content character varying(32) COLLATE pg_catalog."default",
-    status character varying(16) COLLATE pg_catalog."default",
+    content character varying(32),
+    status character varying(16),
     CONSTRAINT cookies_pkey PRIMARY KEY (id)
 )
 
@@ -71,15 +71,15 @@ ALTER TABLE IF EXISTS public.cookies
 CREATE TABLE IF NOT EXISTS public.post
 (
     id uuid NOT NULL,
-    poster_name character varying(256) COLLATE pg_catalog."default",
-    poster_email character varying(256) COLLATE pg_catalog."default",
-    title character varying(256) COLLATE pg_catalog."default",
-    content text COLLATE pg_catalog."default",
+    poster_name character varying(256),
+    poster_email character varying(256),
+    title character varying(256),
+    content text,
     poster_cookies_id uuid NOT NULL,
     post_timestamp timestamp without time zone NOT NULL,
     edit_timestamp timestamp without time zone,
     belong_board_id uuid NOT NULL,
-    status character varying(16) COLLATE pg_catalog."default",
+    status character varying(16),
     CONSTRAINT post_pkey PRIMARY KEY (id)
 )
 
@@ -95,8 +95,8 @@ ALTER TABLE IF EXISTS public.post
 CREATE TABLE IF NOT EXISTS public.post_comment_image
 (
     id uuid NOT NULL,
-    image_type character varying(16) COLLATE pg_catalog."default" NOT NULL,
-    exist_type character varying(16) COLLATE pg_catalog."default" NOT NULL,
+    image_type character varying(16) NOT NULL,
+    exist_type character varying(16) NOT NULL,
     post_id uuid,
     CONSTRAINT post_comment_image_pkey PRIMARY KEY (id)
 )
@@ -113,7 +113,7 @@ ALTER TABLE IF EXISTS public.post_comment_image
 CREATE TABLE IF NOT EXISTS public.section
 (
     id uuid NOT NULL,
-    section_name character varying(256) COLLATE pg_catalog."default" NOT NULL,
+    section_name character varying(256) NOT NULL,
     "order" integer,
     CONSTRAINT section_pkey PRIMARY KEY (id)
 )
@@ -130,10 +130,10 @@ ALTER TABLE IF EXISTS public.section
 
 CREATE TABLE IF NOT EXISTS public.site_settings
 (
-    name character varying(64) COLLATE pg_catalog."default" NOT NULL,
-    data_type character varying(64) COLLATE pg_catalog."default" NOT NULL,
-    value character varying(128) COLLATE pg_catalog."default" NOT NULL,
-    description character varying(256) COLLATE pg_catalog."default" NOT NULL,
+    name character varying(64) NOT NULL,
+    data_type character varying(64) NOT NULL,
+    value character varying(128) NOT NULL,
+    description character varying(256) NOT NULL,
     CONSTRAINT site_settings_pkey PRIMARY KEY (name)
 )
 
@@ -149,11 +149,11 @@ ALTER TABLE IF EXISTS public.site_settings
 CREATE TABLE IF NOT EXISTS public."user"
 (
     id uuid NOT NULL,
-    status character varying(16) COLLATE pg_catalog."default",
-    username character varying(256) COLLATE pg_catalog."default",
-    password_hash character varying(128) COLLATE pg_catalog."default",
-    password_salt character varying(128) COLLATE pg_catalog."default",
-    type character varying(16) COLLATE pg_catalog."default",
+    status character varying(16),
+    username character varying(256),
+    password_hash character varying(128),
+    password_salt character varying(128),
+    type character varying(16),
     create_timestamp timestamp without time zone,
     CONSTRAINT user_pkey PRIMARY KEY (id)
 )
