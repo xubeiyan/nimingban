@@ -1,11 +1,12 @@
 <script>
-    export let highlight = false;
-    $: strokeColor = highlight ? 'stroke-slate-100' : 'stroke-slate-800';
+	export let highlight = false;
+	$: strokeColor = highlight ? 'stroke-slate-100' : 'stroke-slate-800';
 </script>
+
 <svg
 	width="2em"
 	height="2em"
-    class={strokeColor}
+	class={strokeColor}
 	viewBox="0 0 32 32"
 	xmlns="http://www.w3.org/2000/svg"
 	fill="none"

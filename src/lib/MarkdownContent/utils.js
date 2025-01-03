@@ -27,10 +27,10 @@ export const supportLang = [
 		name: 'javascript',
 		display: 'JavaScript'
 	},
-    {
-        name: 'jsx',
-        display: 'JSX',
-    },
+	{
+		name: 'jsx',
+		display: 'JSX'
+	},
 	{
 		name: 'python',
 		display: 'Python'

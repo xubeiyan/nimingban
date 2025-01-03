@@ -154,7 +154,7 @@
 			dispatch('sendPost');
 		} else if (type == 'comment') {
 			// 发送回帖消息
-			dispatch('sendComment', { id: res.commentId});
+			dispatch('sendComment', { id: res.commentId });
 		} else if (type == 'edit') {
 			dispatch('edit', postId);
 		}

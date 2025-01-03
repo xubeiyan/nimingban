@@ -2,7 +2,7 @@
 	width="1.25em"
 	height="1.25em"
 	viewBox="0 0 24 24"
-    class="fill-slate-700 dark:fill-slate-100"
+	class="fill-slate-700 dark:fill-slate-100"
 	fill="none"
 	xmlns="http://www.w3.org/2000/svg"
 >

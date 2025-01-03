@@ -2,7 +2,7 @@
 	width="1em"
 	height="1em"
 	viewBox="0 0 24 24"
-    class="stroke-zinc-700 dark:stroke-zinc-100"
+	class="stroke-zinc-700 dark:stroke-zinc-100"
 	fill="none"
 	xmlns="http://www.w3.org/2000/svg"
 >

@@ -1,6 +1,5 @@
 import { json } from '@sveltejs/kit';
-import { JWTAuth,getJWTSecretDB } from '$lib/auth.js';
-
+import { JWTAuth, getJWTSecretDB } from '$lib/auth.js';
 
 export const POST = async ({ request, locals }) => {
 	const { dbconn } = locals;
@@ -19,7 +18,6 @@ export const POST = async ({ request, locals }) => {
 			errorCode: 'OPERATION_NOT_ALLOWED'
 		});
 	}
-
 
 	const { name } = await request.json();
 

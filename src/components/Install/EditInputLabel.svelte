@@ -23,7 +23,7 @@
 			}).then((r) => r.json());
 
 			if (res.type == 'ok') {
-                postBody.value = null;
+				postBody.value = null;
 				dispatch('update');
 			}
 		}

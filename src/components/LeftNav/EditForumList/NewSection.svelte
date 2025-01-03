@@ -32,7 +32,7 @@
 				headers
 			}).then((r) => r.json());
 
-            return res;
+			return res;
 		}
 	});
 

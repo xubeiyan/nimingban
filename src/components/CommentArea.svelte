@@ -49,7 +49,7 @@
 							<span class="dark:text-yellow-100">作者：{comment.poster_name}</span>
 							<span class="dark:text-red-100 italic">邮箱：{comment.poster_email}</span>
 							<span>写于：{comment.comment_time}</span>
-							<CookieBtn content={comment.cookies_content}/>
+							<CookieBtn content={comment.cookies_content} />
 							{#if comment.edit_time != null}
 								<span
 									class="
