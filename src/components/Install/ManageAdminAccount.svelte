@@ -59,6 +59,7 @@
 			!/[a-z]/.test(toAddUser.password)
 		) {
 			errorText = `密码必须包含至少一个大写字母，一个小写字母，一个数字。当前密码为${toAddUser.password}`;
+			return;
 		}
 
 		return 'pass';

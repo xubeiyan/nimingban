@@ -288,6 +288,13 @@ $ cp .env.example .env
 $ nvim .env
 ```
 
+修改 `IMAGE_UPLOAD_PATH` 至可用的位置，`./uploadImages` 表示`nimingban/uploadImages` 文件夹
+
+```
+# 图片上传位置
+IMAGE_UPLOAD_PATH=./uploadImages
+```
+
 5. 启动项目
 
 ```shell
@@ -300,3 +307,30 @@ $ node build/index.js
 # linux 指定环境变量
 $ ORIGIN=https://nimingban.name.net node build/index.js
 ```
+
+```bat
+> REM windows 指定环境变量
+> set ORIGIN=https://nimingban.name.net 
+> node build\index.js
+```
+
+### 生产环境额外配置
+
+1. 配置 `Web` 服务器直接处理图片请求加快图像访问（以 `nginx` 为例）
+
+```conf
+# /etc/nginx/site-avaliable/nimingban.name.net
+server {
+    ...
+
+    # 指定 /images/ 路径
+    location /images/ {
+        alias /opt/nimingban/uploadImages/;
+    }
+
+    ...
+}
+
+```
+
+

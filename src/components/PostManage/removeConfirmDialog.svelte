@@ -92,7 +92,7 @@
 				>
 			{/if}
 			<button
-				class="bg-sky-200 px-2 py-1 rounded-md"
+				class="bg-sky-200/80 hover:bg-sky-200 dark:bg-sky-600/80 dark:hover:bg-sky-600 px-2 py-1 rounded-md"
 				on:click={() => {
 					$removeCommentMutation.mutate();
 				}}
