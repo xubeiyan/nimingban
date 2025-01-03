@@ -1,19 +1,10 @@
-import { dev } from '$app/environment';
 import { readFile } from 'fs/promises';
 import { error } from '@sveltejs/kit';
 
 import { supportImageExt } from '$lib/SendForm/uploadImage.js';
 
-// 1. 从配置文件读取的上传地址
-import { DEFAULT_IMAGE_UPLOAD_PATH } from '$env/static/private';
-
-// 2. 默认上传地址
-let IMAGE_UPLOAD_PATH = './static/images';
-
-// dev模式下使用2，prod模式下使用1
-if (!dev) {
-	IMAGE_UPLOAD_PATH = DEFAULT_IMAGE_UPLOAD_PATH;
-}
+// 从配置文件读取的上传地址
+import { IMAGE_UPLOAD_PATH } from '$env/static/private';
 
 export const GET = async ({ params }) => {
 	const { file_name } = params;
