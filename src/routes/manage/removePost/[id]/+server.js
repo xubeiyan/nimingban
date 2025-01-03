@@ -1,7 +1,8 @@
 import { json } from '@sveltejs/kit';
-import { JWTAuth, getJWTSecretDB} from '$lib/auth';
+import { JWTAuth, getJWTSecretDB } from '$lib/auth';
 
 export const GET = async ({ params, request, locals }) => {
+	const { dbconn } = locals;
 	const jwt = await getJWTSecretDB(dbconn);
 	const authRes = JWTAuth(request, jwt);
 
@@ -18,7 +19,6 @@ export const GET = async ({ params, request, locals }) => {
 		});
 	}
 
-	const { dbconn } = locals;
 	const { id } = params;
 
 	const deletePostQuery = {

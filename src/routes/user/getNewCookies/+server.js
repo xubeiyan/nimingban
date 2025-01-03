@@ -2,7 +2,7 @@ import { json } from '@sveltejs/kit';
 import { JWTAuth, getJWTSecretDB } from '$lib/auth';
 import { generateCookiesString } from '$lib/utils.js';
 
-import { COOKIES_LIMIT } from '$env/static/private';
+import { DEFAULT_COOKIE_LIMIT } from '$env/static/private';
 import { isMoreThanTillNow } from '$lib/getNewCookies/time.js';
 
 export const GET = async ({ locals, request }) => {
@@ -48,7 +48,7 @@ export const GET = async ({ locals, request }) => {
 	 * 到达最大cookie数量
 	 */
 	const { total_count, cookies_count } = cookies_result.rows[0];
-	if (cookies_count >= COOKIES_LIMIT) {
+	if (cookies_count >= DEFAULT_COOKIE_LIMIT) {
 		return json({
 			type: 'error',
 			errorCode: 'REACH_COOKIES_LIMIT'
