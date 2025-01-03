@@ -44,10 +44,12 @@ export const GET = async ({ locals, request }) => {
 
 	const cookies_result = await dbconn.query(cookies_query);
 
+	const cookies_limit = DEFAULT_COOKIE_LIMIT;
 	/**
 	 * 到达最大cookie数量
 	 */
 	const { total_count, cookies_count } = cookies_result.rows[0];
+
 	if (cookies_count >= DEFAULT_COOKIE_LIMIT) {
 		return json({
 			type: 'error',
