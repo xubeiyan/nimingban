@@ -1,5 +1,17 @@
-// 图片上传路径，如果使用相对路径，则是从packages.json开始计算
-const IMAGE_UPLOAD_PATH = './static/images';
+// 从配置文件读取的上传地址
+import { IMAGE_UPLOAD_PATH } from '$env/static/private';
+
+const ext = {
+	'image/png': 'png',
+	'image/jpeg': 'jpg',
+	'image/gif': 'gif',
+	'image/webp': 'webp',
+	'image/avif': 'avif'
+};
+
+// 支持的文件格式
+export const supportImageExt = Object.fromEntries(Object.entries(ext).map(([k, v]) => [v, k]));
+
 // 图片引用路径
 const IMAGE_URL_PATH = '/images';
 
@@ -12,13 +24,6 @@ export const uploadImages = (content, toUploadImages) => {
 		return { replaceImageUrlContent: content, uploaded: [] };
 	}
 	// 上传图片，使用uuid名称作为文件名
-	const ext = {
-		'image/png': 'png',
-		'image/jpeg': 'jpg',
-		'image/gif': 'gif',
-		'image/webp': 'webp',
-		'image/avif': 'avif'
-	};
 	const uploaded = [];
 
 	toUploadImages.map(async (one) => {

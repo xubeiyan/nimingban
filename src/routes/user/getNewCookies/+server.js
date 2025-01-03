@@ -49,7 +49,8 @@ export const GET = async ({ locals, request }) => {
 	 * 到达最大cookie数量
 	 */
 	const { total_count, cookies_count } = cookies_result.rows[0];
-	if (cookies_count >= cookies_limit) {
+
+	if (cookies_count >= DEFAULT_COOKIE_LIMIT) {
 		return json({
 			type: 'error',
 			errorCode: 'REACH_COOKIES_LIMIT'
