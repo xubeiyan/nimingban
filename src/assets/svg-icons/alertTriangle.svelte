@@ -1,7 +1,7 @@
 <svg
 	width="2em"
 	height="2em"
-    class="stroke-amber-400 dark:stroke-amber-600"
+	class="stroke-amber-400 dark:stroke-amber-600"
 	viewBox="0 0 24 24"
 	fill="none"
 	xmlns="http://www.w3.org/2000/svg"

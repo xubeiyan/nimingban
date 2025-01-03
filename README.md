@@ -29,7 +29,8 @@
 - [x] 版块简介支持 `Markdown` 语法
 - [x] 用户和饼干管理（查询，修改可用性）
 - [x] 匿名版参数修改（网站名，JWT）
-- [ ] 管理者添加和更新
+- [x] 增加 `web` 界面的安装过程
+- [x] 管理者添加和更新（在安装过程中配置）
 
 ## 路由设计
 
@@ -310,7 +311,7 @@ $ ORIGIN=https://nimingban.name.net node build/index.js
 
 ```bat
 > REM windows 指定环境变量
-> set ORIGIN=https://nimingban.name.net 
+> set ORIGIN=https://nimingban.name.net
 > node build\index.js
 ```
 
@@ -332,5 +333,3 @@ server {
 }
 
 ```
-
-

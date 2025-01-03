@@ -55,7 +55,6 @@
 		});
 
 		closeDialog();
-
 	};
 
 	const deleteMutation = createMutation({

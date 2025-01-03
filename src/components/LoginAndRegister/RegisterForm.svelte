@@ -121,7 +121,7 @@
 
 				setTimeout(handler, 1000);
 			};
-            
+
 			handler();
 		}
 	};

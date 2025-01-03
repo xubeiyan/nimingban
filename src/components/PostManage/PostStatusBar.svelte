@@ -35,7 +35,7 @@
 	{#if status == 'hidden'}
 		<button
 			class="flex justify-center items-center
-		rounded-sm size-[1.5em] 
+		rounded-sm size-[1.5em]
 		bg-red-300/50 hover:bg-red-300/80
 		dark:bg-red-500/30 dark:hover:bg-red-500/50"
 			on:click={openDeleteDialog}

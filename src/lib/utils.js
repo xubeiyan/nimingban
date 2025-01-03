@@ -61,8 +61,4 @@ const generateCookiesString = (index) => {
 	return resultStr;
 };
 
-export {
-	generateRandomSaltString,
-	hashStringWithSalt,
-	generateCookiesString,
-};
+export { generateRandomSaltString, hashStringWithSalt, generateCookiesString };

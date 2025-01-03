@@ -12,7 +12,7 @@
 
 <label class="flex flex-col mb-4">
 	<span class="mb-1 pl-1">{label}</span>
-	<input class={textInputStyle} on:input/>
+	<input class={textInputStyle} on:input />
 	{#if error != null}
 		<span class="pl-1 pt-1 text-sm text-red-800 dark:text-red-300">{error}</span>
 	{/if}

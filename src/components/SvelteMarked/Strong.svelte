@@ -1,7 +1,7 @@
 <script>
 	import InlineCode from './InlineCode.svelte';
 	import Text from './Text.svelte';
-	
+
 	export let children = [];
 </script>
 

@@ -62,7 +62,6 @@
 			closeDialog();
 		}
 	});
-	
 </script>
 
 <div

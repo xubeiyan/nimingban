@@ -1,5 +1,5 @@
 <svg
-    class="fill-zinc-500 dark:fill-zinc-400"
+	class="fill-zinc-500 dark:fill-zinc-400"
 	width="1em"
 	height="1em"
 	viewBox="0 0 24 24"
