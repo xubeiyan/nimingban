@@ -193,7 +193,7 @@
 		// console.log(codeblockArray);
 		const langText = codeblockArray[0].substring(3);
 
-		let language = '普通文本';
+		let language = 'PlainText';
 
 		if (langText != '') {
 			const filtered = supportLang.filter((one) => one.name == langText);
