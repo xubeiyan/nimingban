@@ -88,7 +88,7 @@
 	});
 </script>
 
-<nav class="bg-sky-100 dark:bg-sky-950 dark:text-white p-2 flex justify-center z-10 shadow-md">
+<nav class="bg-sky-100 dark:bg-sky-950 dark:text-white p-2 flex justify-center z-20 shadow-md">
 	<div class="container flex justify-between items-center">
 		<div class="flex gap-2 items-center">
 			<button

@@ -19,7 +19,7 @@
 </script>
 
 <div
-	class="fixed w-full h-screen {open_class} bg-slate-800/20 dark:bg-slate-800/90 transition-transform duration-500 ease-in-out"
+	class="fixed w-full h-screen z-10 {open_class} bg-slate-800/20 dark:bg-slate-800/90 transition-transform duration-500 ease-in-out"
 >
 	<div class="container flex gap-4 h-[95%] m-auto">
 		<div class="relative w-[15em] bg-sky-100 dark:bg-sky-800 h-full p-4 shrink-0">
