@@ -198,7 +198,7 @@
 		if (langText != '') {
 			const filtered = supportLang.filter((one) => one.name == langText);
 			if (filtered.length == 1) {
-				language = filtered[0].display;
+				language = filtered[0].name;
 			}
 		}
 
