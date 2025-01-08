@@ -31,7 +31,7 @@
 	};
 </script>
 
-<div class="mb-2 relative">
+<div class="mb-2 relative z-0">
 	<div class="bg-sky-200 dark:bg-sky-600 px-3 py-1 rounded-t-md">
 		<span class="text-slate-700 dark:text-slate-200 font-bold text-sm">{languageText()}</span>
 	</div>
