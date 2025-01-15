@@ -24,13 +24,6 @@ export const POST = async ({ request, locals }) => {
 	username ??= '';
 	cookie ??= '';
 
-	if (cookie == '' || cookie == '神秘饼干') {
-		return json({
-			type: 'error',
-			errorCode: 'THIS_COOKIE_NOT_VALID'
-		});
-	}
-
 	if (username != '') {
 		const userSeachQuery = {
 			text: `SELECT u.id AS user_id, u.username, u.status AS user_status, u.type,
