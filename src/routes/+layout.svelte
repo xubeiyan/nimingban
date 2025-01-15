@@ -42,7 +42,9 @@
 <QueryClientProvider client={queryClient}>
 	<div class="flex flex-col h-screen dark:[color-scheme:dark] text-slate-800 dark:text-slate-100">
 		<Header siteName={data.siteName} on:message={handleMessage} {leftNavOpen} />
-		<div class="flex flex-col overflow-x-hidden grow dark:bg-sky-900">
+		<div class="flex flex-col overflow-x-hidden grow bg-gradient-to-br
+		from-slate-50 to-gray-100
+		 dark:from-sky-900 dark:to-cyan-900">
 			<LeftNav
 				open={leftNavOpen}
 				forums={data.forums}
