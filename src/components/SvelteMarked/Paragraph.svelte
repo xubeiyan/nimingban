@@ -10,13 +10,11 @@
 	export let children = [];
 </script>
 
-<p class="my-1">
+<p class="my-1 empty:h-[0.75rem]">
 	{#each children as child}
 		{#if child.type == 'text'}
 			{#if child.content != ''}
 				<Text content={child.content} />
-			{:else}
-				<br />
 			{/if}
 		{:else if child.type == 'emphasis'}
 			<Emphasis children={child.children} />
