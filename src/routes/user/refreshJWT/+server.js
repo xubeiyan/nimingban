@@ -6,7 +6,7 @@ import { DEFAULT_JWT_SECRET } from '$env/static/private';
 
 export const GET = async ({ request, locals }) => {
 	const { dbconn } = locals;
-	const jwt = await getJWTSecretDB(dbconn);
+	const { secret: jwt } = await getJWTSecretDB(dbconn);
 	const authRes = JWTAuth(request, jwt);
 
 	if (authRes.type != 'ok') {

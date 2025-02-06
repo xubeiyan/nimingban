@@ -23,7 +23,7 @@ export async function GET({ locals, params, url, request }) {
 	const { dbconn } = locals;
 	// 如果有认证字段
 	if (request.headers.get('Authorization') != undefined) {
-		const jwt = await getJWTSecretDB(dbconn);
+		const { secret: jwt } = await getJWTSecretDB(dbconn);
 		const authRes = JWTAuth(request, jwt);
 
 		if (authRes.userType == 'admin') {

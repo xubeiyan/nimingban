@@ -1,9 +1,8 @@
 import { json } from '@sveltejs/kit';
 import { JWTAuth, getJWTSecretDB } from '$lib/auth';
 
-export const POST = async ({ request, params, locals }) => {
+export const POST = async ({ locals, request }) => {
 	const { dbconn } = locals;
-
 	const { secret: jwt } = await getJWTSecretDB(dbconn);
 	const authRes = JWTAuth(request, jwt);
 
@@ -20,37 +19,40 @@ export const POST = async ({ request, params, locals }) => {
 		});
 	}
 
-	const id = params.id;
+	let { post_id, to_board_id } = await request.json();
 
-	let { status } = await request.json();
+	post_id ??= 'invalid';
+	to_board_id ??= 'invalid';
 
-	status ??= '';
-	if (status == '') {
+	// 移动的串id
+	if (post_id == 'invalid') {
 		return json({
 			type: 'error',
-			errorCode: 'CHANGE_STATUS_NOT_FOUND'
+			errorCode: 'INVAILD_POST_ID',
+			extra: 'n p i'
 		});
 	}
 
-	if (!['repliable', 'readonly', 'hidden'].includes(status)) {
+	// 要移动到的版块id
+	if (to_board_id == 'invalid') {
 		return json({
 			type: 'error',
-			errorCode: 'INVALID_STATUS'
+			errorCode: 'INVAILD_TO_BOARD_ID',
+			extra: 'n b i'
 		});
 	}
 
-	const modifyQuery = {
-		text: `UPDATE post SET status = $1
-        WHERE id = $2`,
-		values: [status, id]
+	const query = {
+		text: `UPDATE post SET belong_board_id = $1 WHERE id = $2`,
+		values: [to_board_id, post_id]
 	};
 
-	const modifyResult = await dbconn.query(modifyQuery);
+	const result = await dbconn.query(query);
 
-	if (modifyResult.rowCount == 0) {
+	if (result.rowCount == 0) {
 		return json({
 			type: 'error',
-			errorCode: 'NOT_AFFECT_ROWS'
+			errorCode: 'NO_AFFECT_ROW'
 		});
 	}
 

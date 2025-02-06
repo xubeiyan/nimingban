@@ -10,7 +10,7 @@ const CONTENT_MIN_LENGTH = 10;
 
 export async function POST({ locals, request, params }) {
 	const { dbconn } = locals;
-	const jwt = await getJWTSecretDB(dbconn);
+	const { secret: jwt } = await getJWTSecretDB(dbconn);
 	const authRes = JWTAuth(request, jwt);
 	const { board_url } = params;
 

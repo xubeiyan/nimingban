@@ -64,7 +64,7 @@ export const JWTAuth = (req, jwtSecretDb) => {
 	};
 };
 
-// 从数据库中取jwt_secret
+// 从数据库中取jwt_secret和jwt_expire_minute
 export const getJWTSecretDB = async (dbconn) => {
 	const jwtQuery = {
 		text: `SELECT data_type, value FROM site_settings 
@@ -78,5 +78,20 @@ export const getJWTSecretDB = async (dbconn) => {
 		jwtSecret = jwtResult.rows[0].value;
 	}
 
-	return jwtSecret;
+	const jwtExpireQuery = {
+		text: `SELECT data_type, value FROM site_settings
+		WHERE "name" = 'jwt_expire_minute' LIMIT 1`
+	};
+
+	const jwtExpireResult = await dbconn.query(jwtExpireQuery);
+
+	let jwtExpireMinute = undefined;
+	if (jwtExpireResult.rowCount == 1 && jwtExpireResult.rows[0].data_type == 'number') {
+		jwtExpireMinute = jwtExpireResult.rows[0].value;
+	}
+
+	return {
+		secret: jwtSecret,
+		expire_minute: jwtExpireMinute,
+	};
 };

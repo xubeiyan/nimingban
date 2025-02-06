@@ -20,13 +20,32 @@ export const GET = async ({ locals, request }) => {
 	}
 
 	const query = {
-		text: `SELECT "name", "value", description FROM site_settings ORDER BY "name"`
+		text: `SELECT 
+            s.section_name, 
+            b.id AS board_id, b.name AS board_name, b.url_name AS board_url
+          FROM section AS s JOIN board AS b ON 
+            s.id = b.parent_section_id 
+		      ORDER BY s.order, b.order;`
 	};
 
 	const result = await dbconn.query(query);
 
+	if (request.rowCount == 0) {
+		return json({
+      type: 'ok',
+			forums: []
+		});
+	}
+
+	const forums = result.rows.map((one) => ({
+		id: one.board_id,
+		board_url: one.board_url,
+		board_name: one.board_name,
+		section_name: one.section_name
+	}));
+
 	return json({
-		type: 'ok',
-		settings: result.rows
+    type: 'ok',
+		forums
 	});
 };

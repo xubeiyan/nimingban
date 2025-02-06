@@ -17,10 +17,12 @@
 	import SuperOperationBtn from '$cmpns/SuperOperationBtn.svelte';
 	import PostStatusDialog from '$cmpns/PostManage/PostStatusDialog.svelte';
 	import PostStatusBar from '$cmpns/PostManage/PostStatusBar.svelte';
+	import MoveToDialog from '$cmpns/PostManage/MoveToDialog.svelte';
 
 	import { reduceContent } from '$lib/PostManage/utils';
 	import DeleteConfimDialog from '$cmpns/PostManage/DeleteConfimDialog.svelte';
 	import CookieBtn from '$cmpns/CookiesManage/CookieBtn.svelte';
+	import TertiaryBtn from '$cmpns/TertiaryBtn.svelte';
 
 	export let data;
 
@@ -135,13 +137,25 @@
 	};
 
 	let deleteConfirmDialog = null;
-	// 打开
+	// 打开删除对话框
 	const openDeleteDialog = (id, content) => {
 		if (deleteConfirmDialog == null) return;
 		deleteConfirmDialog.openDialog({ id, content: reduceContent(content) });
 	};
 
 	const handlePostDelete = ({ id }) => {
+		posts = posts.filter((p) => p.id != id);
+	};
+
+	let moveToDialog = null;
+	// 打开移动对话框
+	const openMoveToDialog = ({ id, content }) => {
+		if (moveToDialog == null) return;
+		moveToDialog.openDialog({ id, content: reduceContent(content) });
+	};
+
+	// 移动此串（即在当前页面移除
+	const handleMovePost = ({ id }) => {
 		posts = posts.filter((p) => p.id != id);
 	};
 
@@ -217,6 +231,9 @@
 							on:openDeleteDialog={() => openDeleteDialog(post.id, post.content)}
 							on:click={() => openModifyPostDialog(post.id, post.status, post.content)}
 						/>
+						<TertiaryBtn on:click={() => openMoveToDialog({ id: post.id, content: post.content })}
+							>移动到...</TertiaryBtn
+						>
 					{/if}
 					{#if post.status == 'readonly' && $userStore.type == 'user'}
 						<span
@@ -249,3 +266,4 @@
 	bind:this={deleteConfirmDialog}
 	on:deletePost={(e) => handlePostDelete(e.detail)}
 />
+<MoveToDialog bind:this={moveToDialog} on:move={(e) => handleMovePost(e.detail)} />

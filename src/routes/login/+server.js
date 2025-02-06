@@ -4,7 +4,7 @@ import { hashStringWithSalt } from '$lib/utils.js';
 import { generateJWTToken } from '$lib/jwt.js';
 import { getJWTSecretDB } from '$lib/auth.js';
 
-import { DEFAULT_JWT_SECRET } from '$env/static/private';
+import { DEFAULT_JWT_SECRET, DEFAULT_JWT_EXPIRE_MINUTE } from '$env/static/private';
 
 export const POST = async ({ locals, request }) => {
 	let { username, password } = await request.json();
@@ -21,7 +21,7 @@ export const POST = async ({ locals, request }) => {
 	}
 
 	const { dbconn } = locals;
-	const jwt = await getJWTSecretDB(dbconn);
+	const { secret, expire_minute } = await getJWTSecretDB(dbconn);
 
 	const query = {
 		text: `SELECT id, password_hash, password_salt, type, status, 
@@ -67,16 +67,21 @@ export const POST = async ({ locals, request }) => {
 		});
 	}
 
-	// expire time will be 1 hours later
+	let jwtExpireMinute = DEFAULT_JWT_EXPIRE_MINUTE;
+	if (expire_minute != undefined) {
+		jwtExpireMinute = expire_minute;
+	}
+
+	// default expire time will be 1 hours later
 	const payload = {
 		username,
 		type,
-		expire: new Date().getTime() + 1000 * 60 * 60
+		expire: new Date().getTime() + 1000 * 60 * Number(jwtExpireMinute)
 	};
 
 	let jwtSecret = DEFAULT_JWT_SECRET;
-	if (jwt != undefined) {
-		jwtSecret = jwt;
+	if (secret != undefined) {
+		jwtSecret = secret;
 	}
 
 	const token = generateJWTToken(payload, jwtSecret);

@@ -4,7 +4,7 @@ import { json } from '@sveltejs/kit';
 
 export const POST = async ({ request, locals }) => {
 	const { dbconn } = locals;
-	const jwt = await getJWTSecretDB(dbconn);
+	const { secret: jwt } = await getJWTSecretDB(dbconn);
 	const authRes = JWTAuth(request, jwt);
 
 	// 认证错误则返回
