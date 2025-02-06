@@ -4,7 +4,7 @@ import { JWTAuth, getJWTSecretDB } from '$lib/auth.js';
 export const POST = async ({ locals, request }) => {
 	const { dbconn } = locals;
 
-	const jwt = await getJWTSecretDB(dbconn);
+	const { secret: jwt } = await getJWTSecretDB(dbconn);
 	const authRes = JWTAuth(request, jwt);
 
 	// 认证错误则返回
