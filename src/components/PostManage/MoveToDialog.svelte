@@ -1,6 +1,10 @@
 <script>
 	import CloseIcon from '$svgIcon/close.svelte';
 	import LoadingIcon from '$svgIcon/loading.svelte';
+	import CheckIcon from '$svgIcon/check.svelte';
+
+	import { createEventDispatcher } from 'svelte';
+	const dispatch = createEventDispatcher();
 
 	import SearchSelect from '$cmpns/SearchSelect.svelte';
 
@@ -9,17 +13,21 @@
 	import { refreshToken } from '$lib/refreshToken';
 
 	import { userStore } from '../../store/userStore';
+	import { boardStore } from '../../store/boardStore';
 
 	let boardList = [];
 	let errorText = null;
-	let postId = null;
+	let post = {
+		id: null,
+		content: null
+	};
 
 	let open = false;
 	$: showStyle = open ? '' : 'hidden';
 
-	export const openDialog = ({ id }) => {
+	export const openDialog = ({ id, content }) => {
 		open = true;
-		postId = id;
+		post = { id, content };
 		$getBoardListMutation.mutate();
 	};
 
@@ -53,16 +61,24 @@
 				return;
 			}
 
-			boardList = res.forums.map((one) => ({
-				label: `${one.board_name} - ${one.section_name}`,
-				value: `${one.id}`
-			}));
+			boardList = res.forums
+				.filter((f) => f.board_url != $boardStore.boardUrl)
+				.map((one) => ({
+					label: `${one.board_name} - ${one.section_name}`,
+					value: `${one.id}`
+				}));
 		}
 	});
 
 	const closeDialog = () => {
 		open = false;
 		boardList = [];
+		post = {
+			id: null,
+			content: null
+		};
+		selectBoradId = null;
+		errorText = null;
 	};
 
 	let selectBoradId = null;
@@ -87,8 +103,8 @@
 			const res = await fetch('/manage/movePost', {
 				method: 'POST',
 				body: JSON.stringify({
-					post_id: postId,
-          to_board_id: selectBoradId,
+					post_id: post.id,
+					to_board_id: selectBoradId
 				}),
 				headers
 			}).then((r) => r.json());
@@ -111,7 +127,8 @@
 				return;
 			}
 
-      closeDialog();
+			dispatch('move', { id: post.id });
+			closeDialog();
 		}
 	});
 </script>
@@ -125,14 +142,22 @@
 		</button>
 		<h1 class="text-2xl">移动串</h1>
 		<fieldset class="mt-1 border border-slate-400 px-2 py-1 rounded-md">
-			<legend class="px-1">移动此串至...</legend>
+			<legend class="px-1">部分内容</legend>
+			<textarea
+				rows="4"
+				class="w-full resize-none rounded-md bg-sky-200/50 dark:bg-slate-700 px-2 py-1 outline-none"
+				>{post.content}</textarea
+			>
+		</fieldset>
+		<div class="mt-2 flex flex-col gap-1">
+			<span class="pl-1">移动此串至...</span>
 			<SearchSelect
 				placeholder={errorText == null ? '输入版块名称查找' : errorText}
 				isPending={$getBoardListMutation.isPending}
 				options={boardList}
 				on:select={(e) => handleBoardSelect(e.detail)}
 			/>
-		</fieldset>
+		</div>
 
 		<div class="flex gap-2 items-center justify-end mt-4">
 			{#if errorText != null}
@@ -152,7 +177,7 @@
 				{#if $movePostMuation.isPending}
 					<LoadingIcon size="1.5em" />
 				{:else}
-					确认
+					<CheckIcon />
 				{/if}</button
 			>
 		</div>

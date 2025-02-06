@@ -22,7 +22,7 @@ export const GET = async ({ locals, request }) => {
 	const query = {
 		text: `SELECT 
             s.section_name, 
-            b.id AS board_id, b.name AS board_name
+            b.id AS board_id, b.name AS board_name, b.url_name AS board_url
           FROM section AS s JOIN board AS b ON 
             s.id = b.parent_section_id 
 		      ORDER BY s.order, b.order;`
@@ -39,6 +39,7 @@ export const GET = async ({ locals, request }) => {
 
 	const forums = result.rows.map((one) => ({
 		id: one.board_id,
+		board_url: one.board_url,
 		board_name: one.board_name,
 		section_name: one.section_name
 	}));

@@ -149,9 +149,14 @@
 
 	let moveToDialog = null;
 	// 打开移动对话框
-	const openMoveToDialog = ({ id }) => {
+	const openMoveToDialog = ({ id, content }) => {
 		if (moveToDialog == null) return;
-		moveToDialog.openDialog({ id });
+		moveToDialog.openDialog({ id, content: reduceContent(content) });
+	};
+
+	// 移动此串（即在当前页面移除
+	const handleMovePost = ({ id }) => {
+		posts = posts.filter((p) => p.id != id);
 	};
 
 	onMount(() => {
@@ -226,7 +231,9 @@
 							on:openDeleteDialog={() => openDeleteDialog(post.id, post.content)}
 							on:click={() => openModifyPostDialog(post.id, post.status, post.content)}
 						/>
-						<TertiaryBtn on:click={() => openMoveToDialog({ id: post.id })}>移动到...</TertiaryBtn>
+						<TertiaryBtn on:click={() => openMoveToDialog({ id: post.id, content: post.content })}
+							>移动到...</TertiaryBtn
+						>
 					{/if}
 					{#if post.status == 'readonly' && $userStore.type == 'user'}
 						<span
@@ -259,4 +266,4 @@
 	bind:this={deleteConfirmDialog}
 	on:deletePost={(e) => handlePostDelete(e.detail)}
 />
-<MoveToDialog bind:this={moveToDialog} />
+<MoveToDialog bind:this={moveToDialog} on:move={(e) => handleMovePost(e.detail)} />
