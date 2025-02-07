@@ -15,7 +15,7 @@
 		<p class="border border-slate-400 rounded-md px-2 py-1">{replyContent}</p>
 	{/if}
 	<div class="grow-wrap grid">
-		<textarea class="{inputStyle} p-2" bind:value on:input onInput="this.parentNode.dataset.replicatedValue = this.value"></textarea>
+		<textarea class="{inputStyle} px-2 py-0.5" bind:value on:input onInput="this.parentNode.dataset.replicatedValue = this.value"></textarea>
 	</div>
 </label>
 
