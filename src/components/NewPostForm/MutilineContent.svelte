@@ -14,5 +14,29 @@
 	{#if replyContent != null}
 		<p class="border border-slate-400 rounded-md px-2 py-1">{replyContent}</p>
 	{/if}
-	<textarea class="{inputStyle} px-2 py-1 grow" rows="10" bind:value on:input></textarea>
+	<div class="grow-wrap grid">
+		<textarea class="{inputStyle} p-2" bind:value on:input onInput="this.parentNode.dataset.replicatedValue = this.value"></textarea>
+	</div>
 </label>
+
+<style>
+	.grow-wrap::after {
+		content: attr(data-replicated-value) " ";
+		white-space: pre-wrap;
+		visibility: hidden;
+	}
+
+	.grow-wrap > textarea {
+		resize: none;
+		overflow: hidden;
+	}
+
+	.grow-wrap::after,
+	.grow-wrap > textarea {
+		/* Identical styling required!! */
+		font: inherit;
+
+		/* Place on top of each other */
+		grid-area: 1 / 1 / 2 / 2;
+	}
+</style>
