@@ -32,7 +32,7 @@ export const load = async ({ locals }) => {
             b.name AS board_name, b.url_name, b.intro
         FROM section AS s JOIN board AS b ON 
 			b.access_type IN ('all', 'view_only') AND s.id = b.parent_section_id 
-		ORDER BY b.order;`
+		ORDER BY s.order, b.order;`
 	);
 	// 没有则返回空
 	if (result.rowCount == 0) {
