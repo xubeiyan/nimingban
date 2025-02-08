@@ -39,7 +39,7 @@
 			<span class="rounded-md">{inputOption.label}</span>
 			<button on:click={clearFilledValue}><TrashIcon size="1.5em" /></button>
 		{:else}
-			<input {placeholder} bind:value={inputValue} class="bg-transparent w-full outline-none" />
+			<input {placeholder} bind:value={inputValue} name="board_name" class="bg-transparent w-full outline-none" />
 		{/if}
 	</div>
 	<div

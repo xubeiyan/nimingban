@@ -33,6 +33,7 @@
 			type={dot ? 'password' : 'text'}
 			class={textInputStyle}
 			on:input={(e) => updateInput(e.target.value)}
+			name="password"
 		/>
 		{#if content != ''}
 			<button

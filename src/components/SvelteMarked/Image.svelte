@@ -17,7 +17,7 @@
 
 <div class="flex items-center">
 	<button on:click={() => fullScreenView(url)} disabled={inSketch}>
-		<img class="h-[10em]" {alt} src={realUrl} {title} />
+		<img class="min-h-[10em] max-h-[20em]" {alt} src={realUrl} {title} />
 	</button>
 	{#if inSketch}
 		<span> ← {alt} 会被替换，hover文字为 {title}</span>

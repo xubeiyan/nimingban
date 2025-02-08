@@ -24,7 +24,7 @@
 
 ### 管理者
 
-- [x] 串管理（编辑、修改可见性、删除）
+- [x] 串管理（编辑、修改可见性、移动串至其他板块、删除）
 - [x] 版块管理（新建，删除，修改，列表）
 - [x] 版块简介支持 `Markdown` 语法
 - [x] 用户和饼干管理（查询，修改可用性）
@@ -53,6 +53,8 @@
 | （管理）获取版块列表       | GET /manage/getBoardList/{id}           |          |
 | （管理）获取分区列表       | GET /manage/getSectionList              |          |
 | （管理）获取网站设置       | GET /manage/getSettingList              |          |
+| （管理）移动串             | POST /manage/movePost                   |          |
+| （管理）获取完整版块列表   | GET /manage/movePost/getFullBoardList   |          |
 | （管理）删除版块           | GET /manage/removeBoard/{id}            |          |
 | （管理）删除评论           | GET /manage/removeComment/{id}          |          |
 | （管理）删除串             | GET /manage/removePost/{id}             |          |
@@ -69,8 +71,9 @@
 
 ## 参数设置
 
-- JWTSECRET JSON Web Token 的密钥值
-- COOKIES_LIMIT 每个用户最大可申请饼干数
+- `site_name` 匿名版名称
+- `jwt_secert` JWT 密钥
+- `jwt_expire_minute` JWT 密钥过期时间
 
 ## 表设计
 

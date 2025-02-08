@@ -22,12 +22,14 @@
 
 <div class="relative">
 	<img
-		class="size-16 object-cover object-center rounded-md"
+		class="size-20 object-cover object-center rounded-md"
 		src={window.URL.createObjectURL(attachFile.fileContent)}
 		alt="to upload"
 	/>
 	<button
-		class="absolute size-[2em] right-0 top-0 flex justify-center items-center bg-red-400/80 dark:bg-red-600/50 opacity-0 hover:opacity-100"
+		class="absolute size-[2em] right-0 top-0 translate-x-[50%] translate-y-[-50%] flex justify-center items-center
+		bg-red-400/60 hover:bg-red-400/80 dark:bg-red-600/60 dark:hover:bg-red-600/80
+		 rounded-full"
 		on:click={() => removeImage(attachFile.id)}
 		type="button"
 	>

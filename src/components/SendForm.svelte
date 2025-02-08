@@ -16,6 +16,8 @@
 
 	import { createEventDispatcher } from 'svelte';
 	import SendBtn from './NewPostForm/SendBtn.svelte';
+	import { text } from '@sveltejs/kit';
+
 	const dispatch = createEventDispatcher();
 
 	export let type = 'post';
@@ -46,9 +48,29 @@
 	};
 
 	const addImageFiles = (e) => {
+		sendResponseError = null;
 		const files = e.target.files;
 
+		// TODO：可以从后端获得
+		const MAX_NUMBER_UPLOAD_IMAGES = 5;
+
+		// 检查是否超过允许上传数量
+		if (files.length + attachedFileList.length > MAX_NUMBER_UPLOAD_IMAGES) {
+			sendResponseError = {
+				text: `最多允许上传 ${MAX_NUMBER_UPLOAD_IMAGES} 张图片`
+			};
+			return;
+		}
+
+		// 检查图片大小
+		const MAX_IMAGE_SIZE = 2 * 1024 * 1024;
+		let oversizeList = [];
+
 		for (let file of files) {
+			if (MAX_IMAGE_SIZE < file.size) {
+				oversizeList.push(file.name);
+			}
+
 			attachedFileList.push({
 				id: attachedFileList.length + 1,
 				name: file.name,
@@ -58,6 +80,14 @@
 
 		attachFile.value = '';
 
+		if (oversizeList.length > 0) {
+			sendResponseError = {
+				text: `图片 ${oversizeList.join(', ')} 的体积超过了 2MiB 限制`
+			}
+			attachedFileList = [];
+			return;
+		}
+
 		// reactivity
 		attachedFileList = attachedFileList;
 	};
@@ -65,6 +95,8 @@
 	const handleImageRemove = (e) => {
 		const id = e.detail.id;
 		attachedFileList = attachedFileList.filter((one) => one.id != id);
+
+		// TODO: 可以考虑自动删除正文中的对应markdown代码
 	};
 
 	const handleInsertImageToPost = (e) => {
@@ -278,7 +310,7 @@
 </script>
 
 <div
-	class="z-10 fixed inset-0 {showStyle} transition duration-500 bg-gray-300/50 dark:bg-gray-100/30
+	class="z-10 fixed inset-0 {showStyle} bg-gray-300/50 dark:bg-gray-100/30 transition-transform duration-500
 	flex justify-center items-center"
 >
 	<form
@@ -302,7 +334,7 @@
 				on:input={(e) => handleInput('title', e.target.value)}
 			/>
 		</div>
-		<div class="relative flex gap-2 grow">
+		<div class="relative flex gap-2 grow transition-none">
 			<MutilineContent
 				label="正文"
 				value={post.content}
@@ -336,7 +368,7 @@
 					on:change={(e) => addImageFiles(e)}
 				/>
 			</label>
-			<div class="flex gap-2">
+			<div class="flex gap-4 mt-2">
 				{#each attachedFileList as attachFile}
 					<AttachPicture
 						{attachFile}
@@ -346,7 +378,7 @@
 				{/each}
 
 				<button
-					class="border-2 border-slate-500 dark:border-slate-100 border-dashed hover:bg-slate-500/10 hover:dark:bg-slate-50/10 rounded-lg size-16 flex justify-center items-center"
+					class="border-2 border-slate-500 dark:border-slate-100 border-dashed hover:bg-slate-500/10 hover:dark:bg-slate-50/10 rounded-lg size-20 flex justify-center items-center"
 					on:click={openAttachSelect}
 					disabled={type == 'edit'}
 					type="button"
@@ -361,7 +393,7 @@
 					>{sendResponseError.text}</span
 				>
 			{/if}
-			<SendBtn status={sendBtnStatus} {type} on:click={sendPost} />
+			<SendBtn status={sendBtnStatus} on:click={sendPost} />
 		</div>
 		<CloseBtn
 			on:click={() => {

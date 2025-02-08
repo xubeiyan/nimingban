@@ -6,7 +6,7 @@ import { validCookies, validateImages } from '$lib/SendForm/validation.js';
 import { uploadImages } from '$lib/SendForm/uploadImage.js';
 import { nullStringToEmpty } from '$lib/SendForm/string.js';
 
-const CONTENT_MIN_LENGTH = 10;
+import { CONTENT_MIN_LENGTH } from '$env/static/private';
 
 export async function POST({ locals, request, params }) {
 	const { dbconn } = locals;

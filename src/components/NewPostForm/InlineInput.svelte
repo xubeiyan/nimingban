@@ -10,5 +10,5 @@
 
 <label class="grow flex flex-col gap-1">
 	<span>{label}</span>
-	<input class="{inputStyle} px-2 py-0.5" {placeholder} on:input />
+	<input name={label} class="{inputStyle} px-2 py-0.5" {placeholder} on:input autocomplete="off" />
 </label>
