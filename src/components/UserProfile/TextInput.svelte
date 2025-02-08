@@ -7,6 +7,7 @@
 
 <div class="relative inline-flex items-center">
 	<input
+		name="value"
 		type="text"
 		{readonly}
 		class="bg-transparent border-b-2

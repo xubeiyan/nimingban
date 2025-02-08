@@ -97,6 +97,7 @@
 		<fieldset class="mt-1 border border-slate-400 px-2 py-1 rounded-md">
 			<legend class="px-1">部分内容</legend>
 			<textarea
+				name="part"
 				rows={rows()}
 				class="w-full resize-none rounded-md
                 bg-sky-200/50 dark:bg-slate-700 px-2 py-1 outline-none"

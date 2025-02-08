@@ -107,6 +107,7 @@
 			<legend class="px-1">部分内容</legend>
 			<textarea
 				rows="4"
+				name="part"
 				class="w-full resize-none rounded-md bg-sky-200/50 dark:bg-slate-700 px-2 py-1 outline-none"
 				>{post.content}</textarea
 			>
