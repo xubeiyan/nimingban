@@ -122,7 +122,7 @@
 
 	/* Yellow */
 	:global(.hljs-attribute) {
-		color: #eab308;
+		color: #ca8a04;
 	}
 
 	:global(.dark .hljs-attribute) {
