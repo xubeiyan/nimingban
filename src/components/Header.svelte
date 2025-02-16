@@ -25,6 +25,8 @@
 
 	// 打开或关闭左边的导航
 	const toggleLeftNavbarOpen = () => {
+		siteSetting.hideForm();
+		cookieManage.hideForm();
 		dispatch('message', {
 			type: 'toggleLeftNavbarOpen'
 		});
@@ -60,14 +62,24 @@
 	// 打开饼干管理
 	const openCookiesManage = () => {
 		if (cookieManage == null) return;
+		siteSetting.hideForm();
 		cookieManage.showForm();
+		// 关闭其他的管理窗口
+		dispatch('message', {
+			type: 'openCookieManage'
+		});
 	};
 
 	let siteSetting = null;
 	// 打开网站设置
 	const openSiteSetting = () => {
 		if (siteSetting == null) return;
+		cookieManage.hideForm();
 		siteSetting.showForm();
+		// 关闭其他的管理窗口
+		dispatch('message', {
+			type: 'openSiteSetting'
+		});
 	};
 
 	onMount(() => {

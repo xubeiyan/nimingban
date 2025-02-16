@@ -22,15 +22,18 @@
 	let loginAndRegistermOpen = false;
 
 	// 处理各种消息
-	const handleMessage = (event) => {
-		if (event.detail.type == 'toggleLeftNavbarOpen') {
+	const handleMessage = (e) => {
+		const { type } = e.detail;
+		if (type == 'toggleLeftNavbarOpen') {
 			leftNavOpen = !leftNavOpen;
 			loginAndRegistermOpen = false;
-		} else if (event.detail.type == 'toggleLoginFormOpen') {
+		} else if (type == 'toggleLoginFormOpen') {
 			loginAndRegistermOpen = !loginAndRegistermOpen;
 			leftNavOpen = false;
-		} else if (event.detail.type == 'hideLoginAndRegister') {
+		} else if (type == 'hideLoginAndRegister') {
 			loginAndRegistermOpen = false;
+		} else if (type == 'openCookieManage' || type == 'openSiteSetting') {
+			leftNavOpen = false;
 		}
 	};
 </script>
@@ -42,9 +45,11 @@
 <QueryClientProvider client={queryClient}>
 	<div class="flex flex-col h-screen dark:[color-scheme:dark] text-slate-800 dark:text-slate-100">
 		<Header siteName={data.siteName} on:message={handleMessage} {leftNavOpen} />
-		<div class="flex flex-col overflow-x-hidden grow bg-gradient-to-br
+		<div
+			class="flex flex-col overflow-x-hidden grow bg-gradient-to-br
 		from-slate-50 to-gray-100
-		 dark:from-sky-900 dark:to-cyan-900">
+		 dark:from-sky-900 dark:to-cyan-900"
+		>
 			<LeftNav
 				open={leftNavOpen}
 				forums={data.forums}
