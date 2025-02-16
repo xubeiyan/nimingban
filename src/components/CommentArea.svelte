@@ -26,7 +26,7 @@
 	});
 </script>
 
-<div class="rounded-b-md bg-slate-200 px-4 py-2 dark:bg-sky-800 shadow-inner">
+<div class="rounded-b-md bg-slate-100 px-4 py-2 dark:bg-sky-800 shadow-inner">
 	{#if $getCommentMutation.isPending}
 		<div class="flex gap-2 items-center">
 			<LoadingIcon />
@@ -37,13 +37,13 @@
 			<span class="text-slate-400">没有回复</span>
 		{:else}
 			{#if rowCount > 5}
-				<p class="shadow-inner p-2 mb-2 rounded-md bg-gray-300 dark:bg-sky-900">
+				<p class="shadow-inner p-2 mb-2 rounded-md bg-slate-300 dark:bg-sky-900">
 					<span>此为最新 5 条回复，共 {rowCount} 条回复，点击右上角“详情”查看</span>
 				</p>
 			{/if}
 			<div>
 				{#each comments as comment}
-					<div class="rounded-md even:bg-slate-300 dark:even:bg-sky-900 px-2 py-2">
+					<div class="rounded-md even:bg-slate-200/80 dark:even:bg-sky-900 px-2 py-2">
 						<p class="space-x-2">
 							<span class="dark:text-green-100 font-bold">标题：{comment.title}</span>
 							<span class="dark:text-yellow-100">作者：{comment.poster_name}</span>
