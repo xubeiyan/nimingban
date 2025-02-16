@@ -122,6 +122,10 @@
 
 	/* Yellow */
 	:global(.hljs-attribute) {
+		color: #ca8a04;
+	}
+
+	:global(.dark .hljs-attribute) {
 		color: #facc15;
 	}
 

@@ -16,7 +16,7 @@
 		getSettingList();
 	};
 
-	const hideForm = () => {
+	export const hideForm = () => {
 		show = false;
 	};
 
@@ -67,7 +67,7 @@
 	};
 </script>
 
-<div class="fixed z-10 inset-0 bg-black/40 dark:bg-white/40 transition duration-500 {showStyle}">
+<div class="fixed z-10 inset-0 bg-slate-800/20 dark:bg-white/20 transition duration-500 {showStyle}">
 	<div
 		class="relative container mx-auto mt-[3em]
     bg-sky-100 dark:bg-sky-700 rounded-md px-4 py-4"

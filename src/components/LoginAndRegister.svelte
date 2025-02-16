@@ -31,7 +31,7 @@
 </script>
 
 <div
-	class="fixed z-10 w-full {openClass} h-full bg-slate-800/20 dark:bg-slate-800/90 transition-transform duration-500 ease-in-out"
+	class="fixed z-10 w-full {openClass} h-full bg-slate-800/20 dark:bg-white/20 transition-transform duration-500 ease-in-out"
 >
 	<div class="container h-full m-auto flex justify-center">
 		<div
