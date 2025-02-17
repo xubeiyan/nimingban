@@ -26,7 +26,7 @@
 	});
 </script>
 
-<div class="rounded-b-md bg-slate-100 px-4 py-2 dark:bg-sky-800 shadow-inner">
+<div class="rounded-b-md bg-slate-200/60 px-4 py-2 dark:bg-sky-800">
 	{#if $getCommentMutation.isPending}
 		<div class="flex gap-2 items-center">
 			<LoadingIcon />
@@ -43,7 +43,10 @@
 			{/if}
 			<div>
 				{#each comments as comment}
-					<div class="rounded-md even:bg-slate-200/80 dark:even:bg-sky-900 px-2 py-2">
+					<div
+						class="rounded-md even:bg-slate-200 dark:even:bg-sky-900
+					even:shadow-inner shadow-slate-200 dark:shadow-none px-2 py-2"
+					>
 						<p class="space-x-2">
 							<span class="dark:text-green-100 font-bold">标题：{comment.title}</span>
 							<span class="dark:text-yellow-100">作者：{comment.poster_name}</span>
