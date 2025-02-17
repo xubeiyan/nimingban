@@ -242,7 +242,7 @@
 		</a>
 	</div>
 	<div
-		class="rounded-md bg-slate-200 dark:bg-sky-700 px-4 py-2 mt-2 shadow-inner"
+		class="rounded-md bg-slate-100 dark:bg-sky-700 px-4 py-2 mt-2 shadow-inner"
 		id="id-{data.post.id}"
 	>
 		<div class="flex justify-between items-end">
@@ -282,7 +282,7 @@
 	</div>
 	{#each comments as comment}
 		<div
-			class="rounded-md odd:bg-slate-100 even:bg-slate-200/80 
+			class="rounded-md odd:bg-slate-200/60 even:bg-slate-200 
 			dark:odd:bg-sky-800 dark:even:bg-sky-800/50 px-4 py-2 mt-2 shadow-inner"
 			id="id-{comment.id}"
 		>

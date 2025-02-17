@@ -195,18 +195,19 @@
 			<PostContent content={data.intro} />
 		</p>
 		{#if $userStore.type == 'user'}
-			<p>
+			<p class="pb-4">
 				<PrimaryBtn on:click={showNewPostForm}>发新串</PrimaryBtn>
 			</p>
 		{/if}
 	{/if}
 	{#each posts as post}
 		<div
-			class="rounded-t-md bg-slate-200 dark:bg-sky-700
-			px-4 py-2 mt-2 shadow-inner"
+			class="rounded-md bg-slate-100 dark:bg-sky-700
+			pt-2 mb-4 shadow-inner 
+			shadow-slate-200 dark:shadow-sky-800"
 			id="id-{post.id}"
 		>
-			<div class="flex justify-between items-end">
+			<div class="flex justify-between items-end mx-4">
 				<p class="space-x-2">
 					<a href="#id-{post.id}">
 						<span class="dark:text-green-100 font-bold">标题：{post.title}</span>
@@ -246,14 +247,14 @@
 					</a>
 				</div>
 			</div>
-			<div class="border border-cyan-600 mt-2 py-2 px-4 rounded-sm">
+			<div class="border border-cyan-600 mx-4 my-2 py-2 px-4 rounded-sm">
 				<PostContent content={post.content} on:largeImage={(e) => openImageViewer(e.detail)} />
 			</div>
+			<CommentArea postId={post.id} on:largeImage={(e) => openImageViewer(e.detail)} />
 		</div>
-		<CommentArea postId={post.id} on:largeImage={(e) => openImageViewer(e.detail)} />
 	{/each}
 	{#if data.name}
-		<div class="rounded-md bg-sky-200 dark:bg-sky-400/50 p-4 my-2 mt-4" id="getMore">
+		<div class="rounded-md bg-sky-200 dark:bg-sky-400/50 p-4 my-2" id="getMore">
 			<span>{fetchDataText}</span>
 		</div>
 	{/if}
