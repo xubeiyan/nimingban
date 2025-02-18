@@ -1,5 +1,5 @@
 <script>
-	import { onMount } from "svelte";
+	import { onMount } from 'svelte';
 
 	export let label = '正文';
 	export let replyContent = null;
@@ -19,10 +19,10 @@
 	{#if replyContent != null}
 		<p class="border border-slate-400 rounded-md px-2 py-1">{replyContent}</p>
 	{/if}
-	<div class="grow-wrap grid">
+	<div class="grow-wrap grid" data-replicated-value={value}>
 		<textarea
 			name="content"
-			class="{inputStyle}"
+			class={inputStyle}
 			bind:value
 			on:input
 			onInput="this.parentNode.dataset.replicatedValue = this.value"
