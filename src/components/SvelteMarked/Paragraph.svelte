@@ -10,7 +10,7 @@
 	export let children = [];
 </script>
 
-<p class="my-1 empty:h-[0.75rem]">
+<p class="mb-1 empty:h-[0.5rem] break-words">
 	{#each children as child}
 		{#if child.type == 'text'}
 			{#if child.content != ''}
