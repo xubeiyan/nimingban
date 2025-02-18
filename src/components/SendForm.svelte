@@ -334,11 +334,12 @@
 				on:input={(e) => handleInput('title', e.target.value)}
 			/>
 		</div>
-		<div class="relative flex gap-2 grow transition-none">
+		<div class="relative flex gap-2 transition-none">
 			<MutilineContent
 				label="正文"
 				value={post.content}
 				replyContent={post.commentReplyContent}
+				{expand}
 				on:input={(e) => handleInput('content', e.target.value)}
 			/>
 			<button
