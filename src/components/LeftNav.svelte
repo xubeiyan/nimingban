@@ -19,9 +19,9 @@
 </script>
 
 <div
-	class="fixed w-full h-screen z-10 {open_class} bg-slate-800/20 dark:bg-white/20 transition-transform duration-500 ease-in-out"
+	class="fixed w-full mt-12 inset-0 z-10 {open_class} bg-slate-800/20 dark:bg-white/20 transition-transform duration-500 ease-in-out"
 >
-	<div class="container flex gap-4 h-[95%] m-auto">
+	<div class="container flex gap-4 h-full m-auto">
 		<div class="relative w-[15em] bg-sky-100 dark:bg-sky-800 h-full p-4 shrink-0">
 			{#if $userStore.type == 'admin'}
 				<button

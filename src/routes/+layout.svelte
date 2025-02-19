@@ -48,7 +48,7 @@
 		<div
 			class="flex flex-col overflow-x-hidden grow bg-gradient-to-br
 		from-slate-50 to-gray-100
-		 dark:from-sky-900 dark:to-cyan-900"
+		 dark:from-sky-900 dark:to-cyan-900 gutter"
 		>
 			<LeftNav
 				open={leftNavOpen}
@@ -63,3 +63,9 @@
 		</div>
 	</div>
 </QueryClientProvider>
+
+<style>
+	.gutter {
+		scrollbar-gutter: stable both-edges;
+	}
+</style>
