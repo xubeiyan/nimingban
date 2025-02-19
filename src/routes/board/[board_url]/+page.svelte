@@ -190,7 +190,7 @@
 			{data.name}
 		</h1>
 		<p
-			class="bg-slate-200 dark:bg-slate-950/30 rounded-md px-6 py-4 shadow-inner shadow-slate-300 dark:shadow-slate-800 mb-4"
+			class="bg-slate-200 dark:bg-sky-800 rounded-md px-6 py-4 shadow-inner shadow-slate-300 dark:shadow-sky-950 mb-4"
 		>
 			<PostContent content={data.intro} />
 		</p>
