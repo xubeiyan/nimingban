@@ -221,7 +221,7 @@
 - [x] `paragraph`
 - [x] `emphasis`
 - [x] `strong`
-- [x] `inlineCode`
+- [x] `inlineCode` 支持用`<samp>`标签代替 result 代码块
 - [x] `code`
 - [x] `delete`
 - [x] `hr`
@@ -231,6 +231,7 @@
 - [x] `list`
 - [x] `table`
 - [x] `spoiler` 参考reddit `>! hidden text !<`
+- [x] `kdb` 使用 `[[...]]`
 
 ## 使用方法
 

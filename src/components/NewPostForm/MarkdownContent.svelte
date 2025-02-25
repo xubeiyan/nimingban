@@ -183,7 +183,7 @@
 			result.children.push(...tableTemp.map((one) => inlineLexer(one.rawText)));
 		}
 
-		// console.log(result.children);
+		console.log(result.children);
 
 		return result;
 	};
@@ -339,10 +339,19 @@
 		};
 	};
 
+	// 返回keyboard节点
+	const keyboardLexer = (inlineInput) => {
+		return {
+			type: 'keyboard',
+			content: inlineInput
+		};
+	};
+
 	// 处理已经被解析为行节点的剩余部分
 	// 只处理 emphasis(强调 *...*) strong(加粗 **...**) 删除线(~~...~~)
 	// inlineCode(行内代码 `...`) link(链接 [...](...)) image(图片 ![...](... ..))
 	// 增加spolier(行内代码 >!...!<)
+	// 增加keyboard(行内代码 [[...]])
 	const restInlineLexer = (inlineInput, inToken = []) => {
 		let children = [];
 		let i;
@@ -451,6 +460,19 @@
 				// 处理后面的部分
 				if (spolierRegex[2] != '') {
 					children.push(...restInlineLexer(spolierRegex[2], inToken));
+				}
+				return children;
+			}
+		}
+
+		// 处理keyboard节点
+		if (!inToken.includes('keyboard')) {
+			let keyboardRegex = /\[\[(.+?)\]\](.*)/.exec(inlineInput);
+			if (keyboardRegex != null) {
+				children.push(keyboardLexer(keyboardRegex[1]));
+				// 处理后面的部分
+				if (keyboardRegex[2] != '') {
+					children.push(...restInlineLexer(keyboardRegex[2], inToken));
 				}
 				return children;
 			}
