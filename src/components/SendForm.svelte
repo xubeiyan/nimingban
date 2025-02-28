@@ -353,7 +353,7 @@
 			{#if expand}
 				<div class="w-[50%] h-full mt-10 flex flex-col">
 					<MarkdownContent content={post.commentReplyContent} />
-					<MarkdownContent content={post.content} />
+					<MarkdownContent content={post.content} debugFlags={[]}/>
 				</div>
 			{/if}
 		</div>
