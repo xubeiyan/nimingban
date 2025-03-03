@@ -223,7 +223,7 @@
 - [x] `strong`
 - [x] `inlineCode` 
 - [x] `code`
-  - [x]] 支持用`<samp>`标签代替 result 代码块
+  - [x] 支持用`<samp>`标签代替 result 代码块
 - [x] `delete`
 - [x] `hr`
 - [x] `blockquote`
