@@ -221,8 +221,9 @@
 - [x] `paragraph`
 - [x] `emphasis`
 - [x] `strong`
-- [x] `inlineCode`
+- [x] `inlineCode` 
 - [x] `code`
+  - [x] 支持用`<samp>`标签代替 result 代码块
 - [x] `delete`
 - [x] `hr`
 - [x] `blockquote`
@@ -230,7 +231,8 @@
 - [x] `image`
 - [x] `list`
 - [x] `table`
-- [x] `spoiler` 参考reddit `>! hidden text !<`
+- [x] `spoiler` 参考了 reddit `>! hidden text !<`
+- [x] `kbd` 使用 `[[...]]` 来实现
 
 ## 使用方法
 

@@ -8,7 +8,7 @@
 
 	// 代码过长显示展开
 	let blockOpen = false;
-	$: codeblockStyle = blockOpen ? '' : 'overflow-y-hidden max-h-[10em]';
+	$: codeblockStyle = blockOpen ? '' : 'overflow-y-hidden max-h-[10rem]';
 
 	if (content.split('\n').length <= 6) {
 		blockOpen = true;

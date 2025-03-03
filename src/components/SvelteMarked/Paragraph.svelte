@@ -7,6 +7,7 @@
 	import Link from './Link.svelte';
 	import Image from './Image.svelte';
 	import Spoiler from './Spoiler.svelte';
+	import Keyboard from './Keyboard.svelte';
 	export let children = [];
 </script>
 
@@ -30,6 +31,8 @@
 			<Image alt={child.alt} url={child.url} title={child.title} on:largeImage />
 		{:else if child.type == 'spolier'}
 			<Spoiler children={child.children} />
+		{:else if child.type == 'keyboard'}
+			<Keyboard content={child.content} />
 		{/if}
 	{/each}
 </p>

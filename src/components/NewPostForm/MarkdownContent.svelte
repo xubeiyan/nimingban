@@ -1,6 +1,4 @@
 <script>
-	import { text } from '@sveltejs/kit';
-
 	import Heading from '../SvelteMarked/Heading.svelte';
 	import Blockquote from '../SvelteMarked/Blockquote.svelte';
 	import Paragraph from '../SvelteMarked/Paragraph.svelte';
@@ -12,8 +10,11 @@
 	import UnorderList from '../SvelteMarked/UnorderList.svelte';
 	import OrderList from '../SvelteMarked/OrderList.svelte';
 	import Table from '../SvelteMarked/Table.svelte';
+	import Samp from '$cmpns/SvelteMarked/Samp.svelte';
 
 	export let content = '';
+	// 目前支持输出markdown抽象语法语法树 - CONSOLE_MARKDOWN_AST
+	export let debugFlags = [];
 
 	// 整体
 	const lexer = (input) => {
@@ -183,17 +184,28 @@
 			result.children.push(...tableTemp.map((one) => inlineLexer(one.rawText)));
 		}
 
-		// console.log(result.children);
+		if (debugFlags.includes('CONSOLE_MARKDOWN_AST')) {
+			console.log(result.children);
+		}
 
 		return result;
 	};
 
-	// 返回codeblock节点
+	// 返回codeblock或者sample节点
 	const codeBlockLexer = (codeblockArray) => {
 		// console.log(codeblockArray);
 		const langText = codeblockArray[0].substring(3);
 
 		let language = 'PlainText';
+		let content = codeblockArray.slice(1, -1).join('\n');
+
+		// 如果是sample则直接parse后返回
+		if (langText == 'result' || langText == 'samp') {
+			return {
+				type: 'sample',
+				children: sampLexer(content)
+			};
+		}
 
 		if (langText != '') {
 			const filtered = supportLang.filter((one) => one.name == langText);
@@ -202,16 +214,109 @@
 			}
 		}
 
-		codeblockArray.shift();
-		codeblockArray.pop();
-
-		let content = codeblockArray.join('\n');
-
 		return {
 			type: 'codeblock',
 			language,
 			content
 		};
+	};
+
+	// 返回samp节点
+	// 将$[...]转换为prompt，将[[...]] 转换为userInput
+	const sampLexer = (sampContent) => {
+		let prompt = {
+			inToken: 'not',
+			content: ''
+		};
+		let userInput = {
+			inToken: 'not',
+			content: ''
+		};
+		let normalContent = '';
+
+		const addNormalContent = () => {
+			if (normalContent == '') {
+				return;
+			}
+			children.push({
+				type: 'text',
+				content: normalContent
+			});
+			normalContent = '';
+		};
+
+		let children = [];
+
+		for (let i = 0; i < sampContent.length; ++i) {
+			// 当前字符为$且下一个字符为[且不在userInput之中
+			if (sampContent[i] == '$' && sampContent[i + 1] == '[' && userInput.inToken == 'not') {
+				prompt.inToken = 'parsing';
+				prompt.content = '$[';
+				i += 1;
+				// 将之前的normalContent写入一个text节点
+				addNormalContent();
+				continue;
+			}
+			// 当前字符为[且下一个字符为[且不在promptInput之中
+			if (sampContent[i] == '[' && sampContent[i + 1] == '[' && prompt.inToken == 'not') {
+				userInput.inToken = 'parsing';
+				userInput.content = '[[';
+				i += 1;
+				// 将之前的normalContent写入一个text节点
+				addNormalContent();
+				continue;
+			}
+			// 结束
+			if (sampContent[i] == ']' && prompt.inToken == 'parsing') {
+				children.push({
+					type: 'prompt',
+					content: prompt.content.slice(2)
+				});
+				prompt = {
+					inToken: 'not',
+					content: ''
+				};
+				continue;
+			}
+
+			if (sampContent[i] == ']' && sampContent[i + 1] == ']' && userInput.inToken == 'parsing') {
+				children.push({
+					type: 'userInput',
+					content: userInput.content.slice(2)
+				});
+				userInput = {
+					inToken: 'not',
+					content: ''
+				};
+				i += 1;
+				continue;
+			}
+			// 在此之中
+			if (prompt.inToken == 'parsing') {
+				prompt.content += sampContent[i];
+				continue;
+			}
+
+			if (userInput.inToken == 'parsing') {
+				userInput.content += sampContent[i];
+				continue;
+			}
+			// 都不是
+			normalContent += sampContent[i];
+		}
+
+		// 若prompt或者userInput尚有内容
+
+		children.push({
+			type: 'text',
+			content:
+				prompt.content != ''
+					? prompt.content
+					: userInput.content != ''
+						? userInput.content
+						: normalContent
+		});
+		return children;
 	};
 
 	// 返回list节点
@@ -339,10 +444,19 @@
 		};
 	};
 
+	// 返回keyboard节点
+	const keyboardLexer = (inlineInput) => {
+		return {
+			type: 'keyboard',
+			content: inlineInput
+		};
+	};
+
 	// 处理已经被解析为行节点的剩余部分
 	// 只处理 emphasis(强调 *...*) strong(加粗 **...**) 删除线(~~...~~)
 	// inlineCode(行内代码 `...`) link(链接 [...](...)) image(图片 ![...](... ..))
 	// 增加spolier(行内代码 >!...!<)
+	// 增加keyboard(行内代码 [[...]])
 	const restInlineLexer = (inlineInput, inToken = []) => {
 		let children = [];
 		let i;
@@ -456,6 +570,19 @@
 			}
 		}
 
+		// 处理keyboard节点
+		if (!inToken.includes('keyboard')) {
+			let keyboardRegex = /\[\[(.+?)\]\](.*)/.exec(inlineInput);
+			if (keyboardRegex != null) {
+				children.push(keyboardLexer(keyboardRegex[1]));
+				// 处理后面的部分
+				if (keyboardRegex[2] != '') {
+					children.push(...restInlineLexer(keyboardRegex[2], inToken));
+				}
+				return children;
+			}
+		}
+
 		children.push({
 			type: 'text',
 			content: inlineInput
@@ -535,6 +662,8 @@
 			<OrderList children={one.children} />
 		{:else if one.type == 'table'}
 			<Table header={one.header} body={one.body} />
+		{:else if one.type == 'sample'}
+			<Samp children={one.children} />
 		{/if}
 	{/each}
 </div>
