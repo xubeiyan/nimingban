@@ -15,7 +15,8 @@
 	<slot />
 	{#if hintText != null}
 		<div
-			class="invisible group-hover:visible shadow-md {shadowStyle} w-[5em] p-1 absolute {bgStyle} top-[100%] mt-2 rounded-md"
+			class="invisible group-hover:visible shadow-md {shadowStyle} text-nowrap 
+			px-2 py-1 absolute {bgStyle} top-[100%] mt-2 rounded-md"
 		>
 			<div
 				class="absolute left-[50%] translate-x-[-50%] top-[-3px] size-2 {bgStyle} rotate-45"
