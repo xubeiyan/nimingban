@@ -1,6 +1,7 @@
 <script>
 	import MarkdownIcon from '$svgIcon/markdown.svelte';
 	import AddPlusIcon from '$svgIcon/addPlus.svelte';
+	import ExchangeIcon from '$svgIcon/exchange.svelte';
 
 	import MarkdownContent from './NewPostForm/MarkdownContent.svelte';
 	import AttachPicture from './NewPostForm/AttachPicture.svelte';
@@ -17,6 +18,7 @@
 	import { createEventDispatcher } from 'svelte';
 	import SendBtn from './NewPostForm/SendBtn.svelte';
 	import { text } from '@sveltejs/kit';
+	import IconStatusBtn from './NewPostForm/IconStatusBtn.svelte';
 
 	const dispatch = createEventDispatcher();
 
@@ -83,7 +85,7 @@
 		if (oversizeList.length > 0) {
 			sendResponseError = {
 				text: `图片 ${oversizeList.join(', ')} 的体积超过了 2MiB 限制`
-			}
+			};
 			attachedFileList = [];
 			return;
 		}
@@ -270,6 +272,13 @@
 		}
 	});
 
+	let multiLineContentOriginalPos = true;
+	$: orderStyle = multiLineContentOriginalPos ? '' : 'flex-row-reverse';
+	// 交换编辑区位置
+	const toggleEditPosition = () => {
+		multiLineContentOriginalPos = !multiLineContentOriginalPos;
+	};
+
 	let expand = false;
 
 	// 展开编辑区
@@ -334,7 +343,7 @@
 				on:input={(e) => handleInput('title', e.target.value)}
 			/>
 		</div>
-		<div class="relative flex gap-2 transition-none">
+		<div class="relative flex gap-2 transition-none {orderStyle}">
 			<MutilineContent
 				label="正文"
 				value={post.content}
@@ -342,18 +351,26 @@
 				{expand}
 				on:input={(e) => handleInput('content', e.target.value)}
 			/>
-			<button
-				class="absolute right-0 top-0 {markdownBtnClass} px-2 rounded-md hover:shadow-md"
-				on:click={toggleEdit}
-				type="button"
-			>
-				<MarkdownIcon highlight={expand} />
-			</button>
+			<div class="absolute right-0 top-0 flex gap-2">
+				{#if expand}
+					<IconStatusBtn
+						active={!multiLineContentOriginalPos}
+						on:click={toggleEditPosition}
+						type="secondary"
+						hintText={multiLineContentOriginalPos ? 'Markdown靠左' : 'Markdown靠右'}
+					>
+						<ExchangeIcon />
+					</IconStatusBtn>
+				{/if}
+				<IconStatusBtn active={expand} on:click={toggleEdit} type="primary">
+					<MarkdownIcon />
+				</IconStatusBtn>
+			</div>
 
 			{#if expand}
 				<div class="w-[50%] h-full mt-10 flex flex-col">
 					<MarkdownContent content={post.commentReplyContent} />
-					<MarkdownContent content={post.content} debugFlags={[]}/>
+					<MarkdownContent content={post.content} debugFlags={[]} />
 				</div>
 			{/if}
 		</div>
