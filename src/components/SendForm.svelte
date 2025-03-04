@@ -328,7 +328,12 @@
 		<h1 class="text-2xl mb-6">{formTitle}</h1>
 		<div class="flex gap-2 mb-2">
 			<InlineInput
-				label="名称"
+				label="标题"
+				placeholder="无标题"
+				on:input={(e) => handleInput('title', e.target.value)}
+			/>
+			<InlineInput
+				label="作者"
 				placeholder="无名氏"
 				on:input={(e) => handleInput('name', e.target.value)}
 			/>
@@ -336,11 +341,6 @@
 				label="Email"
 				placeholder="no@name.net"
 				on:input={(e) => handleInput('email', e.target.value)}
-			/>
-			<InlineInput
-				label="标题"
-				placeholder="无标题"
-				on:input={(e) => handleInput('title', e.target.value)}
 			/>
 		</div>
 		<div class="relative flex gap-2 transition-none {orderStyle}">
