@@ -42,5 +42,9 @@ export const supportLang = [
 	{
 		name: 'go',
 		display: 'Go'
+	}, 
+	{
+		name: 'php',
+		display: 'PHP: Hypertext Processor'
 	}
 ];
