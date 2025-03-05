@@ -37,9 +37,8 @@
 	});
 
 	onMount(() => {
-		const usingCookiesFromLocalStorage = window.localStorage.getItem('usingCookies');
-		if (usingCookiesFromLocalStorage == undefined) return;
-		usingCookies = usingCookiesFromLocalStorage;
+		if ($userStore.usingCookie == undefined) return;
+		usingCookies = $userStore.usingCookie;
 	});
 
 	$: slotWidth = usingCookies == null ? 'w-[10em]' : 'w-full';
@@ -89,7 +88,10 @@
 
 	// 使用某个cookies
 	const useCookies = (cookies) => {
-		window.localStorage.setItem('usingCookies', cookies);
+		userStore.update((u) => ({
+			...u,
+			usingCookie: cookies
+		}));
 		usingCookies = cookies;
 	};
 </script>

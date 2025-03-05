@@ -13,7 +13,7 @@
 </script>
 
 <pre
-	class="rounded-md bg-slate-200 dark:bg-slate-600
+	class="rounded-md bg-zinc-100 dark:bg-zinc-600
     px-3 py-2 my-2 text-sm/4 block
     shadow-inner dark:shadow-slate-700">
 <samp class="block"

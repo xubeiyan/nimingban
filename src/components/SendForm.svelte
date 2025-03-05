@@ -153,7 +153,7 @@
 				};
 			} else if (res.errorCode == 'WRONG_COOKIES') {
 				sendResponseError = {
-					text: `当前饼干: "${window.localStorage.getItem('usingCookies')}" 无法${verb}`
+					text: `当前饼干: "${$userStore.usingCookie}" 无法${verb}`
 				};
 			} else if (res.errorCode == 'POST_TOO_FAST') {
 				sendResponseError = {
@@ -174,6 +174,10 @@
 			} else if (res.errorCode == 'NOT_SEND_POST_IN_THIS_BOARD') {
 				sendResponseError = {
 					text: `此版块不允许${verb}`
+				};
+			} else if (res.errorCode == 'NOT_EDITABLE') {
+				sendResponseError = {
+					text: `此串或评论不允许编辑`
 				};
 			}
 
@@ -224,8 +228,8 @@
 			}
 
 			// 有usingCookies则附上
-			const usingCookies = window.localStorage.getItem('usingCookies');
-			if (usingCookies != undefined) {
+			const usingCookies = $userStore.usingCookie;
+			if (usingCookies != null) {
 				form.append('cookies', usingCookies);
 			}
 
@@ -299,6 +303,20 @@
 			post.commentReplyContent = null;
 		}
 		show = true;
+	};
+
+	const closeForm = () => {
+		show = false;
+		sendBtnStatus = 'idle';
+		post = {
+			name: null,
+			email: null,
+			title: null,
+			content: null,
+			commentReplyContent: null
+		};
+		attachFile.value = '';
+		attachedFileList = [];
 	};
 
 	$: formWidthClass = expand ? 'md:w-[95%]' : 'md:w-[50em]';
@@ -413,10 +431,6 @@
 			{/if}
 			<SendBtn status={sendBtnStatus} on:click={sendPost} />
 		</div>
-		<CloseBtn
-			on:click={() => {
-				show = false;
-			}}
-		/>
+		<CloseBtn on:click={closeForm} />
 	</form>
 </div>

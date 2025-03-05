@@ -13,7 +13,8 @@ const nullToDefaultString = ({ type, value }) => {
 		title: '无标题'
 	};
 
-	if (value != null) return value;
+	// 如果不是null或者''
+	if (value != null && value != '') return value;
 
 	if (type == 'poster_name') {
 		return defaultString.poster_name;

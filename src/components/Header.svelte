@@ -45,10 +45,10 @@
 			username: null,
 			type: null,
 			token: null,
-			cookies: []
+			cookies: [],
+			usingCookie: null,
 		});
 
-		window.localStorage.removeItem('usingCookies');
 		window.localStorage.removeItem('user');
 	};
 
@@ -90,11 +90,11 @@
 		const user = JSON.parse(userInLocalStorage);
 		if (user == undefined) return;
 
-		// 检查 localStorage 有无 usingCookies，无则添加
-		const usingCookies = window.localStorage.getItem('usingCookies');
-		if (user.cookies.length > 0 && usingCookies == undefined) {
-			window.localStorage.setItem('usingCookies', user.cookies[0].content);
-		}
+		// // 检查 localStorage 有无 usingCookies，无则添加
+		// const usingCookies = window.localStorage.getItem('usingCookies');
+		// if (user.cookies.length > 0 && usingCookies == undefined) {
+		// 	window.localStorage.setItem('usingCookies', user.cookies[0].content);
+		// }
 
 		userStore.set(user);
 	});
