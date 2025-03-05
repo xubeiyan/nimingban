@@ -129,13 +129,34 @@
 		}
 	});
 
-	// 处理更新评论
-	const handleUpdateComment = async (e) => {
-		const prefixCommentId = e.detail;
-		const commentId = prefixCommentId.split('_')[1];
+	// 获取单条串的mutation
+	const getSinglePostMutation = createMutation({
+		mutationFn: async (postId) => {
+			const res = await fetch(`/post/single/${postId}`).then((r) => r.json());
 
-		if (commentId == undefined) return;
-		const updatedComment = await $getSingleCommentMutation.mutateAsync(commentId);
+			if (res.type != 'ok') return null;
+			return res.post;
+		}
+	});
+
+	// 处理更新串或评论
+	const handleUpdatePostOrComment = async (e) => {
+		// 参数形如post_xxxxx或则comment_xxxx
+		const [type, id] = e.detail.split('_');
+
+		if (id == undefined) return;
+
+		// 串处理
+		if (type == 'post') {
+			const updatedPost = await $getSinglePostMutation.mutateAsync(id);
+
+			if (updatedPost == null) return;
+			data.post = updatedPost;
+			return;
+		}
+
+		// 评论处理
+		const updatedComment = await $getSingleCommentMutation.mutateAsync(id);
 
 		if (updatedComment == []) return;
 
@@ -357,7 +378,7 @@
 	bind:this={newCommentForm}
 	type={oprType}
 	on:sendComment={handleSendComment}
-	on:edit={handleUpdateComment}
+	on:edit={handleUpdatePostOrComment}
 />
 <ImageViewer bind:this={imageViewer} />
 <RemoveConfirmDialog bind:this={removeConfirmDialog} on:delete={(e) => removeComment(e.detail)} />

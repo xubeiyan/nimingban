@@ -175,6 +175,10 @@
 				sendResponseError = {
 					text: `此版块不允许${verb}`
 				};
+			} else if (res.errorCode == 'NOT_EDITABLE') {
+				sendResponseError = {
+					text: `此串或评论不允许编辑`
+				};
 			}
 
 			sendBtnStatus = 'failed';
@@ -313,7 +317,7 @@
 		};
 		attachFile.value = '';
 		attachedFileList = [];
-	}
+	};
 
 	$: formWidthClass = expand ? 'md:w-[95%]' : 'md:w-[50em]';
 	$: markdownBtnClass = expand ? 'bg-blue-400' : 'bg-blue-200';
@@ -427,8 +431,6 @@
 			{/if}
 			<SendBtn status={sendBtnStatus} on:click={sendPost} />
 		</div>
-		<CloseBtn
-			on:click={closeForm}
-		/>
+		<CloseBtn on:click={closeForm} />
 	</form>
 </div>

@@ -9,7 +9,7 @@
         border border-slate-300 
         focus-within:border-slate-600 focus-within:dark:border-slate-400 
         dark:border-slate-600 focus-within:dark:bg-slate-600 
-        dark:bg-slate-700 rounded-md`;
+        dark:bg-slate-700 rounded-md max-w-full`;
 
 	$: expandStyle = expand ? 'w-[50%]' : 'grow';
 </script>
@@ -38,6 +38,7 @@
 	.grow-wrap::after {
 		content: attr(data-replicated-value) ' ';
 		white-space: pre-wrap;
+		color: green;
 		visibility: hidden;
 		word-break: break-all;
 		padding: 0 var(--x-padding);
@@ -45,7 +46,9 @@
 
 	.grow-wrap > textarea {
 		resize: none;
-		overflow: hidden;
+		white-space: nowrap;
+		overflow-x: auto;
+		overflow-y: hidden;
 		padding: 0 var(--x-padding);
 	}
 

@@ -1,8 +1,9 @@
 import { nullToDefaultString } from '$lib/SendForm/string.js';
+import { json } from '@sveltejs/kit';
 
-export const load = async ({ locals, params }) => {
+// 获取单独一条串内容
+export const GET = async ({ params, locals }) => {
 	const { post_id } = params;
-
 	const { dbconn } = locals;
 
 	const query = {
@@ -17,12 +18,6 @@ export const load = async ({ locals, params }) => {
 
 	const result = await dbconn.query(query);
 
-	if (result.rowCount != 1) {
-		return {
-			post_id: 'NOT_FOUND'
-		};
-	}
-
 	const {
 		id,
 		status,
@@ -35,7 +30,8 @@ export const load = async ({ locals, params }) => {
 		cookies_content
 	} = result.rows[0];
 
-	return {
+	return json({
+		type: 'ok',
 		post: {
 			id,
 			status,
@@ -47,5 +43,5 @@ export const load = async ({ locals, params }) => {
 			edit_time,
 			cookies_content: cookies_content == null ? '神秘饼干' : cookies_content
 		}
-	};
+	});
 };

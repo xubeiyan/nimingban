@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { JWTAuth, getJWTSecretDB } from '$lib/auth.js';
 
-import { nullToDefaultString } from '$lib/SendForm/string.js';
+import { nullStringToEmpty } from '$lib/SendForm/string.js';
 
 const CONTENT_MIN_LENGTH = 10;
 
@@ -15,14 +15,6 @@ export const POST = async ({ locals, params, request }) => {
 		return json(authRes);
 	}
 
-	// 不是admin不允许操作
-	if (authRes.userType != 'admin') {
-		return json({
-			type: 'error',
-			errorCode: 'OPERATION_NOT_ALLOWED'
-		});
-	}
-
 	const postId = params.post_id ?? 'invalid';
 	if (postId == 'invalid') {
 		return json({
@@ -33,10 +25,22 @@ export const POST = async ({ locals, params, request }) => {
 	}
 	const formData = await request.formData();
 
-	const name = nullToDefaultString(formData?.get('name'));
-	const email = nullToDefaultString(formData?.get('email'));
-	const title = nullToDefaultString(formData?.get('title'));
+	const name = nullStringToEmpty(formData?.get('name'));
+	const email = nullStringToEmpty(formData?.get('email'));
+	const title = nullStringToEmpty(formData?.get('title'));
 	const content = formData?.get('content') ?? 'empty';
+	const cookies = nullStringToEmpty(formData?.get('cookies'));
+
+	/* 
+	// 未提供cookies字段
+	*/
+	if (authRes.userType != 'admin' && cookies == null) {
+		return json({
+			type: 'error',
+			errorCode: 'WRONG_COOKIES',
+			extra: null
+		});
+	}
 
 	/*
     // 正文内容太少
@@ -52,31 +56,58 @@ export const POST = async ({ locals, params, request }) => {
 		});
 	}
 
-	const postPrefix = postId.split('_').at(0);
-	const id = postId.split('_').at(1);
+	const [postPrefix, id] = postId.split('_');
 
-	let tableName = 'post';
-	if (postPrefix == 'comment') {
-		tableName = 'comment';
+	let searchQuery = null;
+	if (postPrefix == 'post') {
+		// 查找post表中的记录
+		searchQuery = {
+			text: `SELECT p.status, c.content AS cookies_content 
+			FROM post AS p LEFT JOIN cookies AS c ON p.poster_cookies_id = c.id
+			WHERE p.id = $1 LIMIT 1`,
+			values: [id]
+		};
+	} else {
+		// 查找comment表中的记录
+		searchQuery = {
+			text: `SELECT p.status, c.content AS cookies_content 
+			FROM comment LEFT JOIN cookies AS c ON comment.poster_cookies_id = c.id
+			INNER JOIN post AS p ON p.id = comment.belong_post_id
+			WHERE comment.id = $1 LIMIT 1`,
+			values: [id]
+		};
 	}
 
-	// 查找post表中的记录
-	const postSearchQuery = {
-		text: `SELECT 1 FROM ${tableName} WHERE id = $1 LIMIT 1`,
-		values: [id]
-	};
-
-	const postSearchResult = await dbconn.query(postSearchQuery);
+	const searchResult = await dbconn.query(searchQuery);
 
 	// 不存在对应post或comment
-	if (postSearchResult.rowCount == 0) {
+	if (searchResult.rowCount == 0) {
 		return json({
 			type: 'error',
 			errorCode: 'POST_OR_COMMENT_ID_INVALID'
 		});
 	}
 
-	const postUpdateQuery = {
+	// 如果不是admin则需要验证是否作者是对应饼干
+	if (authRes.userType != 'admin') {
+		if (searchResult.rows[0].cookies_content != cookies) {
+			return json({
+				type: 'error',
+				errorCode: 'WRONG_COOKIES'
+			});
+		}
+
+		if (searchResult.rows[0].status != 'repliable') {
+			return json({
+				type: 'error',
+				errorCode: 'NOT_EDITABLE'
+			});
+		}
+	}
+
+	let tableName = postPrefix == 'post' ? 'post' : 'comment';
+
+	const updateQuery = {
 		text: `UPDATE ${tableName} SET 
             poster_name = $1,
             poster_email = $2,
@@ -87,7 +118,7 @@ export const POST = async ({ locals, params, request }) => {
 		values: [name, email, title, content, id]
 	};
 
-	await dbconn.query(postUpdateQuery);
+	await dbconn.query(updateQuery);
 
 	return json({
 		type: 'ok'
