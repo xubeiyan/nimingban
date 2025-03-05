@@ -19,6 +19,7 @@
 	import PrimaryBtn from '$cmpns/PrimaryBtn.svelte';
 	import SuperOperationBtn from '$cmpns/SuperOperationBtn.svelte';
 	import RemoveConfirmDialog from '$cmpns/PostManage/RemoveConfirmDialog.svelte';
+	import PostStatusBadge from '$cmpns/PostStatusBadge.svelte';
 
 	let imageViewer = null;
 	let newCommentForm = null;
@@ -153,11 +154,11 @@
 		comments = comments;
 	};
 
-	// 是否post_author
-	$: post_author = (c) => {
+	// 是否PostAuthor
+	$: isPostAuthor = (c) => {
 		if (data.post.cookies_content == undefined || data.post.cookies_content == '神秘饼干')
-			return '';
-		return c == data.post.cookies_content ? 'po' : '';
+			return false;
+		return c == data.post.cookies_content;
 	};
 
 	let postId = null;
@@ -174,6 +175,13 @@
 	// 删除某条评论
 	const removeComment = ({ id }) => {
 		comments = comments.filter((one) => one.id != id);
+	};
+
+	// 当前用户可否编辑串或回复
+	const isUserEditable = (cookies, postStatus) => {
+		const usingCookie = $userStore.usingCookie;
+		if (usingCookie == cookies && postStatus == 'repliable') return true;
+		return false;
 	};
 
 	afterNavigate(() => {
@@ -261,20 +269,20 @@
 					>
 				{/if}
 			</p>
-			{#if $userStore.type == 'admin'}
-				<SuperOperationBtn on:click={() => openEditForm(data.post.content, `post_${data.post.id}`)}
-					>编辑</SuperOperationBtn
-				>
-			{/if}
+			<p>
+				{#if $userStore.type == 'admin' || isUserEditable(data.post.cookies_content, data.post.status)}
+					<SuperOperationBtn
+						on:click={() => openEditForm(data.post.content, `post_${data.post.id}`)}
+						>编辑</SuperOperationBtn
+					>
+				{/if}
 
-			{#if data.post.status == 'repliable' && $userStore.type == 'user'}
-				<SecondaryBtn on:click={() => openCommentForm()}>回复</SecondaryBtn>
-			{:else if data.post.status == 'readonly' && $userStore.type == 'user'}
-				<span
-					class="shadow-inner shadow-slate-300 dark:shadow-slate-900 rounded-md px-2 py-1 bg-orange-100 dark:bg-orange-800/80"
-					>此串不允许回复</span
-				>
-			{/if}
+				{#if data.post.status == 'repliable' && $userStore.type == 'user'}
+					<SecondaryBtn on:click={() => openCommentForm()}>回复</SecondaryBtn>
+				{:else if data.post.status == 'readonly' && $userStore.type == 'user'}
+					<PostStatusBadge>此串不允许回复</PostStatusBadge>
+				{/if}
+			</p>
 		</div>
 		<div class="border border-cyan-600 mt-2 py-2 px-4 rounded-sm">
 			<PostContent content={data.post.content} on:largeImage={(e) => openImageViewer(e.detail)} />
@@ -282,7 +290,7 @@
 	</div>
 	{#each comments as comment}
 		<div
-			class="rounded-md odd:bg-slate-200/60 even:bg-slate-200 
+			class="rounded-md odd:bg-slate-200/60 even:bg-slate-200
 			dark:odd:bg-sky-800 dark:even:bg-sky-800/50 px-4 py-2 mt-2 shadow-inner"
 			id="id-{comment.id}"
 		>
@@ -293,11 +301,11 @@
 					<span class="dark:text-red-100 italic">邮箱：{comment.poster_email}</span>
 					<span>写于：{comment.comment_time}</span>
 					<span class="dark:text-indigo-100">饼干：{comment.cookies_content} </span>
-					{#if post_author(comment.cookies_content) != ''}
+					{#if isPostAuthor(comment.cookies_content)}
 						<span
-							class="shadow-inner shadow-slate-300 dark:shadow-slate-700 bg-slate-200 dark:bg-slate-600 px-2 py-1 rounded-md"
+							class="shadow-inner shadow-sky-200 dark:shadow-slate-500 bg-sky-100 dark:bg-slate-400 px-2 py-1 rounded-md"
 						>
-							{post_author(comment.cookies_content)}
+							Po
 						</span>
 					{/if}
 					{#if comment.edit_time != null}
@@ -309,8 +317,8 @@
 						>
 					{/if}
 				</p>
-				{#if $userStore.type == 'admin'}
-					<div class="flex gap-1">
+				<p>
+					{#if $userStore.type == 'admin'}
 						<SuperOperationBtn
 							type="delete"
 							on:click={() =>
@@ -319,20 +327,19 @@
 									content: reduceContent(comment.content)
 								})}>删除</SuperOperationBtn
 						>
+					{/if}
+					{#if $userStore.type == 'admin' || isUserEditable(comment.cookies_content, data.post.status)}
 						<SuperOperationBtn
 							on:click={() => openEditForm(comment.content, `comment_${comment.id}`)}
 							>编辑</SuperOperationBtn
 						>
-					</div>
-				{:else if $userStore.type == 'user'}
-					{#if data.post.status == 'repliable'}
+					{/if}
+					{#if data.post.status == 'repliable' && $userStore.type == 'user'}
 						<SecondaryBtn on:click={() => openCommentForm(comment.id)}>回复</SecondaryBtn>
 					{:else if data.post.status == 'readonly'}
-						<span class="shadow-inner rounded-md px-2 py-1 bg-orange-100 dark:bg-orange-800/80"
-							>此串不允许回复</span
-						>
+						<PostStatusBadge>此串不允许回复</PostStatusBadge>
 					{/if}
-				{/if}
+				</p>
 			</div>
 			<div class="border border-cyan-600 mt-2 py-2 px-4 rounded-sm">
 				<PostContent content={comment.content} on:largeImage={(e) => openImageViewer(e.detail)} />

@@ -80,12 +80,15 @@
 		if (res.type == 'OK') {
 			const { username, type, createTime, token, cookies } = res.user;
 
+			let usingCookie = cookies.length > 1 ? cookies[0].content : null;
+
 			userStore.set({
 				username,
 				createTime,
 				type,
 				token,
-				cookies
+				cookies,
+				usingCookie
 			});
 
 			// 写入localStorage
@@ -96,13 +99,10 @@
 					createTime,
 					type,
 					token,
-					cookies
+					cookies,
+					usingCookie
 				})
 			);
-
-			if (cookies.length > 0) {
-				window.localStorage.setItem('usingCookies', cookies[0].content);
-			}
 
 			err.server = {
 				type: 'success',

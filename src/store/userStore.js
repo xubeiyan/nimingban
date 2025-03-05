@@ -4,5 +4,6 @@ export const userStore = writable({
 	username: null,
 	type: null,
 	token: null,
-	cookies: []
+	cookies: [],
+	usingCookie: null,
 });

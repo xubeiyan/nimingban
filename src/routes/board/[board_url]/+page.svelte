@@ -23,6 +23,7 @@
 	import DeleteConfimDialog from '$cmpns/PostManage/DeleteConfimDialog.svelte';
 	import CookieBtn from '$cmpns/CookiesManage/CookieBtn.svelte';
 	import TertiaryBtn from '$cmpns/TertiaryBtn.svelte';
+	import PostStatusBadge from '$cmpns/PostStatusBadge.svelte';
 
 	export let data;
 
@@ -203,7 +204,7 @@
 	{#each posts as post}
 		<div
 			class="rounded-md bg-slate-100 dark:bg-sky-700
-			pt-2 mb-4 shadow-inner 
+			pt-2 mb-4 shadow-inner
 			shadow-slate-200 dark:shadow-sky-800"
 			id="id-{post.id}"
 		>
@@ -237,10 +238,7 @@
 						>
 					{/if}
 					{#if post.status == 'readonly' && $userStore.type == 'user'}
-						<span
-							class="shadow-inner shadow-slate-300 dark:shadow-slate-900 rounded-md px-2 py-1 bg-orange-200 dark:bg-orange-800/80"
-							>此串不允许回复</span
-						>
+						<PostStatusBadge>此串不允许回复</PostStatusBadge>
 					{/if}
 					<a href="/post/{post.id}">
 						<SecondaryBtn>详情</SecondaryBtn>
