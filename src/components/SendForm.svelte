@@ -22,7 +22,7 @@
 
 	const dispatch = createEventDispatcher();
 
-	export let type = 'post';
+	let type = 'post';
 	export let postId = null;
 
 	$: formTitle = type == 'post' ? '发新串' : type == 'edit' ? `编辑串` : '回复串';
@@ -291,22 +291,35 @@
 	};
 
 	export const showForm = (params) => {
-		if (params != undefined && params.reply != undefined) {
-			// 回复评论
-			post.commentReplyContent = params.reply;
-		} else if (params != undefined && params.content != undefined && params.postId != undefined) {
-			// 编辑
+		if (
+			params != undefined &&
+			params.type == 'edit' &&
+			params.content != undefined &&
+			params.postId != undefined
+		) {
+			// 编辑串
+			type = params.type;
 			post.content = params.content;
 			postId = params.postId;
-		} else {
-			// 回复串
-			post.commentReplyContent = null;
+		} else if (params != undefined && params.type == 'post') {
+			// 发新串
+			type = params.type;
+		} else if (params != undefined && params.type == 'comment') {
+			type = params.type;
+			if (params.reply != undefined) {
+				// 回复评论
+				post.commentReplyContent = params.reply;
+			} else {
+				// 回复串
+				post.commentReplyContent = null;
+			}
 		}
 		show = true;
 	};
 
 	const closeForm = () => {
 		show = false;
+		postId = null;
 		sendBtnStatus = 'idle';
 		post = {
 			name: null,

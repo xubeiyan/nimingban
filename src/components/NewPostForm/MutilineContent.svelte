@@ -46,7 +46,6 @@
 
 	.grow-wrap > textarea {
 		resize: none;
-		white-space: nowrap;
 		overflow-x: auto;
 		overflow-y: hidden;
 		padding: 0 var(--x-padding);
