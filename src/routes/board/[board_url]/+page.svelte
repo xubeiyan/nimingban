@@ -77,7 +77,7 @@
 
 	const showNewPostForm = () => {
 		if (newPostForm == null) return;
-		newPostForm.showForm();
+		newPostForm.showForm({ type: 'post' });
 	};
 
 	const handleSendPost = () => {
@@ -258,7 +258,7 @@
 	{/if}
 </div>
 
-<SendForm bind:this={newPostForm} type="post" on:sendPost={handleSendPost} />
+<SendForm bind:this={newPostForm} on:sendPost={handleSendPost} />
 <ImageViewer bind:this={imageViewer} />
 <PostStatusDialog bind:this={postStatusDialog} on:update={(e) => handleStatusUpdate(e.detail)} />
 <DeleteConfimDialog

@@ -33,26 +33,22 @@
 		imageViewer.openDialog(url);
 	};
 
-	// 回复对话框类型
-	let oprType = 'comment';
-
 	// 打开评论框
 	const openCommentForm = (fromCommentId) => {
 		if (newCommentForm == null) return;
 		if (fromCommentId != undefined) {
 			const reply = `> 回复 [此串](#id-${fromCommentId})`;
-			newCommentForm.showForm({ reply });
+			newCommentForm.showForm({ type: 'comment', reply });
 			return;
 		}
 
-		newCommentForm.showForm();
+		newCommentForm.showForm({ type: 'comment'});
 	};
 
 	// 打开编辑对话框
 	const openEditForm = (content, postId) => {
 		if (newCommentForm == null) return;
-		oprType = 'edit';
-		newCommentForm.showForm({ content, postId });
+		newCommentForm.showForm({ type: 'edit', content, postId });
 	};
 
 	//
@@ -376,7 +372,6 @@
 </div>
 <SendForm
 	bind:this={newCommentForm}
-	type={oprType}
 	on:sendComment={handleSendComment}
 	on:edit={handleUpdatePostOrComment}
 />
