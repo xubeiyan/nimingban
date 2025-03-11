@@ -434,15 +434,15 @@
 						on:insertImageToPost={handleInsertImageToPost}
 					/>
 				{/each}
-
-				<button
-					class="border-2 border-slate-500 dark:border-slate-100 border-dashed hover:bg-slate-500/10 hover:dark:bg-slate-50/10 rounded-lg size-20 flex justify-center items-center"
-					on:click={openAttachSelect}
-					disabled={type == 'edit'}
-					type="button"
-				>
-					<AddPlusIcon />
-				</button>
+				{#if type != 'edit'}
+					<button
+						class="border-2 border-slate-500 dark:border-slate-100 border-dashed hover:bg-slate-500/10 hover:dark:bg-slate-50/10 rounded-lg size-20 flex justify-center items-center"
+						on:click={openAttachSelect}
+						type="button"
+					>
+						<AddPlusIcon />
+					</button>
+				{/if}
 			</div>
 		</div>
 		<div class="mt-6 flex justify-end items-center gap-4">
