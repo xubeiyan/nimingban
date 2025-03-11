@@ -198,17 +198,8 @@
 		}
 
 		// 清空发帖部分
-		show = false;
-		sendBtnStatus = 'idle';
-		post = {
-			name: null,
-			email: null,
-			title: null,
-			content: null,
-			commentReplyContent: null
-		};
-		attachFile.value = '';
-		attachedFileList = [];
+		window.localStorage.removeItem('draft');
+		closeForm({ saveDraft: false });
 	};
 
 	const sendPostMutation = createMutation({
@@ -304,8 +295,10 @@
 		} else if (params != undefined && params.type == 'post') {
 			// 发新串
 			type = params.type;
+			draftToFormContent();
 		} else if (params != undefined && params.type == 'comment') {
 			type = params.type;
+			draftToFormContent();
 			if (params.reply != undefined) {
 				// 回复评论
 				post.commentReplyContent = params.reply;
@@ -317,9 +310,12 @@
 		show = true;
 	};
 
-	const closeForm = () => {
+	const closeForm = ({ saveDraft = true }) => {
+		if (saveDraft) {
+			formContentToDraft();
+		}
+
 		show = false;
-		postId = null;
 		sendBtnStatus = 'idle';
 		post = {
 			name: null,
@@ -330,6 +326,19 @@
 		};
 		attachFile.value = '';
 		attachedFileList = [];
+	};
+
+	// 查看是否有草稿，有将其写入到内容中
+	const draftToFormContent = () => {
+		const draft = window.localStorage.getItem('draft');
+		if (draft == undefined) return;
+		post.content = draft;
+	};
+
+	// 将内容写入到草稿
+	const formContentToDraft = () => {
+		if (post.content == null || post.content == '') return;
+		window.localStorage.setItem('draft', post.content);
 	};
 
 	$: formWidthClass = expand ? 'md:w-[95%]' : 'md:w-[50em]';
