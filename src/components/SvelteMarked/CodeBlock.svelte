@@ -8,9 +8,9 @@
 
 	// 代码过长显示展开
 	let blockOpen = false;
-	$: codeblockStyle = blockOpen ? '' : 'overflow-y-hidden max-h-[10rem]';
+	$: codeblockStyle = blockOpen ? '' : 'overflow-y-hidden max-h-[15rem]';
 
-	if (content.split('\n').length <= 6) {
+	if (content.split('\n').length <= 12) {
 		blockOpen = true;
 	}
 
@@ -37,7 +37,7 @@
 	</div>
 
 	<pre
-		class="{codeblockStyle} px-3 py-2 overflow-x-auto bg-blue-100 dark:bg-sky-900 rounded-b-md
+		class="{codeblockStyle} leading-[1.25rem] px-3 py-2 overflow-x-auto bg-blue-100 dark:bg-sky-900 rounded-b-md
     shadow-inner shadow-slate-300 dark:shadow-sky-950"><code>{@html hlContent()}</code></pre>
 
 	{#if !blockOpen}
