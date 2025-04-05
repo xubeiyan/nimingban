@@ -74,7 +74,7 @@ export const POST = async ({ locals, request }) => {
 
 	// default expire time will be 1 hours later
 	const payload = {
-		username,
+		username: encodeURI(username),
 		type,
 		expire: new Date().getTime() + 1000 * 60 * Number(jwtExpireMinute)
 	};

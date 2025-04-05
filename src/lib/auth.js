@@ -58,7 +58,7 @@ export const JWTAuth = (req, jwtSecretDb) => {
 
 	return {
 		type: 'ok',
-		username: payload.username,
+		username: decodeURI(payload.username),
 		userType: payload.type,
 		expire: payload.expire
 	};
