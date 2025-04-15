@@ -33,6 +33,8 @@
 - [x] 管理者添加和更新（在安装过程中配置）
 
 ## 路由设计
+<details>
+<summary>点击展开路由设计</summary>
 
 | 功能                       | 路径（和请求方法）                      | 携带参数 |
 | -------------------------- | --------------------------------------- | -------- |
@@ -68,6 +70,8 @@
 | 获取饼干                   | GET /user/getNewCookies                 |          |
 | 刷新JWT                    | POST /user/refreshJWT                   |          |
 | 修改密码                   | POST /user/updatePassword               |          |
+
+</details>
 
 ## 参数设置
 
