@@ -85,6 +85,17 @@
 			return res;
 		}
 	});
+
+	// 处理状态更新
+	const handleStatusUpdate = ({ type, id, status }) => {
+		// console.log(type, id, status);
+		if (type == 'user') {
+			const filtered = userList.filter((u) => u.id == id);
+			if (filtered.length != 1) return;
+			filtered[0].status = status;
+			userList = userList;
+		}
+	};
 </script>
 
 <div
@@ -154,7 +165,7 @@ bg-sky-100 dark:bg-sky-700 rounded-md px-4 py-4"
 			{:else if userList.length == 0}
 				<span class="px-1">什么都没找到</span>
 			{:else}
-				<ResultTable {userList} />
+				<ResultTable {userList} on:updateStatus={(e) => handleStatusUpdate(e.detail)} />
 			{/if}
 		</fieldset>
 	</div>

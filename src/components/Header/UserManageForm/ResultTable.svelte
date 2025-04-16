@@ -1,4 +1,5 @@
 <script>
+	import StatusSelect from '../CookiesManageForm/StatusSelect.svelte';
 	export let userList = [];
 </script>
 
@@ -14,13 +15,17 @@
 	</thead>
 	<tbody>
 		{#each userList as u}
-			<tr>
+			<tr class="even:bg-sky-200/50 even:dark:bg-sky-600/60">
 				<td class="text-center">{u.username}</td>
 				<td class="text-center">{u.type}</td>
-				<td class="text-center">
-					
+				<td> </td>
+				<td>
+					{#if u.type == '一般用户'}
+						<div class="flex justify-center">
+							<StatusSelect type="user" status={u.status} id={u.id} on:updateStatus />
+						</div>
+					{/if}
 				</td>
-				<td class="text-center">{u.status}</td>
 				<td class="text-center">{u.createTime}</td>
 			</tr>
 		{/each}

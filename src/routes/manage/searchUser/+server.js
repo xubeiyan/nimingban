@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { JWTAuth, getJWTSecretDB } from '$lib/auth';
-import { getUserStatusValue, getUserTypeValue } from '$lib/user/utils';
+import { getUserTypeValue } from '$lib/user/utils';
 
 export const POST = async ({ request, locals }) => {
 	const { dbconn } = locals;
@@ -34,11 +34,12 @@ export const POST = async ({ request, locals }) => {
 		end_time = `${end_time}`;
 	}
 
+	// 根据是否有 username 设置不同的SQL
 	let userSeachQuery = {
 		text: `SELECT id, username, status, type,
         to_char(create_timestamp, 'YYYY-MM-DD HH24:MI:SS') AS create_time 
         FROM "user" WHERE create_timestamp >= $1 AND create_timestamp <= $2 
-		ORDER BY create_timestamp DESC`,
+		ORDER BY create_timestamp DESC LIMIT 20`,
 		values: [start_time, end_time]
 	};
 
@@ -68,7 +69,7 @@ export const POST = async ({ request, locals }) => {
 			id: r.id,
 			username: r.username,
 			type: getUserTypeValue(r.type),
-			status: getUserStatusValue(r.status),
+			status: r.status,
 			createTime: r.create_time
 		}))
 	});
