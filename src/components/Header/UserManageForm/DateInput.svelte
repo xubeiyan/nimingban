@@ -14,7 +14,13 @@
 		shadow-inner shadow-slate-300 dark:shadow-sky-900
 		rounded-md px-2 py-1 flex items-center"
 	>
-		<input class="grow bg-transparent outline-none" name="labelInput" on:input {value} />
+		<input
+			class="grow bg-transparent outline-none"
+			type="date"
+			name="labelInput"
+			on:input
+			{value}
+		/>
 		<button class={btnStyle} on:click type="button">
 			<CloseCircleIcon />
 		</button>

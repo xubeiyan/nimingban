@@ -33,6 +33,7 @@
 - [x] 管理者添加和更新（在安装过程中配置）
 
 ## 路由设计
+
 <details>
 <summary>点击展开路由设计</summary>
 
@@ -61,7 +62,8 @@
 | （管理）删除评论           | GET /manage/removeComment/{id}          |          |
 | （管理）删除串             | GET /manage/removePost/{id}             |          |
 | （管理）删除分区           | GET /manage/removeSection/{id}          |          |
-| （管理）搜索用户或饼干     | POST /manage/seachCookies               |          |
+| （管理）搜索用户或饼干     | POST /manage/searchCookies              |          |
+| （管理）搜索用户详细信息   | POST /manage/searchUser                 |          |
 | （管理）切换用户或饼干状态 | POST /manage/toggleUserStatus           |          |
 | （管理）更新版块           | POST /manage/updateBoard                |          |
 | （管理）更新分区           | POST /manage/updateSection              |          |
@@ -170,15 +172,15 @@
 <details>
 <summary>点击展开 用户 表设计</summary>
 
-| 列名             | 数据类型   | 备注                       |
-| ---------------- | ---------- | -------------------------- |
-| id               | uuid       |                            |
-| status           | vchar(16)  | 可用值 `enable` `disabled` |
-| username         | vchar(256) |                            |
-| password_hash    | vchar(64)  |                            |
-| password_salt    | vchar(64)  |                            |
-| type             | vchar(16)  | 可用值 `admin` `user`      |
-| create_timestamp | timestamp  |                            |
+| 列名             | 数据类型   | 备注                      |
+| ---------------- | ---------- | ------------------------- |
+| id               | uuid       |                           |
+| status           | vchar(16)  | 可用值 `enable` `disable` |
+| username         | vchar(256) |                           |
+| password_hash    | vchar(64)  |                           |
+| password_salt    | vchar(64)  |                           |
+| type             | vchar(16)  | 可用值 `admin` `user`     |
+| create_timestamp | timestamp  |                           |
 
 </details>
 
@@ -225,7 +227,7 @@
 - [x] `paragraph`
 - [x] `emphasis`
 - [x] `strong`
-- [x] `inlineCode` 
+- [x] `inlineCode`
 - [x] `code`
   - [x] 支持用`<samp>`标签代替 result 代码块
 - [x] `delete`

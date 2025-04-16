@@ -1,5 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { JWTAuth, getJWTSecretDB } from '$lib/auth';
+import { avaliableUserStatusKey } from '$lib/user/utils.js';
 
 export const POST = async ({ request, locals }) => {
 	const { dbconn } = locals;
@@ -28,7 +29,7 @@ export const POST = async ({ request, locals }) => {
 		});
 	}
 
-	if (!['enable', 'disable'].includes(status)) {
+	if (!avaliableUserStatusKey().includes(status)) {
 		return json({
 			type: 'error',
 			errorCode: 'WRONG_STATUS'
