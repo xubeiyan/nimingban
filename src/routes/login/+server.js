@@ -70,7 +70,7 @@ export const POST = async ({ locals, request }) => {
 		return json({
 			type: 'error',
 			errorCode: 'USERNAME_OR_PASSWORD_WRONG',
-			extra: 'p w'
+			extra: 'r p w'
 		});
 	}
 

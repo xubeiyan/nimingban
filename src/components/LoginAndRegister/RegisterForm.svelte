@@ -10,13 +10,13 @@
 
 	import { createMutation } from '@tanstack/svelte-query';
 
-	export let toRight = false;
-	$: toRightClass = toRight ? 'translate-x-[-100%]' : '';
+	export let stage = 'register';
+	$: toRightClass = stage == 'register' ? 'translate-x-[-200%]' : '';
 
 	const dispatch = createEventDispatcher();
 
 	const toLoginForm = () => {
-		dispatch('toggleToRight');
+		dispatch('toStage', { name: 'login' });
 	};
 
 	let username = '';
