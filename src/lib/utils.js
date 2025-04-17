@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-// 生成随机盐字符串
+// 生成随机盐字符串，以及随机的找回密码
 const generateRandomSaltString = (length = 6) => {
 	if (Number(length) != length) {
 		length = 6;

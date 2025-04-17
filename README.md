@@ -172,15 +172,16 @@
 <details>
 <summary>点击展开 用户 表设计</summary>
 
-| 列名             | 数据类型   | 备注                      |
-| ---------------- | ---------- | ------------------------- |
-| id               | uuid       |                           |
-| status           | vchar(16)  | 可用值 `enable` `disable` |
-| username         | vchar(256) |                           |
-| password_hash    | vchar(64)  |                           |
-| password_salt    | vchar(64)  |                           |
-| type             | vchar(16)  | 可用值 `admin` `user`     |
-| create_timestamp | timestamp  |                           |
+| 列名             | 数据类型   | 备注                                         |
+| ---------------- | ---------- | -------------------------------------------- |
+| id               | uuid       |                                              |
+| status           | vchar(16)  | 可用值 `enable` `disable`                    |
+| username         | vchar(256) |                                              |
+| password_hash    | vchar(128) |                                              |
+| password_salt    | vchar(128) |                                              |
+| type             | vchar(16)  | 可用值 `admin` `user`                        |
+| create_timestamp | timestamp  |                                              |
+| reset_password   | vchar(128) | 有值则处于密码重置状态，且此值为重置后的密码 |
 
 </details>
 

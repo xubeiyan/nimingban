@@ -36,7 +36,7 @@ export const POST = async ({ request, locals }) => {
 
 	// 根据是否有 username 设置不同的SQL
 	let userSeachQuery = {
-		text: `SELECT id, username, status, type,
+		text: `SELECT id, username, status, type, reset_password,
         to_char(create_timestamp, 'YYYY-MM-DD HH24:MI:SS') AS create_time 
         FROM "user" WHERE create_timestamp >= $1 AND create_timestamp <= $2 
 		ORDER BY create_timestamp DESC LIMIT 20`,
@@ -45,7 +45,7 @@ export const POST = async ({ request, locals }) => {
 
 	if (username != null && username != '') {
 		userSeachQuery = {
-			text: `SELECT id, username, status, type,
+			text: `SELECT id, username, status, type, reset_password,
 			to_char(create_timestamp, 'YYYY-MM-DD HH24:MI:SS') AS create_time 
 			FROM "user" WHERE username = $3 
 			AND create_timestamp >= $1 AND create_timestamp <= $2
@@ -70,7 +70,8 @@ export const POST = async ({ request, locals }) => {
 			username: r.username,
 			type: getUserTypeValue(r.type),
 			status: r.status,
-			createTime: r.create_time
+			createTime: r.create_time,
+			resetPass: r.reset_password
 		}))
 	});
 };

@@ -143,7 +143,7 @@
 						$cookieManageStore.cookie = null;
 					}}
 				/>
-				<SearchBtn on:click={cookieSearch} />
+				<SearchBtn on:click={cookieSearch} disabled={$searchMutation.isPending}/>
 			</div>
 		</form>
 		<fieldset class="border border-slate-400 dark:border-slate-300 rounded-md px-3 py-1 mt-2">

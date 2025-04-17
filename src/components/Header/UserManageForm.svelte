@@ -96,6 +96,14 @@
 			userList = userList;
 		}
 	};
+
+	// 处理密码重置状态更新
+	const handleUserListUpdate = ({ id, tempPass }) => {
+		const filtered = userList.filter((u) => u.id == id);
+		if (filtered.length != 1) return;
+		filtered[0].resetPass = tempPass;
+		userList = userList;
+	};
 </script>
 
 <div
@@ -143,7 +151,7 @@ bg-sky-100 dark:bg-sky-700 rounded-md px-4 py-4"
 					}}
 				/>
 
-				<SearchBtn on:click={searchUser} />
+				<SearchBtn on:click={searchUser} disabled={$searchMutation.isPending} />
 			</div>
 		</form>
 		<fieldset class="border border-slate-400 dark:border-slate-300 rounded-md px-3 py-2 mt-2">
@@ -165,7 +173,11 @@ bg-sky-100 dark:bg-sky-700 rounded-md px-4 py-4"
 			{:else if userList.length == 0}
 				<span class="px-1">什么都没找到</span>
 			{:else}
-				<ResultTable {userList} on:updateStatus={(e) => handleStatusUpdate(e.detail)} />
+				<ResultTable
+					{userList}
+					on:updateStatus={(e) => handleStatusUpdate(e.detail)}
+					on:updateUserList={(e) => handleUserListUpdate(e.detail)}
+				/>
 			{/if}
 		</fieldset>
 	</div>
