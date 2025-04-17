@@ -34,6 +34,9 @@
 
 ## 路由设计
 
+<details>
+<summary>点击展开路由设计</summary>
+
 | 功能                       | 路径（和请求方法）                      | 携带参数 |
 | -------------------------- | --------------------------------------- | -------- |
 | 主页                       | GET /                                   |          |
@@ -59,7 +62,8 @@
 | （管理）删除评论           | GET /manage/removeComment/{id}          |          |
 | （管理）删除串             | GET /manage/removePost/{id}             |          |
 | （管理）删除分区           | GET /manage/removeSection/{id}          |          |
-| （管理）搜索用户或饼干     | POST /manage/seachCookies               |          |
+| （管理）搜索用户或饼干     | POST /manage/searchCookies              |          |
+| （管理）搜索用户详细信息   | POST /manage/searchUser                 |          |
 | （管理）切换用户或饼干状态 | POST /manage/toggleUserStatus           |          |
 | （管理）更新版块           | POST /manage/updateBoard                |          |
 | （管理）更新分区           | POST /manage/updateSection              |          |
@@ -68,6 +72,8 @@
 | 获取饼干                   | GET /user/getNewCookies                 |          |
 | 刷新JWT                    | POST /user/refreshJWT                   |          |
 | 修改密码                   | POST /user/updatePassword               |          |
+
+</details>
 
 ## 参数设置
 
@@ -166,15 +172,16 @@
 <details>
 <summary>点击展开 用户 表设计</summary>
 
-| 列名             | 数据类型   | 备注                       |
-| ---------------- | ---------- | -------------------------- |
-| id               | uuid       |                            |
-| status           | vchar(16)  | 可用值 `enable` `disabled` |
-| username         | vchar(256) |                            |
-| password_hash    | vchar(64)  |                            |
-| password_salt    | vchar(64)  |                            |
-| type             | vchar(16)  | 可用值 `admin` `user`      |
-| create_timestamp | timestamp  |                            |
+| 列名             | 数据类型   | 备注                                         |
+| ---------------- | ---------- | -------------------------------------------- |
+| id               | uuid       |                                              |
+| status           | vchar(16)  | 可用值 `enable` `disable`                    |
+| username         | vchar(256) |                                              |
+| password_hash    | vchar(128) |                                              |
+| password_salt    | vchar(128) |                                              |
+| type             | vchar(16)  | 可用值 `admin` `user`                        |
+| create_timestamp | timestamp  |                                              |
+| reset_password   | vchar(128) | 有值则处于密码重置状态，且此值为重置后的密码 |
 
 </details>
 
@@ -221,7 +228,7 @@
 - [x] `paragraph`
 - [x] `emphasis`
 - [x] `strong`
-- [x] `inlineCode` 
+- [x] `inlineCode`
 - [x] `code`
   - [x] 支持用`<samp>`标签代替 result 代码块
 - [x] `delete`

@@ -13,7 +13,7 @@
 
 	$: placeStyle = status == 'disable' ? '' : 'translate-x-[100%]';
 	$: bgStyle =
-		status == 'disable' ? 'bg-red-100 dark:bg-red-700' : 'bg-green-100 dark:bg-green-700';
+		status == 'disable' ? 'bg-red-100 dark:bg-red-700' : 'bg-lime-100 dark:bg-lime-600';
 
 	let loading = false;
 

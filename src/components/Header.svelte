@@ -11,10 +11,12 @@
 	import LoginoutButton from './Header/LoginoutButton.svelte';
 	import CookiesStatusButton from './Header/CookiesStatusButton.svelte';
 	import UserProfile from './UserProfile.svelte';
+	import UserManageBtn from './Header/UserManageBtn.svelte';
 	import CookiesManageBtn from './Header/CookiesManageBtn.svelte';
 	import CookiesManageForm from './Header/CookiesManageForm.svelte';
 	import SiteSettingBtn from './Header/SiteSettingBtn.svelte';
 	import SiteSettingForm from './Header/SiteSettingForm.svelte';
+	import UserManageForm from './Header/UserManageForm.svelte';
 
 	export let leftNavOpen;
 	export let siteName = '未知名称';
@@ -46,7 +48,7 @@
 			type: null,
 			token: null,
 			cookies: [],
-			usingCookie: null,
+			usingCookie: null
 		});
 
 		window.localStorage.removeItem('user');
@@ -59,27 +61,41 @@
 	};
 
 	let cookieManage = null;
-	// 打开饼干管理
-	const openCookiesManage = () => {
-		if (cookieManage == null) return;
-		siteSetting.hideForm();
-		cookieManage.showForm();
-		// 关闭其他的管理窗口
+	let userManage = null;
+	let siteSetting = null;
+
+	// 打开指定的表单（参数设置，用户管理，饼干管理）
+	const toggleForm = (name) => {
+		if (userManage == null || cookieManage == null || siteSetting == null) return;
+		// 先获取这几个Form的状态，因为closeHeaderForms会改变所有的状态
+		const userManageHide = userManage.isHide();
+		const cookieManageHide = cookieManage.isHide();
+		const siteSettingHide = siteSetting.isHide();
+		closeHeaderForms();
+
+		if (name == 'userManage' && userManageHide) {
+			userManage.showForm();
+		} else if (name == 'cookieManage' && cookieManageHide) {
+			cookieManage.showForm();
+		} else if (name == 'siteSetting' && siteSettingHide) {
+			siteSetting.showForm();
+		}
+
 		dispatch('message', {
-			type: 'openCookieManage'
+			type: 'openHeaderForm'
 		});
 	};
 
-	let siteSetting = null;
-	// 打开网站设置
-	const openSiteSetting = () => {
-		if (siteSetting == null) return;
+	export const closeHeaderForms = () => {
+		userManage.hideForm();
 		cookieManage.hideForm();
-		siteSetting.showForm();
-		// 关闭其他的管理窗口
-		dispatch('message', {
-			type: 'openSiteSetting'
-		});
+		siteSetting.hideForm();
+	};
+
+	// 接受搜索用户
+	const handleSearchUser = ({ username }) => {
+		closeHeaderForms();
+		userManage.showForm({ username });
 	};
 
 	onMount(() => {
@@ -112,16 +128,17 @@
 			</button>
 			<a href="/" class="hover:underline underline-offset-4">{siteName}</a>
 			{#if $userStore.type == 'admin'}
-				<SiteSettingBtn on:click={openSiteSetting} />
+				<SiteSettingBtn on:click={() => toggleForm('siteSetting')} />
 			{/if}
 		</div>
 		<div class="flex gap-2 items-center">
 			{#if $userStore.type == 'admin'}
-				<CookiesManageBtn on:click={openCookiesManage} />
+				<UserManageBtn on:click={() => toggleForm('userManage')} />
+				<CookiesManageBtn on:click={() => toggleForm('cookieManage')} />
 			{/if}
 			{#if $userStore.username != null}
 				{#if $userStore.type == 'user'}
-					<CookiesStatusButton on:click={openCookiesManage} />
+					<CookiesStatusButton />
 				{/if}
 				<button
 					class="flex gap-1 items-center
@@ -147,5 +164,6 @@
 	</div>
 </nav>
 <UserProfile bind:this={userProfile} />
-<CookiesManageForm bind:this={cookieManage} />
+<CookiesManageForm bind:this={cookieManage} on:searchUser={(e) => handleSearchUser(e.detail)} />
+<UserManageForm bind:this={userManage} />
 <SiteSettingForm bind:this={siteSetting} />

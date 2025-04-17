@@ -155,6 +155,7 @@ CREATE TABLE IF NOT EXISTS public."user"
     password_salt character varying(128),
     type character varying(16),
     create_timestamp timestamp without time zone,
+    reset_password character varying(128),
     CONSTRAINT user_pkey PRIMARY KEY (id)
 )
 

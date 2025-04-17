@@ -25,7 +25,7 @@ export const POST = async ({ locals, request }) => {
 
 	const query = {
 		text: `SELECT id, password_hash, password_salt, type, status, 
-			to_char(create_timestamp, 'YYYY-MM-DD HH24:MI:SS') AS create_time
+			to_char(create_timestamp, 'YYYY-MM-DD HH24:MI:SS') AS create_time, reset_password
 			FROM "user" WHERE username = $1 LIMIT 1`,
 		values: [username]
 	};
@@ -46,7 +46,8 @@ export const POST = async ({ locals, request }) => {
 		password_salt,
 		type,
 		status,
-		create_time: createTime
+		create_time: createTime,
+		reset_password
 	} = result.rows[0];
 
 	// 此用户状态不是enable
@@ -54,6 +55,22 @@ export const POST = async ({ locals, request }) => {
 		return json({
 			type: 'error',
 			errorCode: 'USER_NOT_ENABLE'
+		});
+	}
+
+	// 判断是否处于找回状态，找回状态直接比较密码和此值
+	if (reset_password != null) {
+		if (password == reset_password) {
+			return json({
+				type: 'warning',
+				warningCode: 'NEED_NEW_PASS'
+			});
+		}
+
+		return json({
+			type: 'error',
+			errorCode: 'USERNAME_OR_PASSWORD_WRONG',
+			extra: 'r p w'
 		});
 	}
 

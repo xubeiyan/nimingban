@@ -1,6 +1,7 @@
 <script>
 	import LoginForm from './LoginAndRegister/LoginForm.svelte';
 	import RegisterForm from './LoginAndRegister/RegisterForm.svelte';
+	import ResetPassForm from './LoginAndRegister/ResetPassForm.svelte';
 
 	import CloseBtn from './LoginAndRegister/CloseBtn.svelte';
 	import { createEventDispatcher } from 'svelte';
@@ -22,11 +23,26 @@
 	export let open = false;
 	$: openClass = open ? 'translate-x-0' : 'translate-x-[100%]';
 
-	// 显示左边还是右边
-	let toRight = false;
+	// 显示哪个stage，初始为登录界面
+	let stage = 'login';
+
+	let resetPassForm = null;
 	// 切换
-	const handleToggleToRight = () => {
-		toRight = !toRight;
+	const handleToggleStage = ({ name, extra }) => {
+		if (['login', 'register', 'reset'].includes(name)) {
+			stage = name;
+			if (name == 'reset' && resetPassForm != null) {
+				resetPassForm.addExtraInfo(extra);
+			}
+		}
+	};
+
+	// 重置成功
+	const handleResetOK = () => {
+		stage = 'login';
+		dispatch('message', {
+			type: 'hideLoginAndRegister'
+		});
 	};
 </script>
 
@@ -35,14 +51,21 @@
 >
 	<div class="container h-full m-auto flex justify-center">
 		<div
-			class="flex relative overflow-x-hidden w-[60em] h-[40em] bg-sky-50 dark:bg-sky-800 mt-16 p-4 rounded-xl"
+			class="flex relative overflow-x-hidden w-[60em] h-[40em]
+			 bg-sky-50 dark:bg-sky-700 mt-16 p-4 rounded-xl"
 		>
+			<ResetPassForm
+				bind:this={resetPassForm}
+				{stage}
+				on:toStage={(e) => handleToggleStage(e.detail)}
+				on:resetOK={handleResetOK}
+			/>
 			<LoginForm
-				{toRight}
-				on:toggleToRight={handleToggleToRight}
+				{stage}
+				on:toStage={(e) => handleToggleStage(e.detail)}
 				on:toggleLoginFormOpen={hideLoginAndRegister}
 			/>
-			<RegisterForm {toRight} on:toggleToRight={handleToggleToRight} />
+			<RegisterForm {stage} on:toStage={(e) => handleToggleStage(e.detail)} />
 			<CloseBtn on:click={toggleLoginAndRegisterHide}></CloseBtn>
 		</div>
 	</div>

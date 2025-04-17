@@ -13,8 +13,9 @@
 
 	import { userStore } from '../../store/userStore';
 
-	export let toRight = false;
-	$: toRightClass = toRight ? 'translate-x-[-100%]' : '';
+	export let stage = 'login';
+	$: toRightClass =
+		stage == 'login' ? 'translate-x-[-100%]' : stage == 'reset' ? '' : 'translate-x-[-200%]';
 
 	let username = '';
 	let password = '';
@@ -41,7 +42,11 @@
 	const dispatch = createEventDispatcher();
 
 	const toRegisterForm = () => {
-		dispatch('toggleToRight');
+		dispatch('toStage', { name: 'register' });
+	};
+
+	const toResetForm = () => {
+		dispatch('toStage', { name: 'reset', extra: { username, resetCode: password } });
 	};
 
 	const loginSubmit = async () => {
@@ -72,6 +77,17 @@
 			} else if (res.errorCode == 'USER_NOT_ENABLE') {
 				err.server.type = 'error';
 				err.server.message = '用户已被禁止登录';
+			}
+			return;
+		}
+
+		// 重设密码
+		if (res.type == 'warning') {
+			if (res.warningCode == 'NEED_NEW_PASS') {
+				toResetForm();
+			} else {
+				err.server.type = 'error';
+				err.server.message = '用户名或密码错误';
 			}
 			return;
 		}
