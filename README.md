@@ -1,5 +1,7 @@
 # nimingban
 
+![这是图片](/images/screenshot.png '界面')
+
 ## 简介
 
 #### 一个类似于A岛（已停止运营）或者2chan，4chan的匿名版论坛
@@ -31,47 +33,50 @@
 - [x] 匿名版参数修改（网站名，JWT）
 - [x] 增加 `web` 界面的安装过程
 - [x] 管理者添加和更新（在安装过程中配置）
+- [x] 管理者可以重置用户密码，将其设为随机字符串，供用户找回
 
 ## 路由设计
 
 <details>
 <summary>点击展开路由设计</summary>
 
-| 功能                       | 路径（和请求方法）                      | 携带参数 |
-| -------------------------- | --------------------------------------- | -------- |
-| 主页                       | GET /                                   |          |
-| 某个版                     | GET /board/{board_url}                  |          |
-| （管理）编辑某串或评论     | POST /board/editPostOrComment/{post_id} |          |
-| 获取某个版的串             | GET /board/getPosts/{board_url}         |          |
-| 发送串                     | POST /board/sendPost/{board_url}        |          |
-| 发送回复串                 | POST /board/sendComment/{post_id}       |          |
-| 获取某串回复               | GET /comment/{post_id}                  |          |
-| 获取某串最新回复           | GET /comment/latest/{post_id}           |          |
-| 获取单独某条回复           | GET /comment/single/{comment_id}        |          |
-| 查看某串                   | GET /post/{post_id}                     |          |
-| 登录                       | POST /login                             |          |
-| （管理）添加版块           | POST /manage/addBoard                   |          |
-| （管理）添加分区           | POST /manage/addSection                 |          |
-| （管理）编辑串状态         | POST /manage/editPostStatus/{id}        |          |
-| （管理）获取版块列表       | GET /manage/getBoardList/{id}           |          |
-| （管理）获取分区列表       | GET /manage/getSectionList              |          |
-| （管理）获取网站设置       | GET /manage/getSettingList              |          |
-| （管理）移动串             | POST /manage/movePost                   |          |
-| （管理）获取完整版块列表   | GET /manage/movePost/getFullBoardList   |          |
-| （管理）删除版块           | GET /manage/removeBoard/{id}            |          |
-| （管理）删除评论           | GET /manage/removeComment/{id}          |          |
-| （管理）删除串             | GET /manage/removePost/{id}             |          |
-| （管理）删除分区           | GET /manage/removeSection/{id}          |          |
-| （管理）搜索用户或饼干     | POST /manage/searchCookies              |          |
-| （管理）搜索用户详细信息   | POST /manage/searchUser                 |          |
-| （管理）切换用户或饼干状态 | POST /manage/toggleUserStatus           |          |
-| （管理）更新版块           | POST /manage/updateBoard                |          |
-| （管理）更新分区           | POST /manage/updateSection              |          |
-| （管理）更新网站设置       | POST /manage/updateSetting              |          |
-| 注册                       | POST /register                          |          |
-| 获取饼干                   | GET /user/getNewCookies                 |          |
-| 刷新JWT                    | POST /user/refreshJWT                   |          |
-| 修改密码                   | POST /user/updatePassword               |          |
+| 功能                             | 路径（和请求方法）                      | 携带参数 |
+| -------------------------------- | --------------------------------------- | -------- |
+| 主页                             | GET /                                   |          |
+| 某个版                           | GET /board/{board_url}                  |          |
+| （管理）编辑某串或评论           | POST /board/editPostOrComment/{post_id} |          |
+| 获取某个版的串                   | GET /board/getPosts/{board_url}         |          |
+| 发送串                           | POST /board/sendPost/{board_url}        |          |
+| 发送回复串                       | POST /board/sendComment/{post_id}       |          |
+| 获取某串回复                     | GET /comment/{post_id}                  |          |
+| 获取某串最新回复                 | GET /comment/latest/{post_id}           |          |
+| 获取单独某条回复                 | GET /comment/single/{comment_id}        |          |
+| 查看某串                         | GET /post/{post_id}                     |          |
+| 登录                             | POST /login                             |          |
+| （管理）添加版块                 | POST /manage/addBoard                   |          |
+| （管理）添加分区                 | POST /manage/addSection                 |          |
+| （管理）编辑串状态               | POST /manage/editPostStatus/{id}        |          |
+| （管理）获取版块列表             | GET /manage/getBoardList/{id}           |          |
+| （管理）获取分区列表             | GET /manage/getSectionList              |          |
+| （管理）获取网站设置             | GET /manage/getSettingList              |          |
+| （管理）移动串                   | POST /manage/movePost                   |          |
+| （管理）获取完整版块列表         | GET /manage/movePost/getFullBoardList   |          |
+| （管理）删除版块                 | GET /manage/removeBoard/{id}            |          |
+| （管理）删除评论                 | GET /manage/removeComment/{id}          |          |
+| （管理）删除串                   | GET /manage/removePost/{id}             |          |
+| （管理）删除分区                 | GET /manage/removeSection/{id}          |          |
+| （管理）将用户变更为重置密码状态 | POST /manage/resetPassword              |          |
+| （管理）搜索用户或饼干           | POST /manage/searchCookies              |          |
+| （管理）搜索用户详细信息         | POST /manage/searchUser                 |          |
+| （管理）切换用户或饼干状态       | POST /manage/toggleUserStatus           |          |
+| （管理）更新版块                 | POST /manage/updateBoard                |          |
+| （管理）更新分区                 | POST /manage/updateSection              |          |
+| （管理）更新网站设置             | POST /manage/updateSetting              |          |
+| 注册                             | POST /register                          |          |
+| 获取饼干                         | GET /user/getNewCookies                 |          |
+| 刷新JWT                          | POST /user/refreshJWT                   |          |
+| 修改密码                         | POST /user/updatePassword               |          |
+| 重置密码                         | POST /user/resetPassword                |          |
 
 </details>
 
@@ -181,7 +186,7 @@
 | password_salt    | vchar(128) |                                              |
 | type             | vchar(16)  | 可用值 `admin` `user`                        |
 | create_timestamp | timestamp  |                                              |
-| reset_password   | vchar(128) | 有值则处于密码重置状态，且此值为重置后的密码 |
+| reset_password   | vchar(128) | 有值则处于密码重置状态，且此值为重置后的代码 |
 
 </details>
 
