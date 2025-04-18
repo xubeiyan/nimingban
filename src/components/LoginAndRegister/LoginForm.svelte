@@ -32,11 +32,12 @@
 
 	let err = {
 		username: null,
-		password: null,
-		server: {
-			type: null,
-			message: null
-		}
+		password: null
+	};
+
+	let serverRes = {
+		type: null,
+		msg: null
 	};
 
 	const dispatch = createEventDispatcher();
@@ -50,9 +51,9 @@
 	};
 
 	const loginSubmit = async () => {
-		err.server = {
+		serverRes = {
 			type: null,
-			message: null
+			msg: null
 		};
 
 		if (username == '') {
@@ -72,11 +73,15 @@
 		// 用户名和密码错误
 		if (res.type == 'error') {
 			if (res.errorCode == 'USERNAME_OR_PASSWORD_WRONG') {
-				err.server.type = 'error';
-				err.server.message = '用户名或密码错误';
+				serverRes = {
+					type: 'error',
+					msg: '用户名或密码错误'
+				};
 			} else if (res.errorCode == 'USER_NOT_ENABLE') {
-				err.server.type = 'error';
-				err.server.message = '用户已被禁止登录';
+				serverRes = {
+					type: 'error',
+					msg: '用户已被禁止登录'
+				};
 			}
 			return;
 		}
@@ -85,9 +90,13 @@
 		if (res.type == 'warning') {
 			if (res.warningCode == 'NEED_NEW_PASS') {
 				toResetForm();
+				// 清空密码输入框
+				password = '';
 			} else {
-				err.server.type = 'error';
-				err.server.message = '用户名或密码错误';
+				serverRes = {
+					type: 'error',
+					msg: '用户名或密码错误'
+				};
 			}
 			return;
 		}
@@ -120,21 +129,21 @@
 				})
 			);
 
-			err.server = {
+			serverRes = {
 				type: 'success',
-				message: '登录成功，即将跳转.'
+				msg: '登录成功，即将跳转'
 			};
 
 			// 5秒后，关闭loginForm
 			let time = 0;
 			const handler = () => {
 				time += 1;
-				err.server.message += '.';
+				serverRes.msg += '.';
 
 				if (time > 5) {
-					err.server = {
+					serverRes = {
 						type: null,
-						message: null
+						msg: null
 					};
 					dispatch('toggleLoginFormOpen');
 					return;
@@ -163,8 +172,7 @@
 					}
 				}
 			).then((r) => r.json());
-		},
-		onError: (err) => {}
+		}
 	});
 
 	$: btnText = $loginMutation.isPending ? '登录中...' : '登录';
@@ -179,10 +187,25 @@
 		}}
 	>
 		<div class="w-[20em] flex flex-col">
-			<TextInput label="用户名" on:input={handleUsernameInput} error={err.username} />
-			<SecretTextInput label="密码" error={err.password} on:input={handlePasswordInput} />
+			<TextInput
+				label="用户名"
+				value={username}
+				on:input={handleUsernameInput}
+				error={err.username}
+			/>
+			<SecretTextInput
+				label="密码"
+				value={password}
+				error={err.password}
+				on:input={handlePasswordInput}
+			/>
 			<div class="mt-4"></div>
-			<PrimaryButton {btnText} disable={$loginMutation.isPending} on:click={loginSubmit} />
+
+			<PrimaryButton
+				{btnText}
+				disable={serverRes.type == 'success' || $loginMutation.isPending}
+				on:click={loginSubmit}
+			/>
 		</div>
 		<button class="mt-2" on:click={toRegisterForm}>
 			<span class="text-blue-400 dark:text-blue-100 hover:underline underline-offset-4">
@@ -190,8 +213,8 @@
 			</span>
 		</button>
 	</form>
-	{#if err.server.type != null}
+	{#if serverRes.type != null}
 		<div class="mt-8"></div>
-		<AlertMessage type={err.server.type} message={err.server.message} />
+		<AlertMessage type={serverRes.type} message={serverRes.msg} />
 	{/if}
 </div>

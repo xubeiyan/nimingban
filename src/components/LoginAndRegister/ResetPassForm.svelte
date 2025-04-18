@@ -19,11 +19,13 @@
 
 	let err = {
 		password: null,
-		confirm: null,
-		server: {
-			type: null,
-			message: null
-		}
+		confirm: null
+	};
+
+	// 服务器返回的消息
+	let serverRes = {
+		type: null,
+		msg: null
 	};
 
 	$: toRightClass = stage == 'reset' ? '' : 'translate-x-[-100%]';
@@ -49,22 +51,33 @@
 			return;
 		}
 
-		err.server = {
+		serverRes = {
 			type: 'success',
-			message: '密码重置成功，5秒后请重新登录'
+			msg: '密码重置成功，即将重新登录'
 		};
 
-		setTimeout(() => {
-			err = {
-				password: null,
-				confirm: null,
-				server: {
+		// 5秒后，关闭ResetForm
+		let time = 0;
+		const handler = () => {
+			time += 1;
+			serverRes.msg += '.';
+
+			if (time > 5) {
+				err = {
+					password: null,
+					confirm: null
+				};
+				serverRes = {
 					type: null,
-					message: null
-				}
-			};
-			dispatch('resetOK');
-		}, 5000);
+					msg: null
+				};
+				dispatch('resetOK');
+				return;
+			}
+
+			setTimeout(handler, 1000);
+		};
+		handler();
 	};
 
 	const resetMutation = createMutation({
@@ -117,11 +130,15 @@
 				on:input={(e) => handleInput('confirm', e.detail)}
 			/>
 			<div class="mt-4"></div>
-			<PrimaryButton btnText="重设密码" disable={$resetMutation.isPending} on:click={resetSubmit} />
+			<PrimaryButton
+				btnText="重设密码"
+				disable={serverRes.type == 'success' || $resetMutation.isPending}
+				on:click={resetSubmit}
+			/>
 		</div>
 	</div>
-	{#if err.server.type != null}
+	{#if serverRes.type != null}
 		<div class="mt-8"></div>
-		<AlertMessage type={err.server.type} message={err.server.message} />
+		<AlertMessage type={serverRes.type} message={serverRes.msg} />
 	{/if}
 </div>

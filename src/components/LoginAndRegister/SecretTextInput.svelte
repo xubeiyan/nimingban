@@ -4,6 +4,7 @@
 
 	export let error = null;
 	export let label = '未知label';
+	export let value = '';
 
 	let textInputBorderStyle =
 		'border border-slate-400 dark:border-zinc-500 focus-visible:border-slate-700 dark:focus-visible:border-zinc-400';
@@ -18,11 +19,9 @@
 
 	const dispatch = createEventDispatcher();
 
-	let content = '';
-
-	const updateInput = (value) => {
-		content = value;
-		dispatch('input', value);
+	const updateInput = (v) => {
+		value = v;
+		dispatch('input', v);
 	};
 </script>
 
@@ -34,8 +33,9 @@
 			class={textInputStyle}
 			on:input={(e) => updateInput(e.target.value)}
 			name="password"
+			{value}
 		/>
-		{#if content != ''}
+		{#if value != ''}
 			<button
 				type="button"
 				class="absolute right-0 top-0 w-[2em] h-full flex justify-center items-center"
