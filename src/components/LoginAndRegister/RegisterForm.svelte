@@ -149,7 +149,11 @@
 				<SecretTextInput label="确认密码" error={err.confirm} on:input={handleConfirmInput} />
 			{/if}
 			<div class="mt-4"></div>
-			<PrimaryButton {btnText} disable={$registerMutation.isPending} on:click={registerSubmit} />
+			<PrimaryButton
+				{btnText}
+				disable={err.server.type == 'success' || $registerMutation.isPending}
+				on:click={registerSubmit}
+			/>
 		</div>
 		<button class="mt-2" on:click={toLoginForm}>
 			<span class="text-blue-400 dark:text-blue-100 hover:underline underline-offset-4">
