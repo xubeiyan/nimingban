@@ -71,15 +71,16 @@ ALTER TABLE IF EXISTS public.cookies
 CREATE TABLE IF NOT EXISTS public.post
 (
     id uuid NOT NULL,
-    poster_name character varying(256),
-    poster_email character varying(256),
-    title character varying(256),
-    content text,
+    poster_name character varying(256) COLLATE ,
+    poster_email character varying(256) COLLATE ,
+    title character varying(256) COLLATE ,
+    content text COLLATE ,
     poster_cookies_id uuid NOT NULL,
     post_timestamp timestamp without time zone NOT NULL,
     edit_timestamp timestamp without time zone,
     belong_board_id uuid NOT NULL,
-    status character varying(16),
+    status character varying(16) COLLATE ,
+    last_reply_timestamp timestamp without time zone NOT NULL,
     CONSTRAINT post_pkey PRIMARY KEY (id)
 )
 
