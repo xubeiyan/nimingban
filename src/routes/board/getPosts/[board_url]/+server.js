@@ -18,7 +18,7 @@ export async function GET({ locals, params, url, request }) {
 		c.content AS cookies_content
 		FROM post AS p LEFT JOIN cookies AS c ON p.poster_cookies_id = c.id
 		WHERE p.status IN ('repliable', 'readonly') AND p.belong_board_id = $1 
-		ORDER BY post_time DESC LIMIT $2 OFFSET $3`;
+		ORDER BY last_reply_timestamp DESC LIMIT $2 OFFSET $3`;
 
 	const { dbconn } = locals;
 	// 如果有认证字段
@@ -33,7 +33,7 @@ export async function GET({ locals, params, url, request }) {
 			c.content AS cookies_content
 			FROM post AS p LEFT JOIN cookies AS c ON p.poster_cookies_id = c.id WHERE
 			p.belong_board_id = $1 
-			ORDER BY post_time DESC LIMIT $2 OFFSET $3`;
+			ORDER BY last_reply_timestamp DESC LIMIT $2 OFFSET $3`;
 		}
 	}
 

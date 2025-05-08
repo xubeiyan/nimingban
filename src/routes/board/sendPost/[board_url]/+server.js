@@ -115,9 +115,9 @@ export async function POST({ locals, request, params }) {
 
 	const postInsertQuery = {
 		text: `INSERT INTO post (
-			id, 				status, poster_name, 	poster_email, 	title, 	content,	poster_cookies_id,						post_timestamp, belong_board_id
+			id, 				status, poster_name, 	poster_email, 	title, 	content,	poster_cookies_id,	post_timestamp, last_reply_timestamp, 	belong_board_id
 		) VALUES (
-		 	gen_random_uuid(),	'repliable', $1,				$2,				$3,		$4,			$5,										now(),			$6
+		 	gen_random_uuid(),	'repliable', $1,				$2,				$3,		$4,			$5,			now(),			now(),					$6
 		) RETURNING id`,
 		values: [name, email, title, replaceImageUrlContent, poster_cookies_id, board_id]
 	};

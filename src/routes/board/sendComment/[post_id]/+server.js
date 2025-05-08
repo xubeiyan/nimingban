@@ -107,6 +107,16 @@ export const POST = async ({ locals, params, request }) => {
 		});
 	}
 
+	// 更新post的回复时间
+	const postUpdateQuery = {
+		text: `UPDATE post SET 
+			last_reply_timestamp = now()
+		 	WHERE id = $1`,
+		values: [postId]
+	}
+
+	await dbconn.query(postUpdateQuery);
+
 	// commentReplyContent为null会导致回复前面有null字样
 	if (commentReplyContent != undefined && commentReplyContent != 'null') {
 		replaceImageUrlContent = `${commentReplyContent}\n\n${replaceImageUrlContent}`;
