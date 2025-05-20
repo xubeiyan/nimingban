@@ -19,6 +19,7 @@
 	import SendBtn from './NewPostForm/SendBtn.svelte';
 	import { text } from '@sveltejs/kit';
 	import IconStatusBtn from './NewPostForm/IconStatusBtn.svelte';
+	import ImmutableFileList from './NewPostForm/ImmutableFileList.svelte';
 
 	const dispatch = createEventDispatcher();
 
@@ -109,6 +110,12 @@
 		} else {
 			post.content += imageMarkdown;
 		}
+	};
+
+	// 修改串时插入图片
+	const handleInsertUploadedImageToPost = (filename) => {
+		const imageMarkdown = `![](/images/${filename})\n`;
+		post.content += imageMarkdown;
 	};
 
 	// 发送按钮状态
@@ -274,6 +281,18 @@
 		multiLineContentOriginalPos = !multiLineContentOriginalPos;
 	};
 
+	// 编辑模式下的图像列表
+	let immutableFileList = [];
+	// 请求该串的图像
+	const getImagesFromPostOrCommentMutation = createMutation({
+		mutationFn: async (id) => {
+			const res = await fetch(`/images/fromPostOrComment/${id}`).then((r) => r.json());
+			if (res.type == 'ok') {
+				immutableFileList = res.images;
+			}
+		}
+	});
+
 	let expand = false;
 
 	// 展开编辑区
@@ -292,6 +311,7 @@
 			type = params.type;
 			post.content = params.content;
 			postId = params.postId;
+			$getImagesFromPostOrCommentMutation.mutate(postId);
 		} else if (params != undefined && params.type == 'post') {
 			// 发新串
 			type = params.type;
@@ -426,24 +446,31 @@
 					on:change={(e) => addImageFiles(e)}
 				/>
 			</label>
-			<div class="flex gap-4 mt-2">
-				{#each attachedFileList as attachFile}
-					<AttachPicture
-						{attachFile}
-						on:removeImage={handleImageRemove}
-						on:insertImageToPost={handleInsertImageToPost}
-					/>
-				{/each}
-				{#if type != 'edit'}
-					<button
-						class="border-2 border-slate-500 dark:border-slate-100 border-dashed hover:bg-slate-500/10 hover:dark:bg-slate-50/10 rounded-lg size-20 flex justify-center items-center"
-						on:click={openAttachSelect}
-						type="button"
-					>
-						<AddPlusIcon />
-					</button>
-				{/if}
-			</div>
+			{#if type == 'edit'}
+				<ImmutableFileList
+					list={immutableFileList}
+					on:insertImageToPost={(e) => handleInsertUploadedImageToPost(e.detail.filename)}
+				/>
+			{:else}
+				<div class="flex gap-4 mt-2">
+					{#each attachedFileList as attachFile}
+						<AttachPicture
+							{attachFile}
+							on:removeImage={handleImageRemove}
+							on:insertImageToPost={handleInsertImageToPost}
+						/>
+					{/each}
+					{#if type != 'edit'}
+						<button
+							class="border-2 border-slate-500 dark:border-slate-100 border-dashed hover:bg-slate-500/10 hover:dark:bg-slate-50/10 rounded-lg size-20 flex justify-center items-center"
+							on:click={openAttachSelect}
+							type="button"
+						>
+							<AddPlusIcon />
+						</button>
+					{/if}
+				</div>
+			{/if}
 		</div>
 		<div class="mt-6 flex justify-end items-center gap-4">
 			{#if sendResponseError != null}

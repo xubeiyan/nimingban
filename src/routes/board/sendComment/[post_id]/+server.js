@@ -113,7 +113,7 @@ export const POST = async ({ locals, params, request }) => {
 			last_reply_timestamp = now()
 		 	WHERE id = $1`,
 		values: [postId]
-	}
+	};
 
 	await dbconn.query(postUpdateQuery);
 
@@ -139,11 +139,11 @@ export const POST = async ({ locals, params, request }) => {
 	uploaded.forEach(async (one) => {
 		const imageInsertQuery = {
 			text: `INSERT INTO post_comment_image (
-				id, 				image_type, exist_type, post_id
+				id, 				image_type, exist_type, post_id, fullname
 			) VALUES (
-				gen_random_uuid(), 	$1,			'exist',	$2
+				gen_random_uuid(), 	$1,			'exist',	$2, $3
 			)`,
-			values: [one.type, comment_id]
+			values: [one.type, comment_id, one.name]
 		};
 
 		await dbconn.query(imageInsertQuery);
