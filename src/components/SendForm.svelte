@@ -286,7 +286,7 @@
 	// 请求该串的图像
 	const getImagesFromPostOrCommentMutation = createMutation({
 		mutationFn: async (id) => {
-			const res = await fetch(`/images/fromPostOrComment/${id}`).then((r) => r.json());
+			const res = await fetch(`/getImages/fromPostOrComment/${id}`).then((r) => r.json());
 			if (res.type == 'ok') {
 				immutableFileList = res.images;
 			}
