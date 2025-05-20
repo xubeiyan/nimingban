@@ -19,9 +19,9 @@ export const GET = async () => {
             parent_section_id uuid NOT NULL,
             min_post_second integer NOT NULL DEFAULT 10,
             min_post_timestamp timestamp without time zone NOT NULL,
-            access_type character varying(16) COLLATE pg_catalog."default" NOT NULL DEFAULT 'all'::character varying,
-            name character varying(256) COLLATE pg_catalog."default" NOT NULL,
-            url_name character varying(256) COLLATE pg_catalog."default" NOT NULL,
+            access_type character varying(16) NOT NULL DEFAULT 'all'::character varying,
+            name character varying(256) NOT NULL,
+            url_name character varying(256) NOT NULL,
             intro text COLLATE pg_catalog."default",
             "order" integer,
             CONSTRAINT board_pkey PRIMARY KEY (id)
@@ -62,6 +62,7 @@ export const GET = async () => {
             poster_cookies_id uuid NOT NULL,
             post_timestamp timestamp without time zone NOT NULL,
             edit_timestamp timestamp without time zone,
+            last_reply_timestamp timestamp without time zone NOT NULL,
             belong_board_id uuid NOT NULL,
             status character varying(16),
             CONSTRAINT post_pkey PRIMARY KEY (id)

@@ -138,11 +138,11 @@ export async function POST({ locals, request, params }) {
 	uploaded.forEach(async (one) => {
 		const imageInsertQuery = {
 			text: `INSERT INTO post_comment_image (
-				id, 				image_type, exist_type, post_id
+				id, 				image_type, exist_type, post_id, 	fullname
 			) VALUES (
-				gen_random_uuid(), 	$1,			'exist',	$2
+				gen_random_uuid(), 	$1,			'exist',	$2, 		$3
 			)`,
-			values: [one.type, post_id]
+			values: [one.type, post_id, one.name]
 		};
 
 		await dbconn.query(imageInsertQuery);
