@@ -21,8 +21,9 @@
 - [x] 多饼干切换
 - [x] 密码修改
 - [x] 两层版块（第一层称作分区，第二层称作版块）
-- [x] 发串支持 `Markdown` 语法，有预览功能，具体参考[这里](#markdown-编辑器支持语法)
+- [x] 发串或者评论支持 `Markdown` 语法，有预览功能，具体参考[这里](#markdown-编辑器支持语法)
 - [x] 回复也支持 `Markdown` 语法（笑看某V2EX
+- [x] (作者)编辑串或者评论，会增加编辑标记，可增加发送时忘记添加的图片
 
 ### 管理者
 
@@ -34,6 +35,7 @@
 - [x] 增加 `web` 界面的安装过程
 - [x] 管理者添加和更新（在安装过程中配置）
 - [x] 管理者可以重置用户密码，将其设为随机字符串，供用户找回
+- [x] 管理者编辑串或者评论
 
 ## 路由设计
 
@@ -51,6 +53,7 @@
 | 获取某串回复                     | GET /comment/{post_id}                  |          |
 | 获取某串最新回复                 | GET /comment/latest/{post_id}           |          |
 | 获取单独某条回复                 | GET /comment/single/{comment_id}        |          |
+| 获取某串包含的图片               | GET /images/fromPostOrComment/{id}      |          |
 | 查看某串                         | GET /post/{post_id}                     |          |
 | 登录                             | POST /login                             |          |
 | （管理）添加版块                 | POST /manage/addBoard                   |          |
@@ -145,12 +148,13 @@
 <details>
 <summary>点击展开 串内图像 表设计</summary>
 
-| 列名       | 数据类型  | 备注                                   |
-| ---------- | --------- | -------------------------------------- |
-| id         | uuid      |                                        |
-| image_type | vchar(16) | 可用值 `png` `jpg` `gif` `webp` `avif` |
-| exist_type | vchar(16) | 可用值 `exist` `hidden` `remove`       |
-| post_id    | uuid      |                                        |
+| 列名       | 数据类型   | 备注                                   |
+| ---------- | ---------- | -------------------------------------- |
+| id         | uuid       |                                        |
+| image_type | vchar(16)  | 可用值 `png` `jpg` `gif` `webp` `avif` |
+| exist_type | vchar(16)  | 可用值 `exist` `hidden` `remove`       |
+| post_id    | uuid       |                                        |
+| fullname   | vchar(128) |                                        |
 
 </details>
 

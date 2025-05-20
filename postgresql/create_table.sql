@@ -99,6 +99,7 @@ CREATE TABLE IF NOT EXISTS public.post_comment_image
     image_type character varying(16) NOT NULL,
     exist_type character varying(16) NOT NULL,
     post_id uuid,
+    fullname character varying(128) NOT NULL,
     CONSTRAINT post_comment_image_pkey PRIMARY KEY (id)
 )
 
