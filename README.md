@@ -53,7 +53,7 @@
 | 获取某串回复                     | GET /comment/{post_id}                  |          |
 | 获取某串最新回复                 | GET /comment/latest/{post_id}           |          |
 | 获取单独某条回复                 | GET /comment/single/{comment_id}        |          |
-| 获取某串包含的图片               | GET /images/fromPostOrComment/{id}      |          |
+| 获取某串包含的图片               | GET /getImages/fromPostOrComment/{id}      |          |
 | 查看某串                         | GET /post/{post_id}                     |          |
 | 登录                             | POST /login                             |          |
 | （管理）添加版块                 | POST /manage/addBoard                   |          |
