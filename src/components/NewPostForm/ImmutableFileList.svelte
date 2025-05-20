@@ -13,7 +13,7 @@
 	};
 </script>
 
-<div>
+<div class="flex gap-4 mt-2">
 	{#each list as image_file_name}
 		<div class="relative">
 			<img
