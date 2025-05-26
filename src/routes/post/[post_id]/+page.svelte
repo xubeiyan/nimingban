@@ -38,11 +38,12 @@
 		if (newCommentForm == null) return;
 		if (fromCommentId != undefined) {
 			const reply = `> 回复 [此串](#id-${fromCommentId})`;
-			newCommentForm.showForm({ type: 'comment', reply });
+			newCommentForm.showForm({ type: 'comment', replyId: fromCommentId, reply });
 			return;
 		}
 
-		newCommentForm.showForm({ type: 'comment'});
+		const post_id = window.location.href.split('/').at(-1);
+		newCommentForm.showForm({ type: 'comment', replyId: post_id});
 	};
 
 	// 打开编辑对话框

@@ -8,23 +8,30 @@
 	import InlineInput from './NewPostForm/InlineInput.svelte';
 	import MutilineContent from './NewPostForm/MutilineContent.svelte';
 	import CloseBtn from './NewPostForm/CloseBtn.svelte';
+	import SendBtn from './NewPostForm/SendBtn.svelte';
 
 	import { userStore } from '../store/userStore';
 	import { boardStore } from '../store/boardStore';
 	import { createMutation } from '@tanstack/svelte-query';
 
 	import { refreshToken } from '$lib/refreshToken';
+	import {
+		saveToLocalStorage,
+		loadFromLocalStorage,
+		removeFromLocalStorage
+	} from '$lib/draftLocalStorage';
 
 	import { createEventDispatcher } from 'svelte';
-	import SendBtn from './NewPostForm/SendBtn.svelte';
-	import { text } from '@sveltejs/kit';
 	import IconStatusBtn from './NewPostForm/IconStatusBtn.svelte';
 	import ImmutableFileList from './NewPostForm/ImmutableFileList.svelte';
 
 	const dispatch = createEventDispatcher();
 
 	let type = 'post';
+	// 编辑串或评论时的id
 	export let postId = null;
+	// 回复串或评论的 id
+	let replyId = null;
 
 	$: formTitle = type == 'post' ? '发新串' : type == 'edit' ? `编辑串` : '回复串';
 
@@ -204,9 +211,10 @@
 			dispatch('edit', postId);
 		}
 
-		// 清空发帖部分
-		window.localStorage.removeItem('draft');
-		closeForm({ saveDraft: false });
+		// 清空草稿
+		removeFromLocalStorage(type);
+		// 关闭对话框
+		closeForm();
 	};
 
 	const sendPostMutation = createMutation({
@@ -312,13 +320,15 @@
 			post.content = params.content;
 			postId = params.postId;
 			$getImagesFromPostOrCommentMutation.mutate(postId);
+			draftToFormContent('edit', postId);
 		} else if (params != undefined && params.type == 'post') {
 			// 发新串
 			type = params.type;
-			draftToFormContent();
+			draftToFormContent('post');
 		} else if (params != undefined && params.type == 'comment') {
+			replyId = params.replyId;
 			type = params.type;
-			draftToFormContent();
+			draftToFormContent('comment', replyId);
 			if (params.reply != undefined) {
 				// 回复评论
 				post.commentReplyContent = params.reply;
@@ -330,11 +340,18 @@
 		show = true;
 	};
 
-	const closeForm = ({ saveDraft = true }) => {
-		if (saveDraft) {
-			formContentToDraft();
+	const saveDraftAndClose = () => {
+		if (type == 'post') {
+			saveToLocalStorage(type, post.content);
+		} else if (type == 'comment') {
+			saveToLocalStorage(type, post.content, replyId);
+		} else if (type == 'edit') {
+			saveToLocalStorage(type, post.content, postId);
 		}
+		closeForm();
+	};
 
+	const closeForm = () => {
 		show = false;
 		sendBtnStatus = 'idle';
 		post = {
@@ -349,16 +366,12 @@
 	};
 
 	// 查看是否有草稿，有将其写入到内容中
-	const draftToFormContent = () => {
-		const draft = window.localStorage.getItem('draft');
-		if (draft == undefined) return;
-		post.content = draft;
-	};
-
-	// 将内容写入到草稿
-	const formContentToDraft = () => {
-		if (post.content == null || post.content == '') return;
-		window.localStorage.setItem('draft', post.content);
+	// 参数 type 表示从草稿类型 post, comment, edit
+	// 如果是 comment 和 edit，还需要增加 id
+	const draftToFormContent = (type, id = null) => {
+		const content = loadFromLocalStorage(type, id);
+		if (content == null) return;
+		post.content = content;
 	};
 
 	$: formWidthClass = expand ? 'md:w-[95%]' : 'md:w-[50em]';
@@ -480,6 +493,6 @@
 			{/if}
 			<SendBtn status={sendBtnStatus} on:click={sendPost} />
 		</div>
-		<CloseBtn on:click={closeForm} />
+		<CloseBtn on:click={() => saveDraftAndClose()} />
 	</form>
 </div>
