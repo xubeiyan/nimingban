@@ -401,6 +401,19 @@
 		};
 	};
 
+	// 返回emphasisStrong节点
+	const emphasisStrongLexer = (inlineInput, inToken = []) => {
+		return {
+			type: 'emphasis',
+			children: [
+				{
+					type: 'strong',
+					children: restInlineLexer(inlineInput, [...inToken, 'emphasis', 'strong'])
+				}
+			]
+		};
+	};
+
 	// 返回delete节点
 	const deleteLexer = (inlineInput, inToken = []) => {
 		return {
@@ -482,6 +495,19 @@
 
 			// 没有则将剩下部分继续解析
 			inlineInput = inlineInput.substring(i);
+		}
+
+		// 处理strong和emphasis嵌套
+		if (!inToken.includes('strong') && !inToken.includes('emphasis')) {
+			let strongEmphasisRegex = /^\*{3}(.+?)\*{3}(.*)/.exec(inlineInput);
+			if (strongEmphasisRegex != null) {
+				children.push(emphasisStrongLexer(strongEmphasisRegex[1], inToken));
+				// 处理后面的部分
+				if (strongEmphasisRegex[2] != '') {
+					children.push(...restInlineLexer(strongEmphasisRegex[2], inToken));
+				}
+				return children;
+			}
 		}
 
 		// 处理strong
