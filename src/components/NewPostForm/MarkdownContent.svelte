@@ -441,10 +441,11 @@
 
 	// 返回image节点
 	const imageLexer = (alt, urlAndTitle) => {
-		let [url, title] = urlAndTitle.split(' ');
+		// 这里没有处理好，使用了' "'(空格和双引号来分割)
+		let [url, title] = urlAndTitle.split(' "');
 
-		if (title != undefined && title.at(0) == '"' && title.at(-1) == '"') {
-			title = title.substring(1, title.length - 1);
+		if (title != undefined && title.at(-1) == '"') {
+			title = title.substring(0, title.length - 1);
 		}
 
 		return {
