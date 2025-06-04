@@ -441,18 +441,19 @@
 
 	// 返回image节点
 	const imageLexer = (alt, urlAndTitle) => {
-		// 这里没有处理好，使用了' "'(空格和双引号来分割)
-		let [url, title] = urlAndTitle.split(' "');
+		// 最终使用这个处理方法
+		let [url, ...titleArray] = urlAndTitle.split(' ');
 
-		if (title != undefined && title.at(-1) == '"') {
-			title = title.substring(0, title.length - 1);
+		let title = titleArray.join(' ');
+		if (title != undefined && title.at(0) == '"' && title.at(-1) == '"') {
+			title = title.substring(1, title.length - 1);
 		}
 
 		return {
 			type: 'image',
 			alt,
 			url,
-			title: title == undefined ? '' : title
+			title: title == undefined ? null : title
 		};
 	};
 
