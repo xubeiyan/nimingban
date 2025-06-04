@@ -9,17 +9,20 @@
 	$: inSketch = url.includes('TEMPFOLDER');
 	$: realUrl = inSketch ? '/attach_placeholder.png' : url;
 
+	$: centerImage = title != '' && title != null;
+	$: centerImageStyle = centerImage ? 'items-center': '';
+
 	const fullScreenView = (url) => {
 		// TODO: 打开一个大窗口查看图片
 		dispatch('largeImage', url);
 	};
 </script>
 
-<div class="flex items-center">
+<div class="flex flex-col {centerImageStyle}">
 	<button on:click={() => fullScreenView(url)} disabled={inSketch}>
-		<img class="min-h-[10em] max-h-[20em]" {alt} src={realUrl} {title} />
+		<img class="min-h-[10em] max-h-[20em]" {alt} src={realUrl} />
 	</button>
-	{#if inSketch}
-		<span> ← {alt} 会被替换，hover文字为 {title}</span>
+	{#if centerImage}
+		<span class="italic">{title}</span>
 	{/if}
 </div>
