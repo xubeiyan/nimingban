@@ -43,7 +43,7 @@
 		}
 
 		const post_id = window.location.href.split('/').at(-1);
-		newCommentForm.showForm({ type: 'comment', replyId: post_id});
+		newCommentForm.showForm({ type: 'comment', replyId: post_id });
 	};
 
 	// 打开编辑对话框
@@ -259,14 +259,16 @@
 </script>
 
 <div class="px-2 md:px-0 grow container m-auto">
-	<div class="mt-4">
-		<a href={`/board/${$boardStore.boardUrl}`}>
-			<PrimaryBtn>
-				<BackIcon />
-				<span>返回版块</span>
-			</PrimaryBtn>
-		</a>
-	</div>
+	<div class="mt-4 empty:h-[2rem]">
+			{#if $boardStore.boardUrl != null}
+			<a href={`/board/${$boardStore.boardUrl}`}>
+				<PrimaryBtn>
+					<BackIcon />
+					<span>返回版块</span>
+				</PrimaryBtn>
+			</a>
+			{/if}
+		</div>
 	<div
 		class="rounded-md bg-slate-100 dark:bg-sky-700 px-4 py-2 mt-2 shadow-inner"
 		id="id-{data.post.id}"
