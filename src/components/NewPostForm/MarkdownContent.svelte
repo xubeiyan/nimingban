@@ -440,7 +440,13 @@
 	};
 
 	// 返回image节点
-	const imageLexer = (alt, url, title) => {
+	const imageLexer = (alt, urlAndTitle) => {
+		let [url, title] = urlAndTitle.split(' ');
+
+		if (title != undefined && title.at(0) == '"' && title.at(-1) == '"') {
+			title = title.substring(1, title.length - 1);
+		}
+
 		return {
 			type: 'image',
 			alt,
@@ -573,11 +579,11 @@
 		}
 
 		// 处理image节点
-		let imageRegex = /^!\[(.*?)\]\((.+?)(?: \"(.+?)\")?\)(.*)/.exec(inlineInput);
+		let imageRegex = /^!\[(.*?)\]\((.+?)\)(.*)/.exec(inlineInput);
 		if (imageRegex != null) {
-			children.push(imageLexer(imageRegex[1], imageRegex[2], imageRegex[3]));
-			if (imageRegex[4] != '') {
-				children.push(...restInlineLexer(imageRegex[4], inToken));
+			children.push(imageLexer(imageRegex[1], imageRegex[2]));
+			if (imageRegex[3] != '') {
+				children.push(...restInlineLexer(imageRegex[3], inToken));
 			}
 
 			return children;
