@@ -273,7 +273,7 @@
 		class="rounded-md bg-slate-100 dark:bg-sky-700 px-4 py-2 mt-2 shadow-inner"
 		id="id-{data.post.id}"
 	>
-		<div class="flex justify-between items-end">
+		<div class="flex flex-col md:flex-row justify-between items-end">
 			<p class="space-x-2">
 				<span class="dark:text-green-100 font-bold">标题：{data.post.title}</span>
 				<span class="dark:text-yellow-100">作者：{data.post.author}</span>

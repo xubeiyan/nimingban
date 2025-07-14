@@ -6,6 +6,7 @@
 
 	import DarkModeSwitch from './darkModeSwitch.svelte';
 	import { userStore } from '../store/userStore';
+	import { loginAlreadyExpire } from '../lib/user/utils';
 
 	import { createEventDispatcher, onMount } from 'svelte';
 	import LoginoutButton from './Header/LoginoutButton.svelte';
@@ -106,6 +107,9 @@
 		const user = JSON.parse(userInLocalStorage);
 		if (user == undefined) return;
 
+		if (loginAlreadyExpire(user)) {
+			logout();
+		}
 		// // 检查 localStorage 有无 usingCookies，无则添加
 		// const usingCookies = window.localStorage.getItem('usingCookies');
 		// if (user.cookies.length > 0 && usingCookies == undefined) {
