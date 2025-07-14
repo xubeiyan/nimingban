@@ -93,6 +93,8 @@
 			usingCookie: cookies
 		}));
 		usingCookies = cookies;
+		// 写入localStorage
+		window.localStorage.setItem('user', JSON.stringify($userStore));
 	};
 </script>
 
