@@ -72,15 +72,19 @@
 			/**
 			 * list 是如下形式
 			 - first
+			   - subfirst
+			   - subsecond
 			 - second
 			 - third
 			 或者如下
 			 3. 三个饼
+			   1. 饼1
+			   2. 饼2
 			 4. 四杯水
 			 5. 五根薯条
 			*/
 
-			if (new Set(['- ', '+ ', '* ']).has(line.substring(0, 2))) {
+			if (/^ {0,6}[\*|\-|\+] .+/.test(line)) {
 				// 检查是否已经在order中，有要退出
 				if (inList && listType == 'order') {
 					const listObj = listLexer(listTemp, 'order');
@@ -88,24 +92,52 @@
 					listTemp = [];
 				}
 
-				listType = 'unoreder';
+				const unorderLineRegex = /^( {0,6})[\*|\-|\+] (.+)/.exec(line);
+				let level = 1;
+				// 0,1个空格为1级，2,3个空格为2级，4,5,6个空格为3级
+				let len = unorderLineRegex[1].length;
+				if (len >= 4) {
+					level = 3;
+				} else if (len >= 2) {
+					level = 2;
+				}
+
+				listType = 'unorder';
 				inList = true;
 				inTable = false;
 				inCodeBlock = false;
-				listTemp.push(line);
+
+				listTemp.push({
+					level,
+					content: unorderLineRegex[2]
+				});
 				continue;
-			} else if (/^\d{1,2}\. .?/.test(line)) {
+			} else if (/^ {0,6}\d{1,2}\. .+/.test(line)) {
 				// 检查是否已经在unorder中，有要退出
 				if (inList && listType == 'unorder') {
 					const listObj = listLexer(listTemp, 'unorder');
 					result.children.push(listObj);
 					listTemp = [];
 				}
+
+				const orderLineRegex = /^( {0,6})[\d{1,2}]\. (.+)/.exec(line);
+				let level = 1;
+				// 0,1个空格为1级，2,3个空格为2级，4,5,6个空格为3级
+				let len = orderLineRegex[1].length;
+				if (len >= 4) {
+					level = 3;
+				} else if (len >= 2) {
+					level = 2;
+				}
+
 				listType = 'order';
 				inList = true;
 				inTable = false;
 				inCodeBlock = false;
-				listTemp.push(line);
+				listTemp.push({
+					level,
+					content: orderLineRegex[2]
+				});
 				continue;
 			} else {
 				inList = false;
@@ -325,10 +357,11 @@
 		return {
 			type,
 			children: tempList.map((one) => {
-				const removePrefixItem = one.split(' ').toSpliced(0, 1).join(' ');
+				const { level, content } = one;
 				return {
 					type: 'listitem',
-					children: restInlineLexer(removePrefixItem, ['list'])
+					level,
+					content: restInlineLexer(content, ['list'])
 				};
 			})
 		};
