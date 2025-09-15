@@ -33,6 +33,7 @@
 <style>
 	.grow-wrap {
 		--x-padding: 0.5rem;
+		--y-padding: 0.25rem
 	}
 
 	.grow-wrap::after {
@@ -48,7 +49,7 @@
 		resize: none;
 		overflow-x: auto;
 		overflow-y: hidden;
-		padding: 0 var(--x-padding);
+		padding: var(--y-padding) var(--x-padding);
 	}
 
 	.grow-wrap::after,

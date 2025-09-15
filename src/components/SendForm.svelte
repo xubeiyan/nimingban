@@ -441,7 +441,7 @@
 			</div>
 
 			{#if expand}
-				<div class="w-[50%] h-full mt-10 flex flex-col">
+				<div class="w-[50%] h-full mt-10 flex flex-col gap-1">
 					<MarkdownContent content={post.commentReplyContent} />
 					<MarkdownContent content={post.content} debugFlags={[]} />
 				</div>
