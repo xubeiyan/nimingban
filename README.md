@@ -245,7 +245,10 @@
 - [x] `blockquote`
 - [x] `link`
 - [x] `image`
+  - [x] 支持带图片说明文字插入，居中且有文字说明
 - [x] `list`
+  - [x] 支持有序和无序列表
+  - [x] 支持多层级的列表（最大 3 层）
 - [x] `table`
 - [x] `spoiler` 参考了 reddit `>! hidden text !<`
 - [x] `kbd` 使用 `[[...]]` 来实现

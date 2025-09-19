@@ -316,7 +316,9 @@
 		>
 			<div class="flex justify-between items-end">
 				<p class="space-x-2">
-					<span class="dark:text-green-100 font-bold">标题：{comment.title}</span>
+					<a href="#id-{comment.id}">
+						<span class="dark:text-green-100 font-bold">标题：{comment.title}</span>
+					</a>
 					<span class="dark:text-yellow-100">作者：{comment.poster_name}</span>
 					<span class="dark:text-red-100 italic">邮箱：{comment.poster_email}</span>
 					<span>写于：{comment.comment_time}</span>
