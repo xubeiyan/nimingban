@@ -8,7 +8,9 @@
 	import { userStore } from '../store/userStore';
 	import { loginAlreadyExpire } from '../lib/user/utils';
 
-	import { createEventDispatcher, onMount } from 'svelte';
+	import { createEventDispatcher } from 'svelte';
+	import { afterNavigate } from '$app/navigation';
+	
 	import LoginoutButton from './Header/LoginoutButton.svelte';
 	import CookiesStatusButton from './Header/CookiesStatusButton.svelte';
 	import UserProfile from './UserProfile.svelte';
@@ -99,7 +101,7 @@
 		userManage.showForm({ username });
 	};
 
-	onMount(() => {
+	afterNavigate(() => {
 		const userInLocalStorage = window.localStorage.getItem('user');
 		// localStorage 没有则什么都不做
 		if (userInLocalStorage == undefined) return;
