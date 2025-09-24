@@ -10,11 +10,11 @@
 				<OrderItem children={child.content} />
 			</li>
 		{:else if child.level == 2}
-			<li class="list-[square] ml-4">		
+			<li class="list-[square] list-inside ml-4">		
 				<OrderItem children={child.content} />
 			</li>
 		{:else if child.level == 3}
-			<li class="list-[circle] ml-8">		
+			<li class="list-[circle] list-inside ml-8">		
 				<OrderItem children={child.content} />
 			</li>
 		{/if}

@@ -61,12 +61,12 @@
 		<li>
 			<OrderItem children={item.content} />
 			{#if item.subList.length > 0}
-				<ol class="list-[lower-alpha]">
+				<ol class="list-[lower-alpha] list-inside">
 					{#each item.subList as subItem}
-						<li class="ml-8">
+						<li class="ml-4">
 							<OrderItem children={subItem.content} />
 							{#if subItem.subList.length > 0}
-								<ol class="list-[lower-roman]">
+								<ol class="list-[lower-roman] list-inside">
 									{#each subItem.subList as subSubItem}
 										<li class="ml-4">
 											<OrderItem children={subSubItem.content} />

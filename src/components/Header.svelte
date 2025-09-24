@@ -105,10 +105,10 @@
 		const userInLocalStorage = window.localStorage.getItem('user');
 		// localStorage 没有则什么都不做
 		if (userInLocalStorage == undefined) return;
-
+		
 		const user = JSON.parse(userInLocalStorage);
 		if (user == undefined) return;
-
+		
 		if (loginAlreadyExpire(user)) {
 			logout();
 		}
@@ -117,8 +117,6 @@
 		// if (user.cookies.length > 0 && usingCookies == undefined) {
 		// 	window.localStorage.setItem('usingCookies', user.cookies[0].content);
 		// }
-
-		userStore.set(user);
 	});
 </script>
 
