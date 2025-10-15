@@ -10,12 +10,12 @@
 
 	$: style =
 		level == 1
-			? 'text-3xl font-extrabold border-b-2 mb-4 pb-1 border-slate-800 dark:border-sky-500'
+			? 'text-3xl font-extrabold break-words border-b-2 mb-4 pb-1 border-slate-800 dark:border-sky-500'
 			: level == 2
-				? 'text-2xl font-bold border-b mb-2 pb-1 border-slate-800 dark:border-sky-500'
+				? 'text-2xl font-bold break-words border-b mb-2 pb-1 border-slate-800 dark:border-sky-500'
 				: level == 3
-					? 'text-xl mb-1 font-semibold'
-					: 'text-lg mb-1';
+					? 'text-xl mb-1 font-semibold break-words'
+					: 'text-lg mb-1 break-words';
 </script>
 
 <h1 class={style}>
