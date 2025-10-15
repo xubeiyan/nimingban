@@ -130,7 +130,7 @@
 			>
 				<WidgetIcon open={leftNavOpen} />
 			</button>
-			<a href="/" class="hover:underline underline-offset-4">{siteName}</a>
+			<a href="/" class="hidden md:inline hover:underline underline-offset-4">{siteName}</a>
 			{#if $userStore.type == 'admin'}
 				<SiteSettingBtn on:click={() => toggleForm('siteSetting')} />
 			{/if}
