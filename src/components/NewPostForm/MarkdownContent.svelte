@@ -641,29 +641,13 @@
 		}
 
 		// 处理link节点
-		let linkRegex = /^\[(.+?)\](.*)/.exec(inlineInput);
+		let linkRegex = /^\[(.+?)\]\((.+?)\)(.*)/.exec(inlineInput);
 		if (linkRegex != null) {
-			// 判断是否是(...)
-			if (linkRegex[2].startsWith('(')) {
-				let hyperLinkRegex = /^\((.+?)\)(.*)/.exec(linkRegex[2]);
-				if (hyperLinkRegex != null) {
-					children.push(linkLexer(linkRegex[1], hyperLinkRegex[1]));
-				}
-				// 处理后面部分
-				if (hyperLinkRegex[2] != '') {
-					children.push(...restInlineLexer(hyperLinkRegex[2], inToken));
-				}
-				return children;
+			children.push(linkLexer(linkRegex[1], linkRegex[2]));
+			// 处理后面的部分
+			if (linkRegex[3] != '') {
+				children.push(...restInlineLexer(linkRegex[3], inToken));
 			}
-
-			// 否则将这个部分认为是 text
-			// TODO: 这样不支持[[1](2)]这样的语法了
-			children.push({
-				type: 'text',
-				content: '[' + linkRegex[1] + ']'
-			});
-
-			children.push(...restInlineLexer(linkRegex[2], inToken));
 			return children;
 		}
 
