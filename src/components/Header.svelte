@@ -108,9 +108,13 @@
 		
 		const user = JSON.parse(userInLocalStorage);
 		if (user == undefined) return;
-		
+
 		if (loginAlreadyExpire(user)) {
 			logout();
+		}
+		// 刷新会清除useStore，检查是否存在
+		if ($userStore.token == null) {
+			userStore.set(user);
 		}
 		// // 检查 localStorage 有无 usingCookies，无则添加
 		// const usingCookies = window.localStorage.getItem('usingCookies');
