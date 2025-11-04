@@ -309,15 +309,24 @@
 	};
 
 	export const showForm = (params) => {
+		// 重置标题作者邮箱字段
+		post.name = null;
+		post.title = null;
+		post.email = null;
 		if (
 			params != undefined &&
 			params.type == 'edit' &&
-			params.content != undefined &&
+			params.post != undefined &&
 			params.postId != undefined
 		) {
 			// 编辑串
 			type = params.type;
-			post.content = params.content;
+			post.content = params.post.content;
+			console.log(params.post);
+			post.name = params.post.name;
+			post.title = params.post.title;
+			post.email = params.post.email;
+			post = post;
 			postId = params.postId;
 			$getImagesFromPostOrCommentMutation.mutate(postId);
 			draftToFormContent('edit', postId);
@@ -326,6 +335,7 @@
 			type = params.type;
 			draftToFormContent('post');
 		} else if (params != undefined && params.type == 'comment') {
+			// 回复串
 			replyId = params.replyId;
 			type = params.type;
 			draftToFormContent('comment', replyId);
@@ -403,16 +413,19 @@
 			<InlineInput
 				label="标题"
 				placeholder="无标题"
+				value={post.title}
 				on:input={(e) => handleInput('title', e.target.value)}
 			/>
 			<InlineInput
 				label="作者"
 				placeholder="无名氏"
+				value={post.name}
 				on:input={(e) => handleInput('name', e.target.value)}
 			/>
 			<InlineInput
 				label="Email"
 				placeholder="no@name.net"
+				value={post.email}
 				on:input={(e) => handleInput('email', e.target.value)}
 			/>
 		</div>

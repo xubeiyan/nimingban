@@ -1,5 +1,6 @@
 <script>
 	export let label = '未知label';
+	export let value = null;
 	export let placeholder = '';
 	let inputStyle = `outline-none 
         border border-slate-300 
@@ -10,5 +11,5 @@
 
 <label class="grow flex flex-col gap-1">
 	<span>{label}</span>
-	<input name={label} class="{inputStyle} px-2 py-0.5" {placeholder} on:input autocomplete="off" />
+	<input name={label} {value} class="{inputStyle} px-2 py-0.5" {placeholder} on:input autocomplete="off" />
 </label>

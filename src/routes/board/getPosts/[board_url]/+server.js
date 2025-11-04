@@ -65,7 +65,7 @@ export async function GET({ locals, params, url, request }) {
 			posts.push({
 				id: one.id,
 				status: one.status,
-				author: nullToDefaultString({ type: 'poster_name', value: one.poster_name }),
+				name: nullToDefaultString({ type: 'poster_name', value: one.poster_name }),
 				email: nullToDefaultString({ type: 'poster_email', value: one.poster_email }),
 				title: nullToDefaultString({ type: 'title', value: one.title }),
 				content: one.content,

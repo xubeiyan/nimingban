@@ -108,9 +108,13 @@
 		
 		const user = JSON.parse(userInLocalStorage);
 		if (user == undefined) return;
-		
+
 		if (loginAlreadyExpire(user)) {
 			logout();
+		}
+		// 刷新会清除useStore，检查是否存在
+		if ($userStore.token == null) {
+			userStore.set(user);
 		}
 		// // 检查 localStorage 有无 usingCookies，无则添加
 		// const usingCookies = window.localStorage.getItem('usingCookies');
@@ -130,7 +134,7 @@
 			>
 				<WidgetIcon open={leftNavOpen} />
 			</button>
-			<a href="/" class="hidden md:inline hover:underline underline-offset-4">{siteName}</a>
+			<a href="/" class="{$userStore.username != null ? 'hidden' : 'inline'} md:inline hover:underline underline-offset-4">{siteName}</a>
 			{#if $userStore.type == 'admin'}
 				<SiteSettingBtn on:click={() => toggleForm('siteSetting')} />
 			{/if}

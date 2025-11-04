@@ -49,8 +49,8 @@
 					>
 						<p class="space-x-2">
 							<span class="dark:text-green-100 font-bold">标题：{comment.title}</span>
-							<span class="dark:text-yellow-100">作者：{comment.poster_name}</span>
-							<span class="dark:text-red-100 italic">邮箱：{comment.poster_email}</span>
+							<span class="dark:text-yellow-100">作者：{comment.name}</span>
+							<span class="dark:text-red-100 italic">邮箱：{comment.email}</span>
 							<span>写于：{comment.comment_time}</span>
 							<CookieBtn content={comment.cookies_content} />
 							{#if comment.edit_time != null}
