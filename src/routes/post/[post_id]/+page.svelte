@@ -98,13 +98,13 @@
 		// 如果已经在最后一页，则只需增加那一串内容即可，无需再请求整个
 		if ($boardStore.comment_from > $boardStore.comment_total) {
 			const newComment = await $getSingleCommentMutation.mutateAsync(commentId);
-			let { id, poster_name, poster_email, title, comment_time, content, cookies_content } =
+			let { id, name, email, title, comment_time, content, cookies_content } =
 				newComment;
 
 			comments.push({
 				id,
-				poster_name,
-				poster_email,
+				name,
+				email,
 				title,
 				content,
 				comment_time,
@@ -161,12 +161,12 @@
 
 		if (filtered.length != 1) return;
 
-		let { poster_name, poster_email, title, content, edit_time } = updatedComment;
+		let { name, email, title, content, edit_time } = updatedComment;
 
 		filtered[0].content = content;
 		filtered[0].edit_time = edit_time;
-		filtered[0].poster_email = poster_email;
-		filtered[0].poster_name = poster_name;
+		filtered[0].email = email;
+		filtered[0].name = name;
 		filtered[0].title = title;
 
 		comments = comments;
@@ -276,7 +276,7 @@
 		<div class="flex flex-col md:flex-row justify-between items-end">
 			<p class="space-x-2">
 				<span class="dark:text-green-100 font-bold">标题：{data.post.title}</span>
-				<span class="dark:text-yellow-100">作者：{data.post.author}</span>
+				<span class="dark:text-yellow-100">作者：{data.post.name}</span>
 				<span class="dark:text-red-100 italic">邮箱：{data.post.email}</span>
 				<span>写于：{data.post.post_time}</span>
 				<span class="dark:text-indigo-100">饼干：{data.post.cookies_content}</span>
@@ -319,8 +319,8 @@
 					<a href="#id-{comment.id}">
 						<span class="dark:text-green-100 font-bold">标题：{comment.title}</span>
 					</a>
-					<span class="dark:text-yellow-100">作者：{comment.poster_name}</span>
-					<span class="dark:text-red-100 italic">邮箱：{comment.poster_email}</span>
+					<span class="dark:text-yellow-100">作者：{comment.name}</span>
+					<span class="dark:text-red-100 italic">邮箱：{comment.email}</span>
 					<span>写于：{comment.comment_time}</span>
 					<span class="dark:text-indigo-100">饼干：{comment.cookies_content} </span>
 					{#if isPostAuthor(comment.cookies_content)}

@@ -28,8 +28,8 @@ export const GET = async ({ params, locals }) => {
 
 	const {
 		id,
-		poster_name,
-		poster_email,
+		poster_name: name,
+		poster_email: email,
 		title,
 		content,
 		comment_time,
@@ -41,8 +41,8 @@ export const GET = async ({ params, locals }) => {
 		type: 'ok',
 		comment: {
 			id,
-			poster_name: nullToDefaultString({ type: 'poster_name', value: poster_name }),
-			poster_email: nullToDefaultString({ type: 'poster_email', value: poster_email }),
+			name: nullToDefaultString({ type: 'poster_name', value: name }),
+			email: nullToDefaultString({ type: 'poster_email', value: email }),
 			title: nullToDefaultString({ type: 'title', value: title }),
 			content,
 			comment_time,

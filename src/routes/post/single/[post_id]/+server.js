@@ -21,8 +21,8 @@ export const GET = async ({ params, locals }) => {
 	const {
 		id,
 		status,
-		poster_name,
-		poster_email,
+		poster_name: name,
+		poster_email: email,
 		title,
 		content,
 		post_time,
@@ -35,8 +35,8 @@ export const GET = async ({ params, locals }) => {
 		post: {
 			id,
 			status,
-			author: nullToDefaultString({ type: 'poster_name', value: poster_name }),
-			email: nullToDefaultString({ type: 'poster_email', value: poster_email }),
+			name: nullToDefaultString({ type: 'poster_name', value: name }),
+			email: nullToDefaultString({ type: 'poster_email', value: email }),
 			title: nullToDefaultString({ type: 'title', value: title }),
 			content,
 			post_time,
