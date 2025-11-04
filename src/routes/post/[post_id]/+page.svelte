@@ -47,9 +47,9 @@
 	};
 
 	// 打开编辑对话框
-	const openEditForm = (content, postId) => {
+	const openEditForm = (post, postId) => {
 		if (newCommentForm == null) return;
-		newCommentForm.showForm({ type: 'edit', content, postId });
+		newCommentForm.showForm({ type: 'edit', post, postId });
 	};
 
 	//
@@ -292,7 +292,7 @@
 			<p>
 				{#if $userStore.type == 'admin' || isUserEditable(data.post.cookies_content, data.post.status)}
 					<SuperOperationBtn
-						on:click={() => openEditForm(data.post.content, `post_${data.post.id}`)}
+						on:click={() => openEditForm(data.post, `post_${data.post.id}`)}
 						>编辑</SuperOperationBtn
 					>
 				{/if}
@@ -352,7 +352,7 @@
 					{/if}
 					{#if $userStore.type == 'admin' || isUserEditable(comment.cookies_content, data.post.status)}
 						<SuperOperationBtn
-							on:click={() => openEditForm(comment.content, `comment_${comment.id}`)}
+							on:click={() => openEditForm(comment, `comment_${comment.id}`)}
 							>编辑</SuperOperationBtn
 						>
 					{/if}
