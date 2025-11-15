@@ -322,7 +322,7 @@
 			// 编辑串
 			type = params.type;
 			post.content = params.post.content;
-			console.log(params.post);
+			// console.log(params.post);
 			post.name = params.post.name;
 			post.title = params.post.title;
 			post.email = params.post.email;
