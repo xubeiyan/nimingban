@@ -84,7 +84,7 @@
 			 5. 五根薯条
 			*/
 
-			if (/^ {0,6}[\*|\-|\+] .+/.test(line)) {
+			if (/^ {0,6}[\*\-\+] .+/.test(line)) {
 				// 检查是否已经在order中，有要退出
 				if (inList && listType == 'order') {
 					const listObj = listLexer(listTemp, 'order');
@@ -92,7 +92,7 @@
 					listTemp = [];
 				}
 
-				const unorderLineRegex = /^( {0,6})[\*|\-|\+] (.+)/.exec(line);
+				const unorderLineRegex = /^( {0,6})[\*\-\+] (.+)/.exec(line);
 				let level = 1;
 				// 0,1个空格为1级，2,3个空格为2级，4,5,6个空格为3级
 				let len = unorderLineRegex[1].length;

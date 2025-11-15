@@ -131,7 +131,7 @@
 		const res = await $updateSectionMutation.mutateAsync();
 
 		if (res.type == 'ok') {
-			console.log(res);
+			// console.log(res);
 			newForum = {
 				name: undefined
 			};
