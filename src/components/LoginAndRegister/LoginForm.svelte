@@ -156,8 +156,8 @@
 	};
 
 	const loginMutation = createMutation({
-		mutationFn: () => {
-			return fetch(
+		mutationFn: async () =>
+			await fetch(
 				'/login',
 				{
 					method: 'POST',
@@ -171,8 +171,7 @@
 						'Content-Type': 'application/json'
 					}
 				}
-			).then((r) => r.json());
-		}
+			).then((r) => r.json())
 	});
 
 	$: btnText = $loginMutation.isPending ? '登录中...' : '登录';
