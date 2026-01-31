@@ -11,7 +11,7 @@
 	export let children = [];
 </script>
 
-<p class="mb-1 last:mb-0 empty:h-[0.5rem] break-words">
+<p class="mb-1 last:mb-0 empty:h-[0.5rem] break-words text-autospace">
 	{#each children as child}
 		{#if child.type == 'text'}
 			{#if child.content != ''}
