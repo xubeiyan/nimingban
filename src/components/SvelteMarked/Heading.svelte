@@ -18,7 +18,7 @@
 					: 'text-lg mb-1 break-words';
 </script>
 
-<h1 class={style}>
+<h1 class={'text-autospace ' + style}>
 	{#each children as child}
 		{#if child.type == 'text'}
 			<Text content={child.content} />

@@ -3,7 +3,7 @@
 	export let children = [];
 </script>
 
-<ul class="list-disc list-inside">
+<ul class="list-disc list-inside text-autospace">
 	{#each children as child}
 		{#if child.level == 1}
 			<li>
