@@ -9,7 +9,7 @@
 	<div class="w-full container flex justify-between items-center">
 		<div class="inline-flex gap-1 items-center">
 			<CopyleftIcon />
-			<span>2025</span>
+			<span>2025&thinsp;-&thinsp;2026</span>
 			<a href="/" class="hover:underline underline-offset-4">nimingban </a>
 			<span class="text-slate-500 dark:text-slate-300 hidden md:inline"
 				>An anonymous board created with Svelte and
