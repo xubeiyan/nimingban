@@ -5,3 +5,6 @@
 .text-autospace {
     text-autospace: normal;
 }
+.text-no-autospace {
+    text-autospace: no-autospace;
+}

@@ -55,7 +55,7 @@
 	};
 </script>
 
-<ol {start} class="list-decimal list-inside">
+<ol {start} class="list-decimal list-inside text-autospace">
 	<!-- {JSON.stringify(orderList())} -->
 	{#each orderList() as item}
 		<li>
