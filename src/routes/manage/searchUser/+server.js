@@ -22,37 +22,49 @@ export const POST = async ({ request, locals }) => {
 
 	let { username, start_date, end_date } = await request.json();
 
-	let start_time = `2024-01-01 00:00:00`;
+	// 根据是否有 username 和 start_time 和 end_time 设置不同的SQL
+	let partSql = [];
+	let params = [];
 
-	if (start_date != null) {
-		start_time = `${start_date}`;
+	if (username != null && username != "") {
+		params.push(username);
+		partSql.push("username = ?")
 	}
 
-	let end_time = `${new Date().toISOString().substring(0, 10)} 23:59:59`;
-
-	if (end_date != null) {
-		end_time = `${end_time}`;
+	if (start_date != null && start_date != "") {
+		params.push(start_date)
+		partSql.push("create_timestamp >= TO_TIMESTAMP(?, 'YYYY-MM-DD HH24:MI:SS')")
 	}
 
-	// 根据是否有 username 设置不同的SQL
+	if (end_date != null && end_date != "") {
+		params.push(end_date)
+		partSql.push("create_timestamp <= to_timestamp(?, 'YYYY-MM-DD HH24:MI:SS')")
+	}
+
+	// 垃圾node-postgres，只支持$1, $2，可变数量的参数还只能手动替换
+	// 将?替换为对应的$1$2
+	for (let i = 0; i < partSql.length; ++i) {
+		partSql[i] = partSql[i].replace("?", `$${i+1}`)
+	}
+
+	let sql = `
+		SELECT 
+		  id, username, status, type, reset_password,
+          to_char(create_timestamp, 'YYYY-MM-DD HH24:MI:SS') AS create_time 
+        FROM 
+		  "user" 
+		${partSql.length > 0 ? "WHERE" : ""}
+		  ${partSql.join(" AND ")}
+		ORDER BY 
+		  create_timestamp DESC
+		LIMIT 20`
+
+    // console.log(sql);
+
 	let userSeachQuery = {
-		text: `SELECT id, username, status, type, reset_password,
-        to_char(create_timestamp, 'YYYY-MM-DD HH24:MI:SS') AS create_time 
-        FROM "user" WHERE create_timestamp >= $1 AND create_timestamp <= $2 
-		ORDER BY create_timestamp DESC LIMIT 20`,
-		values: [start_time, end_time]
+		text: sql,
+		values: params
 	};
-
-	if (username != null && username != '') {
-		userSeachQuery = {
-			text: `SELECT id, username, status, type, reset_password,
-			to_char(create_timestamp, 'YYYY-MM-DD HH24:MI:SS') AS create_time 
-			FROM "user" WHERE username = $3 
-			AND create_timestamp >= $1 AND create_timestamp <= $2
-			ORDER BY create_timestamp DESC`,
-			values: [start_time, end_time, username]
-		};
-	}
 
 	const userSearchResult = await dbconn.query(userSeachQuery);
 

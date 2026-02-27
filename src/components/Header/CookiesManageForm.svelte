@@ -17,7 +17,13 @@
 	let show = false;
 	$: showStyle = show ? '' : 'translate-y-[-100%]';
 
-	export const showForm = () => {
+	export const showForm = (username) => {
+		if (username != undefined) {
+			cookieManageStore.update(() => ({
+				username,
+				cookie: null
+			}))
+		}
 		show = true;
 	};
 

@@ -101,6 +101,12 @@
 		userManage.showForm({ username });
 	};
 
+	// 处理搜索用户饼干
+	const handleSearchUserAllCookies = ({username}) => {
+		closeHeaderForms();
+		cookieManage.showForm(username);
+	}
+
 	afterNavigate(() => {
 		const userInLocalStorage = window.localStorage.getItem('user');
 		// localStorage 没有则什么都不做
@@ -173,5 +179,5 @@
 </nav>
 <UserProfile bind:this={userProfile} />
 <CookiesManageForm bind:this={cookieManage} on:searchUser={(e) => handleSearchUser(e.detail)} />
-<UserManageForm bind:this={userManage} />
+<UserManageForm bind:this={userManage} on:searchUserAllCookies={(e) => handleSearchUserAllCookies(e.detail)} />
 <SiteSettingForm bind:this={siteSetting} />
