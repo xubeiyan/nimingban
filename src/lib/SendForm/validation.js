@@ -1,5 +1,5 @@
 // 验证发送串和回复串的字段
-import { MAX_UPLOAD_IMAGE_COUNT } from '$env/static/private';
+import { MAX_UPLOAD_IMAGE_COUNT, MAX_SINGLE_IMAGE_SIZE } from '$env/static/private';
 
 // 验证cookie字段
 const validCookies = async ({ dbconn, cookies, authUsername }) => {
@@ -100,7 +100,6 @@ const validCookies = async ({ dbconn, cookies, authUsername }) => {
 	};
 };
 
-const SINGLE_IMAGE_SIZE = 2 * 1024 * 1024; // 不超过2MiB
 const ALLOW_IMAGE_TYPE = ['image/png', 'image/jpeg', 'image/gif', 'image/webp', 'image/avif'];
 // 验证图片字段
 const validateImages = async ({ toUploadImages }) => {
@@ -165,7 +164,7 @@ const validateImages = async ({ toUploadImages }) => {
 	const oversizes = [];
 
 	for (let image of toUploadImages) {
-		if (image.size > SINGLE_IMAGE_SIZE) {
+		if (image.size > MAX_SINGLE_IMAGE_SIZE * 1024) {
 			oversizes.push({
 				name: image.name
 			});

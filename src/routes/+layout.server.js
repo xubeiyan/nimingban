@@ -6,12 +6,15 @@ export const load = async ({ locals }) => {
 
 	const { dbconn } = locals;
 
+    let defaultReturn = {
+		siteName,
+		forums: [],
+		pkgVersion: npm_package_version
+	}
+
 	// 如果没有数据库连接则直接返回
 	if (dbconn == undefined) {
-		return {
-			siteName,
-			forums: []
-		};
+		return defaultReturn;
 	}
 
 	const siteNameQuery = {
@@ -22,7 +25,7 @@ export const load = async ({ locals }) => {
 	const siteNameResult = await dbconn.query(siteNameQuery);
 
 	if (siteNameResult.rowCount == 1 && siteNameResult.rows[0].data_type == 'string') {
-		siteName = siteNameResult.rows[0].value;
+		defaultReturn.siteName = siteNameResult.rows[0].value;
 	}
 
 	// 查询section表中的id和section_name以及board表中的id和board_name
@@ -36,10 +39,7 @@ export const load = async ({ locals }) => {
 	);
 	// 没有则返回空
 	if (result.rowCount == 0) {
-		return {
-			siteName,
-			forums: []
-		};
+		return defaultReturn;
 	}
 	/* 将查询的结果
     [{
@@ -93,9 +93,7 @@ export const load = async ({ locals }) => {
 		});
 	});
 
-	return {
-		siteName,
-		forums,
-		pkgVersion: npm_package_version
-	};
+	defaultReturn.forums = forums;
+
+	return defaultReturn;
 };

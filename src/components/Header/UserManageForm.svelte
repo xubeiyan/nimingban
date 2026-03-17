@@ -155,7 +155,7 @@ bg-sky-100 dark:bg-sky-700 rounded-md px-4 py-4"
 			</div>
 		</form>
 		<fieldset class="border border-slate-400 dark:border-slate-300 rounded-md px-3 py-2 mt-2">
-			<legend class="px-1">搜索结果</legend>
+			<legend class="px-1">搜索结果(最多20条)</legend>
 			{#if $searchMutation.isIdle}
 				<span class="px-1">未进行搜索</span>
 			{:else if errorText != null}
@@ -177,6 +177,7 @@ bg-sky-100 dark:bg-sky-700 rounded-md px-4 py-4"
 					{userList}
 					on:updateStatus={(e) => handleStatusUpdate(e.detail)}
 					on:updateUserList={(e) => handleUserListUpdate(e.detail)}
+					on:searchUserAllCookies
 				/>
 			{/if}
 		</fieldset>

@@ -62,8 +62,9 @@
 		const files = e.target.files;
 
 		// TODO：可以从后端获得
-		const MAX_NUMBER_UPLOAD_IMAGES = 5;
+		const MAX_NUMBER_UPLOAD_IMAGES = $boardStore.upload_image_max_count;
 
+		// console.log(MAX_NUMBER_UPLOAD_IMAGES)
 		// 检查是否超过允许上传数量
 		if (files.length + attachedFileList.length > MAX_NUMBER_UPLOAD_IMAGES) {
 			sendResponseError = {
@@ -73,7 +74,8 @@
 		}
 
 		// 检查图片大小
-		const MAX_IMAGE_SIZE = 2 * 1024 * 1024;
+		const MAX_IMAGE_SIZE = $boardStore.upload_image_max_size * 1024;
+		// console.log(MAX_IMAGE_SIZE)
 		let oversizeList = [];
 
 		for (let file of files) {
@@ -92,7 +94,7 @@
 
 		if (oversizeList.length > 0) {
 			sendResponseError = {
-				text: `图片 ${oversizeList.join(', ')} 的体积超过了 2MiB 限制`
+				text: `图片 ${oversizeList.join(', ')} 的体积超过了 ${$boardStore.upload_image_max_size} KiB 限制`
 			};
 			attachedFileList = [];
 			return;
@@ -147,7 +149,7 @@
 				};
 			} else if (res.errorCode == 'IMAGE_OVERSIZE') {
 				sendResponseError = {
-					text: `图片 ${res.errorDetail.filenames.join(', ')} 超出了大小限制`
+					text: `图片 ${res.errorDetail.filenames.join(', ')} 超出了大小 ${$boardStore.upload_image_max_size} KiB 的限制`
 				};
 			} else if (res.errorCode == 'CONTENT_LENGTH_TOO_SHORT') {
 				sendResponseError = {

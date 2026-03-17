@@ -8,7 +8,7 @@
 	import { userStore } from '../store/userStore';
 	import { loginAlreadyExpire } from '../lib/user/utils';
 
-	import { createEventDispatcher } from 'svelte';
+	import { createEventDispatcher, onMount } from 'svelte';
 	import { afterNavigate } from '$app/navigation';
 	
 	import LoginoutButton from './Header/LoginoutButton.svelte';
@@ -20,6 +20,8 @@
 	import SiteSettingBtn from './Header/SiteSettingBtn.svelte';
 	import SiteSettingForm from './Header/SiteSettingForm.svelte';
 	import UserManageForm from './Header/UserManageForm.svelte';
+	import { createMutation } from '@tanstack/svelte-query';
+	import { boardStore } from '../store/boardStore';
 
 	export let leftNavOpen;
 	export let siteName = '未知名称';
@@ -101,6 +103,28 @@
 		userManage.showForm({ username });
 	};
 
+	// 处理搜索用户饼干
+	const handleSearchUserAllCookies = ({username}) => {
+		closeHeaderForms();
+		cookieManage.showForm(username);
+	}
+
+    const getUploadImageSetting = async () => {
+		const res = await fetch(`/manage/getUpdateImageSetting`).then((r) => r.json());
+		if (res.type != 'ok') return;
+        boardStore.update(s => ({
+			...s,
+			upload_image_max_count: res.settings.upload_image_max_count,
+			upload_image_max_size: res.settings.upload_image_max_size,
+		}));
+	}
+
+	onMount(() => {
+		// 获取上传图片的要求
+		getUploadImageSetting()
+		console.log('get upload settings')
+	})
+
 	afterNavigate(() => {
 		const userInLocalStorage = window.localStorage.getItem('user');
 		// localStorage 没有则什么都不做
@@ -173,5 +197,5 @@
 </nav>
 <UserProfile bind:this={userProfile} />
 <CookiesManageForm bind:this={cookieManage} on:searchUser={(e) => handleSearchUser(e.detail)} />
-<UserManageForm bind:this={userManage} />
+<UserManageForm bind:this={userManage} on:searchUserAllCookies={(e) => handleSearchUserAllCookies(e.detail)} />
 <SiteSettingForm bind:this={siteSetting} />

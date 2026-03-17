@@ -1,7 +1,11 @@
 <script>
+	import { createEventDispatcher } from 'svelte';
 	import StatusSelect from '../CookiesManageForm/StatusSelect.svelte';
 	import ResetPassBtn from './ResetPassBtn.svelte';
 	import CopyResetPassBtn from './copyResetPassBtn.svelte';
+	import ArrowUpRightIcon from '$svgIcon/arrowUpRight.svelte';
+
+	const dispatch = createEventDispatcher();
 
 	export let userList = [];
 </script>
@@ -20,7 +24,23 @@
 	<tbody>
 		{#each userList as u}
 			<tr class="even:bg-sky-200/50 even:dark:bg-sky-600/60">
-				<td class="text-center">{u.username}</td>
+				<td class="text-center">
+					{u.username}
+					{#if u.type == '一般用户'}
+						<button
+							class="bg-sky-200/80 hover:bg-sky-200
+						dark:bg-sky-600/80 hover:dark:bg-sky-600 px-2 py-0.5 rounded-md
+						inline-flex items-center"
+							type="button"
+							on:click={() =>
+								dispatch('searchUserAllCookies', {
+									username: u.username
+								})}
+							>搜索饼干
+							<ArrowUpRightIcon />
+						</button>
+					{/if}
+				</td>
 				<td class="text-center py-1">{u.type}</td>
 				<td>
 					{#if u.type == '一般用户'}
