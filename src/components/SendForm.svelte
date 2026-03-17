@@ -94,7 +94,7 @@
 
 		if (oversizeList.length > 0) {
 			sendResponseError = {
-				text: `图片 ${oversizeList.join(', ')} 的体积超过了 2MiB 限制`
+				text: `图片 ${oversizeList.join(', ')} 的体积超过了 ${$boardStore.upload_image_max_size} KiB 限制`
 			};
 			attachedFileList = [];
 			return;
@@ -149,7 +149,7 @@
 				};
 			} else if (res.errorCode == 'IMAGE_OVERSIZE') {
 				sendResponseError = {
-					text: `图片 ${res.errorDetail.filenames.join(', ')} 超出了大小限制`
+					text: `图片 ${res.errorDetail.filenames.join(', ')} 超出了大小 ${$boardStore.upload_image_max_size} KiB 的限制`
 				};
 			} else if (res.errorCode == 'CONTENT_LENGTH_TOO_SHORT') {
 				sendResponseError = {
