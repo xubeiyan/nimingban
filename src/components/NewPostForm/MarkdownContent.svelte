@@ -11,6 +11,7 @@
 	import OrderList from '../SvelteMarked/OrderList.svelte';
 	import Table from '../SvelteMarked/Table.svelte';
 	import Samp from '$cmpns/SvelteMarked/Samp.svelte';
+	import KatexMath from '$cmpns/SvelteMarked/KatexMath.svelte';
 
 	export let content = '';
 	// 目前支持输出markdown抽象语法语法树 - CONSOLE_MARKDOWN_AST
@@ -181,6 +182,16 @@
 				inTable = false;
 				hasHeader = false;
 				tableTemp = [];
+			}
+
+			/**
+			 * 行内公式是如下形式
+			 * $$1+1=2$$
+			*/
+			if (line.length > 4 && line.slice(0, 2) == '$$' && line.slice(-2) == '$$') {
+				const katexMathObj = katexMathLexer(line.slice(2, -2), false)
+                result.children.push(katexMathObj)
+				continue
 			}
 
 			// 是普通一行
@@ -506,17 +517,26 @@
 		};
 	};
 
+	// 返回katexMath节点
+	const katexMathLexer = (inlineInput, inline = true) => {
+		return {
+			type: inline ? 'katexmath_inline' : 'katexmath_block',
+			content: inlineInput
+		};
+	};
+
 	// 处理已经被解析为行节点的剩余部分
 	// 只处理 emphasis(强调 *...*) strong(加粗 **...**) 删除线(~~...~~)
 	// inlineCode(行内代码 `...`) link(链接 [...](...)) image(图片 ![...](... ..))
 	// 增加spolier(行内代码 >!...!<)
 	// 增加keyboard(行内代码 [[...]])
+	// 增加math(行内代码$ ... $)
 	const restInlineLexer = (inlineInput, inToken = []) => {
 		let children = [];
 		let i;
 		for (i = 0; i < inlineInput.length; ++i) {
 			// 包含这些字符，认为不是text节点
-			if ('*`[!~'.includes(inlineInput[i])) {
+			if ('*`[!~$'.includes(inlineInput[i])) {
 				break;
 			}
 
@@ -651,6 +671,17 @@
 			return children;
 		}
 
+		// 处理math节点
+		let mathRegex = /^\$([^\$]+?)\$(.*)/.exec(inlineInput);
+		if (mathRegex != null) {
+			children.push(katexMathLexer(mathRegex[1], true));
+			// 处理后面的部分
+			if (mathRegex[2] != '') {
+				children.push(...restInlineLexer(mathRegex[2], inToken));
+			}
+			return children;
+		}
+
 		children.push({
 			type: 'text',
 			content: inlineInput
@@ -732,6 +763,8 @@
 			<Table header={one.header} body={one.body} />
 		{:else if one.type == 'sample'}
 			<Samp children={one.children} />
+		{:else if one.type == 'katexmath_block'}
+			<KatexMath math={one.content} displayMode/>
 		{/if}
 	{/each}
 </div>

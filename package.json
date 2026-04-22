@@ -33,6 +33,7 @@
 	"dependencies": {
 		"@tanstack/svelte-query": "^5.87.4",
 		"highlight.js": "^11.11.1",
+		"katex": "^0.16.45",
 		"pg": "^8.16.3"
 	}
 }

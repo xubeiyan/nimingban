@@ -8,6 +8,7 @@
 	import Image from './Image.svelte';
 	import Spoiler from './Spoiler.svelte';
 	import Keyboard from './Keyboard.svelte';
+	import KatexMath from './KatexMath.svelte';
 	export let children = [];
 </script>
 
@@ -33,6 +34,8 @@
 			<Spoiler children={child.children} />
 		{:else if child.type == 'keyboard'}
 			<Keyboard content={child.content} />
+		{:else if child.type == 'katexmath_inline'}
+			<KatexMath math={child.content} />
 		{/if}
 	{/each}
 </p>
