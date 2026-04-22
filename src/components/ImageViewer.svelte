@@ -27,5 +27,5 @@
 	bind:this={dialog}
 >
 	<CloseBtn place="inBorder" on:click={closeDialog} />
-	<img class="max-w-full max-h-full" alt src={imageUrl} />
+	<img class="max-w-full max-h-full z-10" alt src={imageUrl} />
 </div>

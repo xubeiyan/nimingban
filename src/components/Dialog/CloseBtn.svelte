@@ -7,10 +7,12 @@
 </script>
 
 <button
-	class="absolute {styleType} rounded-full size-[2em] bg-red-300 dark:bg-red-700
-flex justify-center items-center
-hover:outline outline-offset-1 outline-red-500"
+	class="absolute inset-0"
 	on:click
 >
-	<CloseIcon />
+	<span class="absolute z-0 {styleType} rounded-full size-[2em] bg-red-300 dark:bg-red-700
+flex justify-center items-center
+hover:outline outline-offset-1 outline-red-500">
+		<CloseIcon />
+	</span>
 </button>

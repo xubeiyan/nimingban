@@ -252,6 +252,7 @@
 - [x] `table`
 - [x] `spoiler` 参考了 reddit `>! hidden text !<`
 - [x] `kbd` 使用 `[[...]]` 来实现
+- [x] `katexmath` 使用`KatexMath`来实现数学公式的显示，支持行内和块两种显示方式
 
 ## 使用方法
 

@@ -46,5 +46,9 @@ export const supportLang = [
 	{
 		name: 'php',
 		display: 'PHP: Hypertext Processor'
+	},
+	{
+		name: 'haskell',
+		display: 'Haskell'
 	}
 ];

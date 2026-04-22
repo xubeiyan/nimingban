@@ -1,5 +1,8 @@
 <script>
 	import hljs from 'highlight.js/lib/common';
+	import haskell from 'highlight.js/lib/languages/haskell';
+
+	hljs.registerLanguage('haskell', haskell);
 
 	import { supportLang } from '$lib/MarkdownContent/utils';
 
