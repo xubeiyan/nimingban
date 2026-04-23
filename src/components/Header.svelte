@@ -122,7 +122,7 @@
 	onMount(() => {
 		// 获取上传图片的要求
 		getUploadImageSetting()
-		console.log('get upload settings')
+		// console.log('get upload settings')
 	})
 
 	afterNavigate(() => {
