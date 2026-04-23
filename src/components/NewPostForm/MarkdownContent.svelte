@@ -41,6 +41,9 @@
 		let inList = false;
 		let listType = '';
 		let listTemp = [];
+		// 在公式区块
+		let inFormula = false;
+		let formulaTemp = [];
 		// 缓冲区
 		const inputArray = input.split('\n');
 		for (let line of inputArray) {
@@ -53,6 +56,7 @@
 			if (line.substring(0, 3) == '```') {
 				inTable = false;
 				inList = false;
+				inFormula = false;
 				inCodeBlock = !inCodeBlock;
 				// 退出了codeblock
 				if (!inCodeBlock) {
@@ -107,6 +111,7 @@
 				inList = true;
 				inTable = false;
 				inCodeBlock = false;
+				inFormula = false;
 
 				listTemp.push({
 					level,
@@ -135,6 +140,7 @@
 				inList = true;
 				inTable = false;
 				inCodeBlock = false;
+				inFormula = false;
 				listTemp.push({
 					level,
 					content: orderLineRegex[2]
@@ -187,11 +193,43 @@
 			/**
 			 * 行内公式是如下形式
 			 * $$1+1=2$$
+			 * 也可以是换行的
+			 * $$\begin{pmatrix}
+			 * 1 & 0 & 0 \\
+			 * 0 & 1 & 0 \\
+			 * 0 & 0 & 1
+			 * \end{pmatrix}$$
 			*/
+			// 一行的
 			if (line.length > 4 && line.slice(0, 2) == '$$' && line.slice(-2) == '$$') {
-				const katexMathObj = katexMathLexer(line.slice(2, -2), false)
-                result.children.push(katexMathObj)
-				continue
+				const katexMathObj = katexMathLexer(line.slice(2, -2), false);
+                result.children.push(katexMathObj);
+				continue;
+			}
+
+			// 如果是起始为$$且inFormula不成立
+			if (line.length > 2 && line.slice(0, 2) == '$$' && !inFormula) {
+				inFormula = true;
+				inTable = false;
+				inCodeBlock = false;
+				inList = false;
+				formulaTemp.push(line);
+				continue;
+			}
+
+			// 如果结束为$$且inFormula成立
+			if (line.length > 2 && line.slice(-2) == '$$' && inFormula) {
+				inFormula = false
+				formulaTemp.push(line.slice(0, -2))
+				const katexMathObj = katexMathLexer(formulaTemp.join('\n').slice(2), false);
+				result.children.push(katexMathObj);
+				formulaTemp = [];
+				continue;
+			}
+
+			if (inFormula) {
+				formulaTemp.push(line);
+				continue;
 			}
 
 			// 是普通一行
@@ -225,6 +263,11 @@
 			tableTemp = [];
 		} else {
 			result.children.push(...tableTemp.map((one) => inlineLexer(one.rawText)));
+		}
+
+		// 处理解析完成但公式缓存还有数据的情况
+		if (formulaTemp.length > 0) {
+			result.children.push(...formulaTemp.map((one) => inlineLexer(one)));
 		}
 
 		if (debugFlags.includes('CONSOLE_MARKDOWN_AST')) {
