@@ -119,33 +119,33 @@
 		}));
 	}
 
+  // 切换标签页时检查用户登录是否过期
+  const visibilityChange = () => {
+    if (document.visibilityState == 'visible') {
+      checkSessionOrLogout();
+    }
+  }
+
+  // 检查用户是否登录
+  const checkSessionOrLogout = () => {
+    // 如果没有登录，$userStore 应该是空的
+    if ($userStore.username == null) {
+      return
+    }
+    loginAlreadyExpire($userStore);
+  }
+
 	onMount(() => {
 		// 获取上传图片的要求
-		getUploadImageSetting()
+		getUploadImageSetting();
 		// console.log('get upload settings')
+    document.addEventListener('visibilitychange', visibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', visibilityChange);
+    }
 	})
 
-	afterNavigate(() => {
-		const userInLocalStorage = window.localStorage.getItem('user');
-		// localStorage 没有则什么都不做
-		if (userInLocalStorage == undefined) return;
-		
-		const user = JSON.parse(userInLocalStorage);
-		if (user == undefined) return;
-
-		if (loginAlreadyExpire(user)) {
-			logout();
-		}
-		// 刷新会清除useStore，检查是否存在
-		if ($userStore.token == null) {
-			userStore.set(user);
-		}
-		// // 检查 localStorage 有无 usingCookies，无则添加
-		// const usingCookies = window.localStorage.getItem('usingCookies');
-		// if (user.cookies.length > 0 && usingCookies == undefined) {
-		// 	window.localStorage.setItem('usingCookies', user.cookies[0].content);
-		// }
-	});
 </script>
 
 <nav class="bg-sky-100 dark:bg-sky-950 dark:text-white p-2 flex justify-center z-20 shadow-md">
