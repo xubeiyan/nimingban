@@ -36,7 +36,7 @@
 		<CloseIcon />
 	</button>
 	<button
-		class="absolute w-full h-[2em] bottom-0 bg-gray-300/60 dark:bg-gray-600/60 flex justify-center items-center opacity-0 hover:opacity-100"
+		class="absolute w-full h-[50%] bottom-0 bg-gray-300/60 dark:bg-gray-600/60 flex justify-center items-center opacity-80 hover:opacity-100"
 		on:click={() => copyImageMarkdown(attachFile.id)}
 		type="button"
 	>

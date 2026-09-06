@@ -411,7 +411,7 @@
 		class="relative {formWidthClass} w-[90%] max-h-[96%] overflow-y-auto transition-all duration-500 bg-sky-100 dark:bg-sky-800 py-4 px-6 rounded-md"
 	>
 		<h1 class="text-2xl mb-6">{formTitle}</h1>
-		<div class="flex gap-2 mb-2">
+		<div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-2">
 			<InlineInput
 				label="标题"
 				placeholder="无标题"
