@@ -135,7 +135,19 @@
     loginAlreadyExpire($userStore);
   }
 
+  // 重建userStore 
+  const restoreUserStore = () => {
+    const userString = window.localStorage.getItem('user')
+    if (userString == null) {
+      return
+    }
+    const userStoreObj = JSON.parse(userString)
+    userStore.set(userStoreObj) 
+  }
+
 	onMount(() => {
+    // 根据 LocalStorage 重建 userStore
+    restoreUserStore();
 		// 获取上传图片的要求
 		getUploadImageSetting();
 		// console.log('get upload settings')
