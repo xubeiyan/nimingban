@@ -13,33 +13,37 @@
 		});
 	};
 
-	const copyImageMarkdown = (id) => {
+	const copyImageMarkdown = (path) => {
 		dispatch('insertImageToPost', {
-			id
+			path
 		});
 	};
 </script>
 
 <div class="relative">
-	<img
-		class="size-20 object-cover object-center rounded-md"
-		src={window.URL.createObjectURL(attachFile.fileContent)}
-		alt="to upload"
-	/>
-	<button
-		class="absolute size-[2em] right-0 top-0 translate-x-[50%] translate-y-[-50%] flex justify-center items-center
-		bg-red-400/60 hover:bg-red-400/80 dark:bg-red-600/60 dark:hover:bg-red-600/80
-		 rounded-full"
-		on:click={() => removeImage(attachFile.id)}
-		type="button"
-	>
-		<CloseIcon />
-	</button>
-	<button
-		class="absolute w-full h-[50%] bottom-0 bg-gray-300/60 dark:bg-gray-600/60 flex justify-center items-center opacity-80 hover:opacity-100"
-		on:click={() => copyImageMarkdown(attachFile.id)}
-		type="button"
-	>
-		<InsertImageIcon />
-	</button>
+  {#if attachFile.status == 'uploading'}
+    <span>上传中...</span>
+  {:else}
+    <img
+      class="size-20 object-cover object-center rounded-md"
+      src={attachFile.path}
+      alt="to upload"
+    />
+    <button
+      class="absolute size-[2em] right-0 top-0 translate-x-[50%] translate-y-[-50%] flex justify-center items-center
+      bg-red-400/60 hover:bg-red-400/80 dark:bg-red-600/60 dark:hover:bg-red-600/80
+       rounded-full"
+      on:click={() => removeImage(attachFile.id)}
+      type="button"
+    >
+      <CloseIcon />
+    </button>
+    <button
+      class="absolute w-full h-[50%] bottom-0 bg-gray-300/60 dark:bg-gray-600/60 flex justify-center items-center opacity-80 hover:opacity-100"
+      on:click={() => copyImageMarkdown(attachFile.path)}
+      type="button"
+    >
+      <InsertImageIcon />
+    </button>
+  {/if}
 </div>

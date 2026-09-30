@@ -1,9 +1,11 @@
 <script>
 	import InsertImageIcon from '$svgIcon/insertImage.svelte';
-	export let list = [];
 
-	import { createEventDispatcher } from 'svelte';
+	import { createMutation } from '@tanstack/svelte-query';
+	import { createEventDispatcher, onMount } from 'svelte';
 
+  export let postID = "";
+	let list = [];
 	const dispatch = createEventDispatcher();
 
 	const insertImageToPost = (filename) => {
@@ -11,6 +13,22 @@
 			filename
 		});
 	};
+
+	// 请求该串的图像
+	const getImagesFromPostOrCommentMutation = createMutation({
+		mutationFn: async (id) => {
+			const res = await fetch(`/getImages/fromPostOrComment/${id}`).then((r) => r.json());
+			if (res.type == 'ok') {
+				list = res.images;
+			}
+		}
+	});
+
+  onMount(() => {
+    if (postID == "") return;
+    $getImagesFromPostOrCommentMutation.mutate(postId);
+  })
+
 </script>
 
 <div class="flex gap-4 mt-2">
@@ -23,7 +41,7 @@
 			/>
 			<button
 				class="absolute w-full h-[2em] bottom-0 bg-gray-300/60 dark:bg-gray-600/60
-            flex justify-center items-center opacity-0 hover:opacity-100"
+            flex justify-center items-center opacity-80 hover:opacity-100"
 				type="button"
 				on:click={() => insertImageToPost(image_file_name)}
 			>

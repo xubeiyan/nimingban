@@ -1,10 +1,10 @@
 <script>
-	import MarkdownIcon from '$svgIcon/markdown.svelte';
-	import AddPlusIcon from '$svgIcon/addPlus.svelte';
+  import MarkdownIcon from '$svgIcon/markdown.svelte';
+
 	import ExchangeIcon from '$svgIcon/exchange.svelte';
 
 	import MarkdownContent from './NewPostForm/MarkdownContent.svelte';
-	import AttachPicture from './NewPostForm/AttachPicture.svelte';
+	
 	import InlineInput from './NewPostForm/InlineInput.svelte';
 	import MutilineContent from './NewPostForm/MutilineContent.svelte';
 	import CloseBtn from './NewPostForm/CloseBtn.svelte';
@@ -23,10 +23,12 @@
 
 	import { createEventDispatcher } from 'svelte';
 	import IconStatusBtn from './NewPostForm/IconStatusBtn.svelte';
-	import ImmutableFileList from './NewPostForm/ImmutableFileList.svelte';
+	
+	import AttachPart from './NewPostForm/AttachPart.svelte';
 
 	const dispatch = createEventDispatcher();
 
+  // 发送框的类型 post=发新串 edit=编辑串 commet=回复串
 	let type = 'post';
 	// 编辑串或评论时的id
 	export let postId = null;
@@ -48,91 +50,28 @@
 		commentReplyContent: null
 	};
 
-	let attachFile = null;
-
 	let attachedFileList = [];
-
-	const openAttachSelect = () => {
-		if (attachFile == null) return;
-		attachFile.click();
-	};
-
-	const addImageFiles = (e) => {
-		sendResponseError = null;
-		const files = e.target.files;
-
-		// TODO：可以从后端获得
-		const MAX_NUMBER_UPLOAD_IMAGES = $boardStore.upload_image_max_count;
-
-		// console.log(MAX_NUMBER_UPLOAD_IMAGES)
-		// 检查是否超过允许上传数量
-		if (files.length + attachedFileList.length > MAX_NUMBER_UPLOAD_IMAGES) {
-			sendResponseError = {
-				text: `最多允许上传 ${MAX_NUMBER_UPLOAD_IMAGES} 张图片`
-			};
-			return;
-		}
-
-		// 检查图片大小
-		const MAX_IMAGE_SIZE = $boardStore.upload_image_max_size * 1024;
-		// console.log(MAX_IMAGE_SIZE)
-		let oversizeList = [];
-
-		for (let file of files) {
-			if (MAX_IMAGE_SIZE < file.size) {
-				oversizeList.push(file.name);
-			}
-
-			attachedFileList.push({
-				id: attachedFileList.length + 1,
-				name: file.name,
-				fileContent: file
-			});
-		}
-
-		attachFile.value = '';
-
-		if (oversizeList.length > 0) {
-			sendResponseError = {
-				text: `图片 ${oversizeList.join(', ')} 的体积超过了 ${$boardStore.upload_image_max_size} KiB 限制`
-			};
-			attachedFileList = [];
-			return;
-		}
-
-		// reactivity
-		attachedFileList = attachedFileList;
-	};
 
 	const handleImageRemove = (e) => {
 		const id = e.detail.id;
 		attachedFileList = attachedFileList.filter((one) => one.id != id);
-
 		// TODO: 可以考虑自动删除正文中的对应markdown代码
 	};
 
-	const handleInsertImageToPost = (e) => {
-		const id = e.detail.id;
-		const imageMarkdown = `![附加图片${id}](/TEMPFOLDER/${id})\n`;
-		if (post.content == null) {
-			post.content = imageMarkdown;
-		} else {
-			post.content += imageMarkdown;
-		}
-	};
-
-	// 修改串时插入图片
-	const handleInsertUploadedImageToPost = (filename) => {
-		const imageMarkdown = `![](/images/${filename})\n`;
-		post.content += imageMarkdown;
+	// 串插入图片
+	const handleInsertUploadedImageToPost = (path) => {
+		const imageMarkdown = `![](${path})\n`;
+    if (post.content == null) {
+      post.content = imageMarkdown;
+    } else {
+      post.content += imageMarkdown;
+    }
 	};
 
 	// 发送按钮状态
 	let sendBtnStatus = 'idle';
 
-	// 发送结果
-	let sendResponseError = null;
-	// 发送串
+  // 发送串
 	const sendPost = async () => {
 		const res = await $sendPostMutation.mutateAsync();
 
@@ -284,25 +223,19 @@
 		}
 	});
 
+  // 发送结果
+	let sendResponseError = null;
+  const handleSetUploadImageErr = (text) => {
+    sendResponseError = text
+  }
+
 	let multiLineContentOriginalPos = true;
 	$: orderStyle = multiLineContentOriginalPos ? '' : 'flex-row-reverse';
 	// 交换编辑区位置
 	const toggleEditPosition = () => {
 		multiLineContentOriginalPos = !multiLineContentOriginalPos;
 	};
-
-	// 编辑模式下的图像列表
-	let immutableFileList = [];
-	// 请求该串的图像
-	const getImagesFromPostOrCommentMutation = createMutation({
-		mutationFn: async (id) => {
-			const res = await fetch(`/getImages/fromPostOrComment/${id}`).then((r) => r.json());
-			if (res.type == 'ok') {
-				immutableFileList = res.images;
-			}
-		}
-	});
-
+	
 	let expand = false;
 
 	// 展开编辑区
@@ -330,7 +263,6 @@
 			post.email = params.post.email;
 			post = post;
 			postId = params.postId;
-			$getImagesFromPostOrCommentMutation.mutate(postId);
 			draftToFormContent('edit', postId);
 		} else if (params != undefined && params.type == 'post') {
 			// 发新串
@@ -373,8 +305,6 @@
 			content: null,
 			commentReplyContent: null
 		};
-		attachFile.value = '';
-		attachedFileList = [];
 	};
 
 	// 查看是否有草稿，有将其写入到内容中
@@ -462,48 +392,15 @@
 				</div>
 			{/if}
 		</div>
-		<div class="mt-2 flex flex-col items-start">
-			<label class="mb-1">
-				<span>附加图片</span>
-				<input
-					type="file"
-					class="hidden"
-					bind:this={attachFile}
-					multiple
-					accept=".jpeg, .jpg, .png, .webp, .avif"
-					on:change={(e) => addImageFiles(e)}
-				/>
-			</label>
-			{#if type == 'edit'}
-				<ImmutableFileList
-					list={immutableFileList}
-					on:insertImageToPost={(e) => handleInsertUploadedImageToPost(e.detail.filename)}
-				/>
-			{:else}
-				<div class="flex gap-4 mt-2">
-					{#each attachedFileList as attachFile}
-						<AttachPicture
-							{attachFile}
-							on:removeImage={handleImageRemove}
-							on:insertImageToPost={handleInsertImageToPost}
-						/>
-					{/each}
-					{#if type != 'edit'}
-						<button
-							class="border-2 border-slate-500 dark:border-slate-100 border-dashed hover:bg-slate-500/10 hover:dark:bg-slate-50/10 rounded-lg size-20 flex justify-center items-center"
-							on:click={openAttachSelect}
-							type="button"
-						>
-							<AddPlusIcon />
-						</button>
-					{/if}
-				</div>
-			{/if}
-		</div>
-		<div class="mt-6 flex justify-end items-center gap-4">
+    <AttachPart
+      type={type}
+      postID={postId}
+      on:setUploadImageErr={e => handleSetUploadImageErr(e.detail.text)}
+      on:insertImageToPost={(e) => handleInsertUploadedImageToPost(e.detail.path)}/>
+    <div class="mt-6 flex justify-end items-center gap-4">
 			{#if sendResponseError != null}
 				<span class="border border-red-400 text-red-600 dark:text-red-300 rounded-md px-2"
-					>{sendResponseError.text}</span
+					>{sendResponseError}</span
 				>
 			{/if}
 			<SendBtn status={sendBtnStatus} on:click={sendPost} />

@@ -6,6 +6,6 @@ export const boardStore = writable({
 	total: 0,
 	comment_from: 0,
 	comment_total: 0,
-	upload_image_max_size: 2048,
+	upload_image_max_size: 5 * 1024 * 1024, // 最大图片大小 5 MiB
 	upload_image_max_count: 5
 });

@@ -5,6 +5,7 @@ import { JWTAuth, getJWTSecretDB } from '$lib/auth.js';
 import { validCookies, validateImages } from '$lib/SendForm/validation.js';
 import { uploadImages } from '$lib/SendForm/uploadImage.js';
 import { nullStringToEmpty } from '$lib/SendForm/string.js';
+import { generatePlaceholder } from '$lib/utils.js';
 
 import { CONTENT_MIN_LENGTH } from '$env/static/private';
 
@@ -19,14 +20,10 @@ export async function POST({ locals, request, params }) {
 		return json(authRes);
 	}
 
-	const formData = await request.formData();
-	const toUploadImages = formData?.getAll('image');
+	const jsonData = await request.json();
 
-	const name = nullStringToEmpty(formData?.get('name'));
-	const email = nullStringToEmpty(formData?.get('email'));
-	const title = nullStringToEmpty(formData?.get('title'));
-	const content = nullStringToEmpty(formData?.get('content'));
-	const cookies = nullStringToEmpty(formData?.get('cookies'));
+  // 获取 发帖用户名，邮件，标题，内容，饼干，图片的名称
+	const { name, email, title, content, cookies, imageNames } = jsonData;
 
 	/* 
 	// 未提供cookies字段
@@ -49,7 +46,7 @@ export async function POST({ locals, request, params }) {
 	const { poster_cookies_id } = cookies_result;
 
 	// 验证图片
-	const image_validate_result = await validateImages({ toUploadImages });
+	const image_validate_result = await validateImages({ imageNames });
 
 	if (image_validate_result.type == 'error') {
 		return json(image_validate_result);
@@ -69,17 +66,18 @@ export async function POST({ locals, request, params }) {
 		});
 	}
 
-	// 上传图片
-	const { replaceImageUrlContent, uploaded } = uploadImages(content, toUploadImages);
-
 	// 写入数据库
 	// 查找board是否存在
-
 	const boardSearchQuery = {
-		text: `SELECT id, min_post_second, access_type, 
-		to_char(min_post_timestamp, 'YYYY-MM-DD HH24:MI:SS') AS min_post_time,
-		to_char(now(), 'YYYY-MM-DD HH24:MI:SS') AS current_time 
-		FROM board WHERE url_name = $1 LIMIT 1`,
+		text: `
+    SELECT
+      id, min_post_second, access_type, 
+		  to_char(min_post_timestamp, 'YYYY-MM-DD HH24:MI:SS') AS min_post_time,
+		  to_char(now(), 'YYYY-MM-DD HH24:MI:SS') AS current_time 
+		FROM 
+      board 
+    WHERE 
+      url_name = $1 LIMIT 1`,
 		values: [board_url]
 	};
 	const boardSearchResult = await dbconn.query(boardSearchQuery);
@@ -114,17 +112,20 @@ export async function POST({ locals, request, params }) {
 	}
 
 	const postInsertQuery = {
-		text: `INSERT INTO post (
-			id, 				status, poster_name, 	poster_email, 	title, 	content,	poster_cookies_id,	post_timestamp, last_reply_timestamp, 	belong_board_id
-		) VALUES (
-		 	gen_random_uuid(),	'repliable', $1,				$2,				$3,		$4,			$5,			now(),			now(),					$6
+		text: `INSERT INTO 
+      post 
+      (id, status, poster_name, poster_email, title, content, poster_cookies_id, 
+      post_timestamp, last_reply_timestamp, belong_board_id) 
+    VALUES 
+      (gen_random_uuid(),	'repliable', $1, $2, $3, $4, $5, 
+      now(), now(), $6
 		) RETURNING id`,
 		values: [name, email, title, replaceImageUrlContent, poster_cookies_id, board_id]
 	};
 
 	const boardInsertResult = await dbconn.query(postInsertQuery);
 
-	// 更新发帖时间
+	// 更新板块的最后发帖时间
 	const updateBoardQuery = {
 		text: `UPDATE board SET min_post_timestamp = now() WHERE id = $1`,
 		values: [board_id]
@@ -133,20 +134,21 @@ export async function POST({ locals, request, params }) {
 	await dbconn.query(updateBoardQuery);
 
 	const post_id = boardInsertResult.rows[0].id;
+  const placeholder = generatePlaceholder(2, imageNames.length)
 
-	// 如果有图片，则需插入post_comment_image表
-	uploaded.forEach(async (one) => {
-		const imageInsertQuery = {
-			text: `INSERT INTO post_comment_image (
-				id, 				image_type, exist_type, post_id, 	fullname
-			) VALUES (
-				gen_random_uuid(), 	$1,			'exist',	$2, 		$3
-			)`,
-			values: [one.type, post_id, one.name]
-		};
+	// 更新 post_comment_image 表中对应的字段
+  const updateImageQuery = {
+    text: `UPDATE
+      post_comment_image
+    SET
+      post_id = $1
+    WHERE
+      id IN (${placeholder}) AND post_id = NULL
+    `,
+    values: [post_id, ...imageNames]
+  };
 
-		await dbconn.query(imageInsertQuery);
-	});
+  await dbconn.query(updateImageQuery)
 
 	return json({
 		type: 'ok'
