@@ -7,12 +7,13 @@
   import { userStore } from '$store/userStore';
 
   import { createEventDispatcher } from 'svelte';
-  const dispath = createEventDispatcher();
+  const dispatch = createEventDispatcher();
 
   export let type = 'edit';
   export let postID = "";
 
   let attachFile = null;
+  // 目前的附件列表
   let attachedFileList = [];
   const openAttachSelect = () => {
 		if (attachFile == null) return;
@@ -21,7 +22,7 @@
 
   // 选择图片文件，并且上传为临时文件
 	const addImageFiles = (e) => {
-    dispath('setUploadImageErr', {
+    dispatch('setUploadImageErr', {
       text: null
     });
 		const files = e.target.files;
@@ -32,7 +33,7 @@
 		// console.log(MAX_NUMBER_UPLOAD_IMAGES)
 		// 检查是否超过允许上传数量
 		if (files.length + attachedFileList.length > MAX_NUMBER_UPLOAD_IMAGES) {
-			dispath('setUploadImageErr', {
+			dispatch('setUploadImageErr', {
 				text: `最多允许上传 ${MAX_NUMBER_UPLOAD_IMAGES} 张图片`
 			});
 			return;
@@ -54,6 +55,7 @@
 
       attachedFileList.push({
 				id,
+        imageId: '',
 				name: file.name,
         path: '',
         status: 'uploading',
@@ -93,7 +95,13 @@
         return
       }
       filtered[0].path = res.path;
+      filtered[0].imageId = res.imageID;
       filtered[0].status = 'uploaded';
+
+      // 更新 sendForm 中的 imageNames 字段
+      dispatch('updateImageNames', {
+        imageNames: attachedFileList.map(file => file.imageId),
+      });
 
       // reactivity
       attachedFileList = attachedFileList;
@@ -102,11 +110,10 @@
 
     // 显示超过限制大小的图片名称
 		if (oversizeList.length > 0) {
-			dispath('setUploadImageErr', {
+			dispatch('setUploadImageErr', {
 				text: `图片 ${oversizeList.join(', ')} 的体积超过了 ${$boardStore.upload_image_max_size / 1024} KiB 限制`
 			});
 		}
-
 
 		// reactivity
 		attachedFileList = attachedFileList;
@@ -115,6 +122,9 @@
   // 移除图片
   const handleRemoveImage = (id) => {
     attachedFileList = attachedFileList.filter(f => f.id != id);
+    dispatch('updateImageNames', {
+      imageNames: attachedFileList.map(file => file.imageId),
+    });
   }
 
 </script>

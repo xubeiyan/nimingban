@@ -21,7 +21,6 @@ export async function POST({ locals, request, params }) {
 	}
 
 	const jsonData = await request.json();
-
   // 获取 发帖用户名，邮件，标题，内容，饼干，图片的名称
 	const { name, email, title, content, cookies, imageNames } = jsonData;
 
@@ -46,7 +45,7 @@ export async function POST({ locals, request, params }) {
 	const { poster_cookies_id } = cookies_result;
 
 	// 验证图片
-	const image_validate_result = await validateImages({ imageNames });
+	const image_validate_result = await validateImages({ dbconn, imageNames });
 
 	if (image_validate_result.type == 'error') {
 		return json(image_validate_result);
@@ -120,11 +119,10 @@ export async function POST({ locals, request, params }) {
       (gen_random_uuid(),	'repliable', $1, $2, $3, $4, $5, 
       now(), now(), $6
 		) RETURNING id`,
-		values: [name, email, title, replaceImageUrlContent, poster_cookies_id, board_id]
+		values: [name, email, title, content, poster_cookies_id, board_id]
 	};
 
 	const boardInsertResult = await dbconn.query(postInsertQuery);
-
 	// 更新板块的最后发帖时间
 	const updateBoardQuery = {
 		text: `UPDATE board SET min_post_timestamp = now() WHERE id = $1`,
@@ -134,7 +132,7 @@ export async function POST({ locals, request, params }) {
 	await dbconn.query(updateBoardQuery);
 
 	const post_id = boardInsertResult.rows[0].id;
-  const placeholder = generatePlaceholder(2, imageNames.length)
+  const placeholder = generatePlaceholder(2, imageNames.length);
 
 	// 更新 post_comment_image 表中对应的字段
   const updateImageQuery = {
@@ -143,12 +141,12 @@ export async function POST({ locals, request, params }) {
     SET
       post_id = $1
     WHERE
-      id IN (${placeholder}) AND post_id = NULL
+      id IN (${placeholder}) AND post_id IS NULL
     `,
     values: [post_id, ...imageNames]
   };
 
-  await dbconn.query(updateImageQuery)
+  await dbconn.query(updateImageQuery);
 
 	return json({
 		type: 'ok'

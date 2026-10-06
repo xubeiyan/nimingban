@@ -1,5 +1,6 @@
 // 验证发送串和回复串的字段
 import { MAX_UPLOAD_IMAGE_COUNT, MAX_SINGLE_IMAGE_SIZE } from '$env/static/private';
+import { generatePlaceholder } from "$lib/utils.js";
 
 // 验证cookie字段
 const validCookies = async ({ dbconn, cookies, authUsername }) => {

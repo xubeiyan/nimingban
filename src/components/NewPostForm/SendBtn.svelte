@@ -10,7 +10,7 @@
 </script>
 
 <button
-	type="submit"
+	type="button"
 	class="{btnClass} px-2 py-1 rounded-md flex gap-1 items-center"
 	disabled={['sending', 'ok'].includes(status)}
 	on:click

@@ -46,6 +46,8 @@
 		email: null,
 		title: null,
 		content: null,
+    cookies: null,
+    imageNames: [],
 		// 回复某串的部分
 		commentReplyContent: null
 	};
@@ -67,6 +69,11 @@
       post.content += imageMarkdown;
     }
 	};
+
+  // 更新 post.imageNames 字段
+  const handleUpdateImageNames = (names) => {
+    post.imageNames = names;
+  }
 
 	// 发送按钮状态
 	let sendBtnStatus = 'idle';
@@ -160,24 +167,10 @@
 
 	const sendPostMutation = createMutation({
 		mutationFn: async () => {
-			const form = new FormData();
-			attachedFileList.forEach((file) => {
-				form.append('image', file.fileContent);
-			});
-
-			form.append('name', post.name);
-			form.append('email', post.email);
-			form.append('title', post.title);
-			form.append('content', post.content);
-
-			if (type == 'comment') {
-				form.append('commentReplyContent', post.commentReplyContent);
-			}
-
 			// 有usingCookies则附上
 			const usingCookies = $userStore.usingCookie;
 			if (usingCookies != null) {
-				form.append('cookies', usingCookies);
+			  post.cookies = usingCookies;
 			}
 
 			sendBtnStatus = 'sending';
@@ -206,7 +199,7 @@
 
 			const res = await fetch(url, {
 				method: 'POST',
-				body: form,
+				body: JSON.stringify(post),
 				headers
 			});
 
@@ -396,6 +389,7 @@
       type={type}
       postID={postId}
       on:setUploadImageErr={e => handleSetUploadImageErr(e.detail.text)}
+      on:updateImageNames={e => handleUpdateImageNames(e.detail.imageNames)}
       on:insertImageToPost={(e) => handleInsertUploadedImageToPost(e.detail.path)}/>
     <div class="mt-6 flex justify-end items-center gap-4">
 			{#if sendResponseError != null}

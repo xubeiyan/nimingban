@@ -26,7 +26,7 @@
 
   onMount(() => {
     if (postID == "") return;
-    $getImagesFromPostOrCommentMutation.mutate(postId);
+    $getImagesFromPostOrCommentMutation.mutate(postID);
   })
 
 </script>
