@@ -4,6 +4,7 @@ import { JWTAuth, getJWTSecretDB } from '$lib/auth.js';
 import { validCookies, validateImages } from '$lib/SendForm/validation.js';
 import { uploadImages } from '$lib/SendForm/uploadImage.js';
 import { nullStringToEmpty } from '$lib/SendForm/string.js';
+import { generatePlaceholder } from '$lib/utils.js';
 
 import { CONTENT_MIN_LENGTH } from '$env/static/private';
 
@@ -24,15 +25,10 @@ export const POST = async ({ locals, params, request }) => {
 			extra: 'n p i'
 		});
 	}
-	const formData = await request.formData();
-	const toUploadImages = formData?.getAll('image');
 
-	const name = nullStringToEmpty(formData?.get('name'));
-	const email = nullStringToEmpty(formData?.get('email'));
-	const title = nullStringToEmpty(formData?.get('title'));
-	const content = nullStringToEmpty(formData?.get('content'));
-	const cookies = nullStringToEmpty(formData?.get('cookies'));
-	const commentReplyContent = nullStringToEmpty(formData?.get('commentReplyContent'));
+  const jsonData = await request.json();
+  // 获取 发帖用户名，邮件，标题，内容，饼干，图片的名称, 回复的评论的内容
+	let { name, email, title, content, cookies, imageNames, commentReplyContent } = jsonData;
 
 	/* 
 	// 未提供cookies字段
@@ -60,7 +56,7 @@ export const POST = async ({ locals, params, request }) => {
 	const { poster_cookies_id } = cookies_result;
 
 	// 验证图片
-	const image_validate_result = await validateImages({ toUploadImages });
+	const image_validate_result = await validateImages({ dbconn, imageNames });
 
 	if (image_validate_result.type == 'error') {
 		return json(image_validate_result);
@@ -79,9 +75,6 @@ export const POST = async ({ locals, params, request }) => {
 			errorCode: 'CONTENT_LENGTH_TOO_SHORT'
 		});
 	}
-
-	// 上传图片
-	let { replaceImageUrlContent, uploaded } = uploadImages(content, toUploadImages);
 
 	// 查找post表中的记录
 	const postSearchQuery = {
@@ -119,38 +112,41 @@ export const POST = async ({ locals, params, request }) => {
 
 	// commentReplyContent为null会导致回复前面有null字样
 	if (commentReplyContent != undefined && commentReplyContent != 'null') {
-		replaceImageUrlContent = `${commentReplyContent}\n\n${replaceImageUrlContent}`;
+		content = `${commentReplyContent}\n\n${content}`;
 	}
 
 	// 向comment插入新的一行
 	const commentInsertQuery = {
-		text: `INSERT INTO comment (
-            id,                 belong_post_id, poster_name,    poster_email,   title,  content, poster_cookies_id, post_timestamp
-        ) VALUES (
-            gen_random_uuid(),  $1,             $2,             $3,             $4,     $5,     $6,                 now()        
-        ) RETURNING id`,
-		values: [postId, name, email, title, replaceImageUrlContent, poster_cookies_id]
+		text: `INSERT INTO comment 
+      (id, belong_post_id, poster_name, poster_email, title, content,
+      poster_cookies_id, post_timestamp)
+    VALUES 
+      (gen_random_uuid(), $1, $2, $3, $4, $5,
+      $6, now())
+    RETURNING id`,
+		values: [postId, name, email, title, content, poster_cookies_id]
 	};
 
 	const commentInsertResult = await dbconn.query(commentInsertQuery);
 
-	const comment_id = commentInsertResult.rows[0].id;
+	const commentId = commentInsertResult.rows[0].id;
+  const placeholder = generatePlaceholder(2, imageNames.length);
+	// 更新 post_comment_image 表中对应的字段
+  const updateImageQuery = {
+    text: `UPDATE
+      post_comment_image
+    SET
+      post_id = $1
+    WHERE
+      id IN (${placeholder}) AND post_id IS NULL
+    `,
+    values: [commentId, ...imageNames]
+  };
 
-	uploaded.forEach(async (one) => {
-		const imageInsertQuery = {
-			text: `INSERT INTO post_comment_image (
-				id, 				image_type, exist_type, post_id, fullname
-			) VALUES (
-				gen_random_uuid(), 	$1,			'exist',	$2, $3
-			)`,
-			values: [one.type, comment_id, one.name]
-		};
-
-		await dbconn.query(imageInsertQuery);
-	});
+  await dbconn.query(updateImageQuery);
 
 	return json({
 		type: 'ok',
-		commentId: comment_id
+		commentId: commentId
 	});
 };

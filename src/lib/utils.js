@@ -61,4 +61,18 @@ const generateCookiesString = (index) => {
 	return resultStr;
 };
 
-export { generateRandomSaltString, hashStringWithSalt, generateCookiesString };
+// 生成SQL占位符
+const generatePlaceholder = (start, length) => {
+  if (start < 1) {
+    start = 1
+  }
+
+  let resultStrArray = [];
+  for (let i = 0; i < length; ++i) {
+    resultStrArray.push(`$${start + i}`);
+  }
+
+  return resultStrArray.join(',')
+}
+
+export { generateRandomSaltString, hashStringWithSalt, generateCookiesString, generatePlaceholder };

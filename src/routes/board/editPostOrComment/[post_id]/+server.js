@@ -23,13 +23,9 @@ export const POST = async ({ locals, params, request }) => {
 			extra: 'n p i'
 		});
 	}
-	const formData = await request.formData();
-
-	const name = nullStringToEmpty(formData?.get('name'));
-	const email = nullStringToEmpty(formData?.get('email'));
-	const title = nullStringToEmpty(formData?.get('title'));
-	const content = formData?.get('content') ?? 'empty';
-	const cookies = nullStringToEmpty(formData?.get('cookies'));
+	const jsonData = await request.json();
+  // 获取 发帖用户名，邮件，标题，内容，饼干
+	const { name, email, title, content, cookies } = jsonData;
 
 	/* 
 	// 未提供cookies字段
@@ -97,6 +93,7 @@ export const POST = async ({ locals, params, request }) => {
 			});
 		}
 
+    // 以及验证是否是可回复
 		if (searchResult.rows[0].status != 'repliable') {
 			return json({
 				type: 'error',

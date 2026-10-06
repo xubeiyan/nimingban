@@ -1,5 +1,6 @@
 // 验证发送串和回复串的字段
 import { MAX_UPLOAD_IMAGE_COUNT, MAX_SINGLE_IMAGE_SIZE } from '$env/static/private';
+import { generatePlaceholder } from "$lib/utils.js";
 
 // 验证cookie字段
 const validCookies = async ({ dbconn, cookies, authUsername }) => {
@@ -100,11 +101,10 @@ const validCookies = async ({ dbconn, cookies, authUsername }) => {
 	};
 };
 
-const ALLOW_IMAGE_TYPE = ['image/png', 'image/jpeg', 'image/gif', 'image/webp', 'image/avif'];
-// 验证图片字段
-const validateImages = async ({ toUploadImages }) => {
+// 验证图片是否存在
+const validateImages = async ({ dbconn, imageNames = [] }) => {
 	// 没有就不验证
-	if (toUploadImages == undefined) {
+	if (imageNames.length == 0) {
 		return {
 			type: 'ok'
 		};
@@ -116,74 +116,33 @@ const validateImages = async ({ toUploadImages }) => {
         errorCode: "BEYOND_MAX_UPLAD_IMAGE_COUNT"
     }
     */
-	if (toUploadImages.length > MAX_UPLOAD_IMAGE_COUNT) {
+	if (imageNames.length > MAX_UPLOAD_IMAGE_COUNT) {
 		return {
 			type: 'error',
 			errorCode: 'BEYOND_MAX_UPLAD_IMAGE_COUNT'
 		};
 	}
 
-	/*
-	// 图片格式不符合
-	{
-		type: "error",
-		errorCode: "IMAGE_FORMAT_NOT_ALLOW",
-		errorDetal: {
-			filenames: ['not_allowed_format.bmp']
-		}
-	}
-	*/
-	const wrongFormats = [];
+  const placeholder = generatePlaceholder(1, imageNames.length)
 
-	for (let image of toUploadImages) {
-		if (!ALLOW_IMAGE_TYPE.includes(image.type)) {
-			wrongFormats.push(image.name);
-		}
-	}
+  const query = {
+    text: `SELECT
+      COUNT(*) AS count
+    FROM
+      post_comment_image
+    WHERE
+      id IN (${placeholder})
+    `,
+    values: imageNames
+  }
 
-	if (wrongFormats.length > 0) {
-		return {
-			type: 'error',
-			errorCode: 'IMAGE_FORMAT_NOT_ALLOW',
-			errorDetail: {
-				filenames: wrongFormats
-			}
-		};
-	}
-
-	/*
-    // 超出了图片文件大小
-    {
-        type: "error",
-        errorCode: "IMAGE_OVERSIZE",
-		errorDetail: {
-			filenames: ['oversize.jpg']
-		}
+  const result = await dbconn.query(query)
+  if (result.rows[0].count != imageNames.length) {
+    return {
+      type: 'error',
+      errorCode: 'INVALID_IMAGE_NAMES'
     }
-     */
-	const oversizes = [];
-
-	for (let image of toUploadImages) {
-		if (image.size > MAX_SINGLE_IMAGE_SIZE * 1024) {
-			oversizes.push({
-				name: image.name
-			});
-		}
-	}
-
-	if (oversizes.length > 0) {
-		let namesArray = [];
-		oversizes.forEach((one) => {
-			namesArray.push(one.name);
-		});
-		return {
-			type: 'error',
-			errorCode: 'IMAGE_OVERSIZE',
-			errorDetail: {
-				filenames: namesArray
-			}
-		};
-	}
+  }
 
 	return {
 		type: 'ok'

@@ -10,7 +10,8 @@ const config = {
 		adapter: adapter(),
 		alias: {
 			$svgIcon: 'src/assets/svg-icons',
-			$cmpns: 'src/components'
+			$cmpns: 'src/components',
+      $store: 'src/store',
 		},
 		paths: {
 			base: ''
