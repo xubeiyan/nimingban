@@ -28,7 +28,7 @@ export const POST = async ({ locals, params, request }) => {
 
   const jsonData = await request.json();
   // 获取 发帖用户名，邮件，标题，内容，饼干，图片的名称, 回复的评论的内容
-	let { name, email, title, content, cookies, imageNames, commentReplyContent } = jsonData;
+	let { name, email, title, content, cookies, imageNames = [], commentReplyContent } = jsonData;
 
 	/* 
 	// 未提供cookies字段
@@ -130,21 +130,22 @@ export const POST = async ({ locals, params, request }) => {
 	const commentInsertResult = await dbconn.query(commentInsertQuery);
 
 	const commentId = commentInsertResult.rows[0].id;
-  const placeholder = generatePlaceholder(2, imageNames.length);
-	// 更新 post_comment_image 表中对应的字段
-  const updateImageQuery = {
-    text: `UPDATE
-      post_comment_image
-    SET
-      post_id = $1
-    WHERE
-      id IN (${placeholder}) AND post_id IS NULL
-    `,
-    values: [commentId, ...imageNames]
-  };
+  if (imageNames.length > 1) {
+    const placeholder = generatePlaceholder(2, imageNames.length);
+    // 更新 post_comment_image 表中对应的字段
+    const updateImageQuery = {
+      text: `UPDATE
+        post_comment_image
+      SET
+        post_id = $1
+      WHERE
+        id IN (${placeholder}) AND post_id IS NULL
+      `,
+      values: [commentId, ...imageNames]
+    };
 
-  await dbconn.query(updateImageQuery);
-
+    await dbconn.query(updateImageQuery);
+  }
 	return json({
 		type: 'ok',
 		commentId: commentId
