@@ -130,7 +130,7 @@ export const POST = async ({ locals, params, request }) => {
 	const commentInsertResult = await dbconn.query(commentInsertQuery);
 
 	const commentId = commentInsertResult.rows[0].id;
-  if (imageNames.length > 1) {
+  if (imageNames.length > 0) {
     const placeholder = generatePlaceholder(2, imageNames.length);
     // 更新 post_comment_image 表中对应的字段
     const updateImageQuery = {

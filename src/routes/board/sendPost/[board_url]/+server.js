@@ -131,7 +131,7 @@ export async function POST({ locals, request, params }) {
 
 	await dbconn.query(updateBoardQuery);
 
-  if (imageNames.length > 1) {
+  if (imageNames.length > 0) {
     const post_id = boardInsertResult.rows[0].id;
     const placeholder = generatePlaceholder(2, imageNames.length);
 
