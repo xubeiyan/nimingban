@@ -10,7 +10,7 @@
 
 	const insertImageToPost = (filename) => {
 		dispatch('insertImageToPost', {
-			path: filename
+			path: `/images/${filename}`
 		});
 	};
 
