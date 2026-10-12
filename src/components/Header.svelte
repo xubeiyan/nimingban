@@ -130,9 +130,13 @@
   const checkSessionOrLogout = () => {
     // 如果没有登录，$userStore 应该是空的
     if ($userStore.username == null) {
+      // console.log("userStore 是空的");
       return
     }
-    loginAlreadyExpire($userStore);
+    // 如果已经过期了，则登出
+    if (loginAlreadyExpire($userStore)) {
+      logout();
+    }
   }
 
   // 重建userStore 
@@ -151,6 +155,7 @@
 		// 获取上传图片的要求
 		getUploadImageSetting();
 		// console.log('get upload settings')
+    checkSessionOrLogout();
     document.addEventListener('visibilitychange', visibilityChange);
 
     return () => {
