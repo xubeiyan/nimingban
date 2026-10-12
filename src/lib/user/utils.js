@@ -34,8 +34,10 @@ export const loginAlreadyExpire = (user) => {
 	const userInfo = JSON.parse(atob(payload));
 	const expireTimeStamp = userInfo.expire;
 	const now = Date.now();
+  // console.log(expireTimeStamp);
 
 	if (expireTimeStamp <= now) {
+    console.log("登录已经过期，登出...")
 		return true;
 	}
 	return false;

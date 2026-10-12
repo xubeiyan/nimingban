@@ -86,61 +86,33 @@
 		if (res.type == 'error') {
 			const verb = type == 'post' ? '发串' : '回复串';
 			if (res.errorCode == 'BEYOND_MAX_UPLAD_IMAGE_COUNT') {
-				sendResponseError = {
-					text: '上传图片数超出了限制'
-				};
+				sendResponseError =  `上传图片数超出了限制`;
 			} else if (res.errorCode == 'IMAGE_FORMAT_NOT_ALLOW') {
-				sendResponseError = {
-					text: `图片 ${json.errorDetail.filenames.join(', ')} 不是允许上传的格式`
-				};
+				sendResponseError = `图片 ${json.errorDetail.filenames.join(', ')} 不是允许上传的格式`;
 			} else if (res.errorCode == 'IMAGE_OVERSIZE') {
-				sendResponseError = {
-					text: `图片 ${res.errorDetail.filenames.join(', ')} 超出了大小 ${$boardStore.upload_image_max_size} KiB 的限制`
-				};
+				sendResponseError = `图片 ${res.errorDetail.filenames.join(', ')} 超出了大小 ${$boardStore.upload_image_max_size} KiB 的限制`;
 			} else if (res.errorCode == 'CONTENT_LENGTH_TOO_SHORT') {
-				sendResponseError = {
-					text: `串的正文内容太短了`
-				};
+				sendResponseError = `串的正文内容太短了`;
 			} else if (res.errorCode == 'NO_AUTHORIZATION_HEADER') {
-				sendResponseError = {
-					text: `${verb}需要登录且拥有饼干`
-				};
+				sendResponseError = `${verb}需要登录且拥有饼干`;
 			} else if (['COOKIES_MALFORM', 'INVALID_AUTHORIZATION_HEADER'].includes(res.errorCode)) {
-				sendResponseError = {
-					text: `认证字段不正确`
-				};
+				sendResponseError =  `认证字段不正确`;
 			} else if (res.errorCode == 'AUTHORIZATION_EXPIRE') {
-				sendResponseError = {
-					text: `需要退出后重新登录`
-				};
+				sendResponseError =  `需要退出后重新登录`;
 			} else if (res.errorCode == 'WRONG_COOKIES') {
-				sendResponseError = {
-					text: `当前饼干: "${$userStore.usingCookie}" 无法${verb}`
-				};
+				sendResponseError =  `当前饼干: "${$userStore.usingCookie}" 无法${verb}`;
 			} else if (res.errorCode == 'POST_TOO_FAST') {
-				sendResponseError = {
-					text: `${verb}太快了，请等待 ${res.extra} 秒后重试`
-				};
+				sendResponseError =  `${verb}太快了，请等待 ${res.extra} 秒后重试`;
 			} else if (res.errorCode == 'OPERATION_NOT_ALLOWED') {
-				sendResponseError = {
-					text: `当前用户不允许编辑串或回复`
-				};
+				sendResponseError = `当前用户不允许编辑串或回复`;
 			} else if (res.errorCode == 'POST_OR_COMMENT_ID_INVALID') {
-				sendResponseError = {
-					text: `串或回复的ID不正确`
-				};
+				sendResponseError = `串或回复的ID不正确`;
 			} else if (res.errorCode == 'COOKIE_NOT_ENABLE') {
-				sendResponseError = {
-					text: `当前饼干不允许${verb}`
-				};
+				sendResponseError = `当前饼干不允许${verb}`;
 			} else if (res.errorCode == 'NOT_SEND_POST_IN_THIS_BOARD') {
-				sendResponseError = {
-					text: `此版块不允许${verb}`
-				};
+				sendResponseError = `此版块不允许${verb}`;
 			} else if (res.errorCode == 'NOT_EDITABLE') {
-				sendResponseError = {
-					text: `此串或评论不允许编辑`
-				};
+				sendResponseError = `此串或评论不允许编辑`;
 			}
 
 			sendBtnStatus = 'failed';

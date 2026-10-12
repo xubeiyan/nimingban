@@ -24,6 +24,7 @@
 - [x] 发串或者评论支持 `Markdown` 语法，有预览功能，具体参考[这里](#markdown-编辑器支持语法)
 - [x] 回复也支持 `Markdown` 语法（笑看某V2EX
 - [x] (作者)编辑串或者评论，会增加编辑标记，可增加发送时忘记添加的图片
+- [x] 单独设计了图片文件上传功能，帖子或评论发布之前就上传图片，并且可以插入到帖子中
 
 ### 管理者
 
@@ -48,6 +49,7 @@
 | 某个版                           | GET /board/{board_url}                  |          |
 | （管理）编辑某串或评论           | POST /board/editPostOrComment/{post_id} |          |
 | 获取某个版的串                   | GET /board/getPosts/{board_url}         |          |
+| 上传图片                         | POST /board/uploadImage                 |          |
 | 发送串                           | POST /board/sendPost/{board_url}        |          |
 | 发送回复串                       | POST /board/sendComment/{post_id}       |          |
 | 获取某串回复                     | GET /comment/{post_id}                  |          |
