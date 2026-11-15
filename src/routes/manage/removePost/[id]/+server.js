@@ -36,12 +36,31 @@ export const GET = async ({ params, request, locals }) => {
 		});
 	}
 
+  // 删除串的图像
+  const deletePostImagesQuery = {
+    text: `UPDATE post_comment_image SET exist_type = 'delete' WHERE post_id = $1`,
+    values: [id],
+  }
+
+  await dbconn.query(deletePostImagesQuery);
+
+  // 删除回复时返回它的id
 	const deleteCommentQuery = {
-		text: `DELETE FROM comment WHERE belong_post_id = $1`,
+		text: `DELETE FROM comment WHERE belong_post_id = $1 RETURNING id`,
 		values: [id]
 	};
 
 	const deleteCommentResult = await dbconn.query(deleteCommentQuery);
+
+  // 增加删除帖子包含的图像的操作
+  const commentIds = deleteCommentResult.rows.filter(row => row.id).map(one => one.id);
+
+  const deleteCommentsImagesQuery = {
+    text: `UPDATE post_comment_image SET exist_type = 'delete' WHERE post_id = ANY($1::uuid[])`,
+    values: [commentIds],
+  };
+
+  await dbconn.query(deleteCommentsImagesQuery);
 
 	return json({
 		type: 'ok',

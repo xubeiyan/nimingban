@@ -28,6 +28,13 @@ export const GET = async ({ params, request, locals }) => {
 
 	const deleteCommentResult = await dbconn.query(deleteCommentQuery);
 
+  const deleteCommentImagesQuery = {
+    text: `UPDATE post_comment_image SET exist_type = 'delete' WHERE post_id = $1`,
+    values: [id],
+  }
+  
+  await dbconn.query(deleteCommentImagesQuery);
+
 	return json({
 		type: 'ok',
 		commentCount: deleteCommentResult.rowCount
