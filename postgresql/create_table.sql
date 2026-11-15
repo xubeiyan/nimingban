@@ -8,9 +8,9 @@ CREATE TABLE IF NOT EXISTS public.board
     parent_section_id uuid NOT NULL,
     min_post_second integer NOT NULL DEFAULT 10,
     min_post_timestamp timestamp without time zone NOT NULL,
-    access_type character varying(16) NOT NULL DEFAULT 'all'::character varying,
-    name character varying(256) NOT NULL,
-    url_name character varying(256) NOT NULL,
+    access_type text NOT NULL DEFAULT 'all'::character varying,
+    name text NOT NULL,
+    url_name text NOT NULL,
     intro text,
     "order" integer,
     CONSTRAINT board_pkey PRIMARY KEY (id)
@@ -29,9 +29,9 @@ CREATE TABLE IF NOT EXISTS public.comment
 (
     id uuid NOT NULL,
     belong_post_id uuid NOT NULL,
-    poster_name character varying(256),
-    poster_email character varying(256),
-    title character varying(256),
+    poster_name text,
+    poster_email text,
+    title text,
     content text,
     poster_cookies_id uuid,
     post_timestamp timestamp without time zone NOT NULL,
@@ -54,8 +54,8 @@ CREATE TABLE IF NOT EXISTS public.cookies
     belong_user_id uuid NOT NULL,
     create_timestamp timestamp without time zone NOT NULL,
     expire_timestamp timestamp without time zone NOT NULL,
-    content character varying(32),
-    status character varying(16),
+    content text,
+    status text,
     CONSTRAINT cookies_pkey PRIMARY KEY (id)
 )
 
@@ -71,15 +71,15 @@ ALTER TABLE IF EXISTS public.cookies
 CREATE TABLE IF NOT EXISTS public.post
 (
     id uuid NOT NULL,
-    poster_name character varying(256) COLLATE ,
-    poster_email character varying(256) COLLATE ,
-    title character varying(256) COLLATE ,
+    poster_name text COLLATE ,
+    poster_email text COLLATE ,
+    title text COLLATE ,
     content text COLLATE ,
     poster_cookies_id uuid NOT NULL,
     post_timestamp timestamp without time zone NOT NULL,
     edit_timestamp timestamp without time zone,
     belong_board_id uuid NOT NULL,
-    status character varying(16) COLLATE ,
+    status text COLLATE ,
     last_reply_timestamp timestamp without time zone NOT NULL,
     CONSTRAINT post_pkey PRIMARY KEY (id)
 )
@@ -96,10 +96,11 @@ ALTER TABLE IF EXISTS public.post
 CREATE TABLE IF NOT EXISTS public.post_comment_image
 (
     id uuid NOT NULL,
-    image_type character varying(16) NOT NULL,
-    exist_type character varying(16) NOT NULL,
+    image_type text NOT NULL,
+    exist_type text NOT NULL,
     post_id uuid,
-    fullname character varying(128) NOT NULL,
+    fullname text NOT NULL,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT post_comment_image_pkey PRIMARY KEY (id)
 )
 
